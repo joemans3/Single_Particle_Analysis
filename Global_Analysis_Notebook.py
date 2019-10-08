@@ -8,7 +8,7 @@ import matplotlib as plt
 
 from trajectory_analysis_script import *
 
-from __future__ import print_function
+
 from ipywidgets import interact, interactive, fixed, interact_manual, FloatSlider, IntSlider
 import ipywidgets as widgets
 '''
@@ -47,7 +47,7 @@ def define_variables(frame_step,frame_total,t_len_l,t_len_u,MSD_avg_threshold,up
 
 #first rpoc
 rpoc_1 = run_analysis("/Users/baljyot/Desktop/Baljyot_EXP_RPOC/DATA","RPOC")
-print(rpoc_1.frames)
+print((rpoc_1.frames))
 #rpoc_1.read_parameters
 interact_manual(rpoc_1.read_parameters,frame_step = FloatSlider(min=100,max=1000,step=100,value=1000),
                 frame_total = FloatSlider(min=0,max=5000,step=1000,value=5000),
@@ -63,7 +63,7 @@ interact_manual(rpoc_1.read_parameters,frame_step = FloatSlider(min=100,max=1000
 
 # In[ ]:
 
-print(rpoc_1.wd)
+print((rpoc_1.wd))
 
 
 # In[ ]:
