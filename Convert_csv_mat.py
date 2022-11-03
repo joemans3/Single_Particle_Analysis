@@ -112,14 +112,16 @@ class Prepare_Tracks:
 		t = self.read_track_data(self.wd,self.t_string)
 		for i in range(len(t[0])):
 
-			self.save_to_mat(*self.convert_track_frame(t[0][i]),i)
+			self.save_to_mat(*self.convert_track_frame(t[0][i]),k =i)
 			temp = self.tracks_clist[i]
 			dic = {	
 			"trfile" : np.transpose(temp)
 			}
 
-			savemat("{0}/MAT_FILES_{1}/NUSA_{2}.mat".format(self.wd,self.t_string,i),dic)
+			savemat("{0}/MAT_FILES_{1}/{2}_{3}.mat".format(self.wd,self.t_string,self.t_string,i),dic)
 		return
+'''
 a = Prepare_Tracks("/Users/baljyot/Desktop/Baljyot_EXP_RPOC/DATA/Nusa_20190305","NUSA",10,20)
 a.run()
+'''
 	

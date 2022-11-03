@@ -1,39 +1,81 @@
-import os
-import sys
-import matplotlib.cm as cm
-from matplotlib.colors import LogNorm
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Circle
-from matplotlib.collections import PatchCollection
-from scipy.optimize import curve_fit
+from ast import Raise
 import glob
-from sklearn import mixture
-import pandas
-
-from plotting_functions import *
-from Analysis_functions import *
-from draw_circle import *
-
+import math
+import os
 import pdb
+from re import L
+import shutil
+import sys
+from typing_extensions import Self
+
+import h5py
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+import mpl_toolkits.mplot3d.art3d as art3d
+import numpy as np
+import pandas
+import scipy.io as sio
+from matplotlib.animation import MovieWriterRegistry
+from matplotlib.collections import PatchCollection
+from matplotlib.colors import LogNorm
+from matplotlib.patches import Circle
+from scipy.optimize import curve_fit
+from shapely.geometry import Point, Polygon
+from sklearn import mixture
+from scipy.stats import binned_statistic_2d
+from scipy.stats import gaussian_kde
+
+import import_functions
+import nucleoid_detection
+from Analysis_functions import *
+from blob_detection import *
+from Convert_csv_mat import *
+from plotting_functions import *
 
 
 class run_analysis:
+	'''
+	Define a class for each dataset to analyse
+	Contains multiple frames of view for movies
 
-	def __init__(self,wd,t_string):
+	Parameters
+	----------
+	wd : str
+		working directory of the stored data
+	t_string : str
+		unique string identifier for dataset
+	sim : bool
+		if True, this is a simulated dataset
+
+	Attributes
+	----------
+	TODO
+
+	Methods
+	-------
+	read_track_data(wd,t_string)
+		reads all the data file associated with the dataset
+	convert_track_frame(track_set)
+		given raw track data filters it into the format needed
+	analyse_cell_tracks()
+		helper function to create mappings of Movies.Cells.Drops.Trajectories
+	analyse_cell_tracks_utility(i,k,sorted_tracks)
+		main function that does the above's dirty work
+	run_flow()
+		global flow of the class, run this after getting the parameters via read_parameters
+	read_parameters(*many)
+		read the variables needed for the analysis, all have default values if not provided
+	_correct_msd_vectors()
+		internal function to pad msd vs. tau data to be of same length w.o.t NaNs
+
+	'''
+	def __init__(self,wd,t_string,sim = False):
+		self.radius = []
 		self.pixel_to_nm = 0
 		self.pixel_to_um = 0
 		self.master_trag_list = []
 
 		self.total_experiments = 0
-
-		self.in_sorted_experiment = []
-		self.io_sorted_experiment = []
-		self.ot_sorted_experiment = []
-
-		self.temp_i_d_tavg  = []
-		self.temp_io_d_tavg  = []
-		self.temp_o_d_tavg  = []
 
 		self.wd = wd
 		self.t_string = t_string
@@ -54,186 +96,308 @@ class run_analysis:
 		self.minimum_percent_per_drop_in = 0.50
 		self.frames = int(self.frame_total/self.frame_step)
 
-
-
-
-		self.occupency_per_drop__per_frame_per_experiment = []
-		self.tmframe_occ = [[] for i in range(self.frames)] #occupation per frame step for all experiments 
-
-		#averaged MSD (time) over all frame steps
-		self.i_d_tavg = []
-		self.o_d_tavg = []
-		self.io_d_tavg = []
-
-		self.i_d_tavg_x = []
-		self.o_d_tavg_x = []
-		self.io_d_tavg_x = []
-
-		self.i_d_tavg_y = []
-		self.o_d_tavg_y = []
-		self.io_d_tavg_y = []
-
-		#Lengths of tracks
-
-		self.in_length = []
-		self.out_length =[]
-		self.inout_length = []
-
-
-		self.in_dist = []
-		self.ot_dist = [] 
-		self.io_dist = []
-
-		self.minimum_center = []
-		
-		self.minimum_msd = []
-
-		#center of mass distance to center of drop (chooses closest drop)
-		self.mean_center = []
-		self.mean_center_msd = []
-		
-
-		#averaged MSD (time) per frame step
-		self.in_drop = [[] for i in range(self.frames)]
-		self.out_drop = [[] for i in range(self.frames)]
-		self.in_out_drop = [[] for i in range(self.frames)]
-
-		self.in_drop_x = [[] for i in range(self.frames)]
-		self.out_drop_x = [[] for i in range(self.frames)]
-		self.in_out_drop_x = [[] for i in range(self.frames)]
-
-		self.in_drop_y = [[] for i in range(self.frames)]
-		self.out_drop_y = [[] for i in range(self.frames)]
-		self.in_out_drop_y = [[] for i in range(self.frames)]
-
-		#single track decomposition per frame step over all experiments
-		self.max_in = np.zeros(self.frames)
-		self.max_out = np.zeros(self.frames)
-		self.max_io = np.zeros(self.frames)
-
-
-		self.in_msd_track = [[] for i in range(self.frames)]
-		self.out_msd_track = [[] for i in range(self.frames)]
-		self.io_msd_track = [[] for i in range(self.frames)]
-
-		self.in_msd_track_x = [[] for i in range(self.frames)]
-		self.out_msd_track_x = [[] for i in range(self.frames)]
-		self.io_msd_track_x = [[] for i in range(self.frames)]
-
-		self.in_msd_track_y = [[] for i in range(self.frames)]
-		self.out_msd_track_y = [[] for i in range(self.frames)]
-		self.io_msd_track_y = [[] for i in range(self.frames)]
-		self.distances = []
-
-
-		self.in_tracksf = []
-		self.out_tracksf = []
-		self.io_tracksf = []
-
-		self.in_track_total = []
-		self.io_track_total = []
-		self.ot_track_total = []
-
-		self.viable_drop_total = []
-
 		self.segmented_drop_files = []
 
-		self.in_msd_all = []
-		self.ot_msd_all = []
-		self.io_msd_all = []
+		##########################
+		#condensed analysis data
+		#Cells in the specific movie being analysed
+		self.Cells = {}
+		self.Movie = {}
 
-		self.unrestricted_msd = []
+	def get_movie_path(self,movie_ID,frame):
+		'''
+		Gives the path of the specific time projected frame (0-4) of the movie (reference frame)
 
-		self.in_radius_g = []
-		self.io_radius_g = []
-		self.ot_radius_g = []
-
-		#end to end distances all together (without frame classification)
-		self.in_ete = []
-		self.io_ete = []
-		self.ot_ete = []
-
-		self.all_tracks_x = []
-		self.all_tracks_y = []
-		self.all_msd = []
-
-		self.in_angle = []
-		self.ot_angle = []
-		self.io_angle = []
-		self.in_angle_tot = []
-		self.ot_angle_tot = []
-		self.io_angle_tot = []
-
-
-
-
-
-		#Distances in x and y
-		self.in_distances_x = []
-		self.io_distances_x = []
-		self.ot_distances_x = []
-		self.in_distances_y = []
-		self.io_distances_y = []
-		self.ot_distances_y = []
-		##########
-		#ordered containers for msd and other metrics using the class varient of the tracjectory/localizations
-
+		Parameters
+		----------
+		movie_ID : str
+			key identifier for the frame of reference, i.e the movie in this whole dataset
+		frame : int, or array-like of ints
+			the specific time projected subframe of the movie
 		
+		Returns
+		-------
+		string, or array-like of strings
+			if frame is a single integer then returns the path to that specific subframe
+			if frame is a set of integers defining the subframes then array of paths of length frame
 
+		Note
+		----
+		This function only works if the run_flow() method has already been applied to an instance of the run_analysis class
+		'''
+		#check to make sure run_flow() has occured by checking the length of self.Movie
+		#check the type of frame
+		if len(self.Movie) != 0:
+			if isinstance(frame, int):
+				return self.Movie[movie_ID].Movie_location[frame]
+			else:
+				return np.asarray(self.Movie[movie_ID].Movie_location)[frame]
+		else:
+			raise Exception("There are no Movies in this dataset yet.")
+	def blob_detection_utility(self,seg_files,plot = False):
+		'''
+		Utility function for the use of blob_dections to find the candidate spots
+
+		Parameteres
+		-----------
+		seg_files : array-like of img objects
+			img objects of 2D img or 2D array of the img
+		plot : bool
+			if true plot the images with the circles ontop
+			else don't plot and don't print the possible drops
+
+		Returns
+		-------
+		array-like 
+			for each seg_file find the possible blobs and return the center coordinates and radius
+			[len(seg_files),# circles identified, 3 ([x,y,r])]
+		'''
+
+		blob_data = []
+		for ff in range(len(seg_files)):
+			blob_class = blob_detection(seg_files[ff],threshold = 1e-4,overlap = 0.0)
+			blobs = blob_class.detection()
+			for ppp in blobs:
+				self.radius.append(ppp)
+			blobs_copy = np.copy(blobs)
+			blobs[:,0] = blobs_copy[:,1]
+			blobs[:,1] = blobs_copy[:,0]
+			if plot:
+				fig = plt.figure()
+				ax = fig.add_subplot()
+				ax.imshow(read_file(seg_files[ff]))
+				blobs = blob_class.detection()
+				for ppp in blobs:
+					cir = create_circle_obj(ppp)
+					ax.add_artist(cir)
+				print(blobs)
+			plt.show()
+			
+			blob_data.append(blobs)
+		return blob_data
+
+	def read_supersegger(self,sorted_cells):
+		'''
+		Reads the structured cell data from supersegger and returns a nested array with the structure
+
+		Parameters
+		----------
+		sorted_cells : array-like of strings of directories paths
+			the directories of the different frames of reference that are segemented
+			
+		Returns
+		-------
+		array-like of structured data for each parameter is read, see below
+		'''
+
+		movies = []
+		for i in sorted_cells:
+			cells = []
+			all_files = sorted(glob.glob(i +"/cell"+ "/cell**.mat"))
+
+			for j in range(len(all_files)):
+				
+				f = sio.loadmat(all_files[j])
+				bounding_box = f['CellA'][0][0]['coord'][0][0]['box'][0][0][:-1]
+				r_offset = f['CellA'][0][0]['r_offset'][0][0][0]
+				cell_area = f['CellA'][0][0]['coord'][0][0]['A'][0][0][0]
+				cell_center = f['CellA'][0][0]['coord'][0][0]['r_center'][0][0]
+				cell_long_axis = f['CellA'][0][0]['coord'][0][0]['e1'][0][0]
+				cell_short_axis = f['CellA'][0][0]['coord'][0][0]['e2'][0][0]
+				cell_mask = f['CellA'][0][0]['mask'][0][0]
+				cell_axis_lengths = f['CellA'][0][0]['length'][0][0][0]
+				cells.append([bounding_box,r_offset,cell_area,cell_center,cell_long_axis,cell_short_axis,cell_axis_lengths,cell_mask])
+
+			movies.append(cells)
+		return movies
+	
 	def read_track_data(self,wd,t_string):
 		'''
-		wd: this is the current woring directory for the dataset you are interested in.
-		t_string: Eg. NUSA, nusA, rpoC, RPOC etc.
+		TODO: full explination
+
+		Parameters
+		----------
+		wd : str
+			directory location of the dataset
+		t_string : str
+			unique identifier string for the dataset. Eg. NUSA, nusA, rpoC, RPOC etc.
+		
+		Returns
+		-------
+		array-like : [tracks,drops,blob_total]
+			tracks : array-like
+				all raw tracks from the dataset of trajectories from TrackMate
+			drops : array-like
+				drop statistics from TrackMate on time projected images
+			blob_total
+				drop statistics from blob_detection on time projected images
+
+		Notes
+		-----
+		This function does more than just the returns.
+		It also sets up the class substructure for the Movie.Cell.Drop.Trajectory mapping and updates many of their attributes
 		'''
 
 		cd = wd
+		nucleoid_path = cd + '/gfp'
+		nucleoid_imgs = find_image(nucleoid_path,full_path=True)
+		nucleoid_imgs_sorted = sorted_alphanumeric(nucleoid_imgs)
+
+
+		xy_frame_dir_names =[]
+		#load the data of segmented cells from SuperSegger (cell files)
+		for root, subdirs, files in os.walk(cd + '/gfp/Inverted_Images'):
+			for d in subdirs:
+				if d[:2] == 'xy':
+					xy_frame_dir_names.append(cd+'/gfp/Inverted_Images/'+d)
+		
+		movies = self.read_supersegger(np.sort(xy_frame_dir_names))
 
 		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + "_**.tif_spots.csv"))
+		
 		self.mat_path_dir = cd + "/Analysis/" + t_string + "MATLAB_dat/"
+		
 		max_tag = np.max([len(i) for i in all_files]) 
 
-
+		blob_total = []
 		tracks = []
 		drops = []
 		segf = []
-		for pp in all_files:
+		for pp in range(len(all_files)):
 
-			test = np.loadtxt("{0}".format(pp),delimiter=",")
+			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
+			fmt = '%d', '%d', '%1.9f', '%1.9f', '%d'
+			np.savetxt(all_files[pp][:-4] + '_sptsanalysis.csv',test,delimiter = "\t",fmt=fmt)
+
 			tracks.append(test)
-			if len(pp) == max_tag:
-				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
+			if len(all_files[pp]) == max_tag:
+				tag = all_files[pp][len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
 			else: 
-				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
+				tag = all_files[pp][len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
+
 
 			drop_files = 0
 			seg_files = 0
 			if max_tag != np.min([len(i) for i in all_files]):
-				drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
-				seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
+				drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
+				if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
+					seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
+				else:
+					seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
 			else:
-				drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
-				seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
+				drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
+				if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
+					seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
+				else:
+					seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
+
+			blob_total.append(self.blob_detection_utility(seg_files,plot = False))
 			point_data = []
-			print(drop_files)
 			segf.append(seg_files)
+
 			for i in drop_files:
-				point_data.append(np.loadtxt("{0}".format(i),delimiter=",",usecols=(0,1,2)))
+
+				points = np.loadtxt("{0}".format(i),delimiter=",",usecols=(0,1,2))
+
+				point_data.append(points)
 
 			drops.append(point_data)
-		self.segmented_drop_files = segf
-		return [tracks,drops]
 
+		
+		for pp in range(len(movies)):
+			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
+			drop_s = blob_total[pp]
+			self.Movie[str(pp)].Movie_nucleoid = nucleoid_imgs_sorted[pp]
+			for i in range(len(movies[pp])):
+
+				nuc_img = import_functions.read_file(self.Movie[str(pp)].Movie_nucleoid)
+				padded_mask = pad_array(movies[pp][i][7],np.shape(nuc_img),movies[pp][i][1])
+
+				self.Movie[str(pp)].Cells[str(i)] = Cell(i,all_files[pp],movies[pp][i][0],movies[pp][i][1],movies[pp][i][2],
+														movies[pp][i][3],movies[pp][i][4],movies[pp][i][5],movies[pp][i][6],
+														padded_mask,nuc_img*padded_mask)
+				
+				bb_nucl, regions = self.find_nucleoid(str(pp),str(i),nuc_img*padded_mask)
+				
+				#sort points into cells
+				poly_cord = []
+				for temp in movies[pp][i][0]:
+					poly_cord.append((temp[0],temp[1]))
+				poly = Polygon(poly_cord)
+				x_points = tracks[pp][:,2]
+				y_points = tracks[pp][:,3]
+				for j in range(len(x_points)):
+					point = Point(x_points[j],y_points[j])
+					if poly.contains(point) or poly.touches(point):
+						self.Movie[str(pp)].Cells[str(i)].raw_tracks.append(tracks[pp][j])
+
+				for j in range(len(drop_s)):
+					for k in range(len(drop_s[j])): 
+
+						point = Point(drop_s[j][k][0],drop_s[j][k][1])
+						if poly.contains(point) or poly.touches(point):
+							#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
+							self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][k]
+
+				
+		self.segmented_drop_files = segf
+
+		return [tracks,drops,blob_total]
+	
+	def find_nucleoid(self,movie_ID,cell_ID,img=0):
+		
+		
+		#find the location of the the nucleoid labeled images
+		#load the image
+		if isinstance(img,int):
+
+			img = import_functions.read_file(self.Movie[movie_ID].Movie_nucleoid)*self.Movie[movie_ID].Cells[cell_ID].cell_mask
+
+		#find the bounding box of this image
+		# plt.imshow(img)
+		# plt.show()
+
+		return nucleoid_detection.test(img)
 	def convert_track_frame(self,track_set):
 		'''
-		track_set: the set of tracks for one specific frame of reference
 		This function preps the data such that the tracks satisfy a length
 		and segregates the data in respect to the frame step.
+
+		Parameters
+		----------
+		track_set : array-like
+			the set of tracks for one specific frame of reference from TrackMate (unfiltered)
+		
+		Returns
+		-------
+		array-like : [track_n,x_n,y_n,i_n,f_n]
+			track_n : array-like of ints
+				track_IDs from TrackMate
+			x_n : array-like of floats
+				x coordinates of the localization belonging to index of track_ID
+			y_n : array-like of floats
+				y coordinates of the localization belonging to index of track_ID
+			i_n : array-like of floats
+				intensity of the localization belonging to index of track_ID
+			f_n : array-like of floats
+				frame of the movie the localization belonging to index of track_ID
 		'''
+
+		
 		track_ID = track_set[:,0]
 		frame_ID = track_set[:,1]
 		x_ID = track_set[:,2]
 		y_ID = track_set[:,3]
 		intensity_ID = track_set[:,4]
+
+
+
+
+
+
+
+
+
 
 		tp=[]
 		tp_x=[]
@@ -304,448 +468,182 @@ class run_analysis:
 
 		return [track_n,x_n,y_n,i_n,f_n]
 
-	def analyse_tracks(self,point_data,track_n,x_n,y_n,i_n,f_n,movie_ID):
-
-		x_f = []
-		y_f = []
-		i_f = []
-		f_f = []   
-
-
-
-
-		#Per_frame
-
-		tmframe_occ_f=[]
-		pc_h=[]
-
-
-		diff_in = []
-		diff_out = []
-		diff_io = []
-
-
+	def analyse_cell_tracks(self):
 		'''
-		for i in range(len(f_n)):
-		    for j in range(len(f_n[i])):
-		        print np.max(np.array(f_n[i][j])-np.min(f_n[i][j])), len(f_n[i][j])-1
-		'''    
-		viable_drop_t = []
+		Helper function to create mapping of Movie.Cell.Drop.Trajectory
+		'''
+		#go over each movie in this dataset
+		for i,j in self.Movie.items():
+			#go over each Cell in this movie
+			for k,l in j.Cells.items():
+				#sort the tracks based on the frame segmentation and cutoff criteria
+				if len(l.raw_tracks)!=0:
+					sorted_track = self.convert_track_frame(np.array(l.raw_tracks))
+					self.analyse_cell_tracks_utility(i,k,sorted_track)
+		return
 
-		in_track_t = []
-		ot_track_t = []
-		io_track_t = [] 
+	def analyse_cell_tracks_utility(self,i,k,sorted_tracks):
+		'''
+		Main function that: 
+			1) Identifies viable drops
+			2) Classifies trajecotries based on 1)
+		'''
 
-		in_msd_f = []
-		ot_msd_f = []
-		io_msd_f = []
-
-		occupency_per_drop__per_frame = []
-		for i in range(len(track_n)):
-			in_msd_ff = []
-			ot_msd_ff = []
-			io_msd_ff = []
-
-
-
-
-			in_tracks = []
-			out_tracks = []
-			io_tracks = []
-			in_drop_f = []
-			out_drop_f = []
-			in_out_drop_f = []
-			pc_tf =[]
-			frame_occ = []
-			xf = []
-			yf = []
-			ipf = []
-			ff = []
-			diff_in_f = []
-			diff_out_f = []
-			diff_io_f = []
-
-			in_msd_track_f = []
-			out_msd_track_f = []
-			io_msd_track_f = []
-
-			in_msd_track_f_x = []
-			out_msd_track_f_x = []
-			io_msd_track_f_x = []
-
-			in_msd_track_f_y = []
-			out_msd_track_f_y = []
-			io_msd_track_f_y = []
-
-			ki=0
-			ko=0
-			kio=0
-			counter = 0
-
-			global_control = True
-
-			try:
-				what=len(point_data[i])
-			except:
-				global_control = False
-
-			if global_control:
-				occupency_per_drop = np.zeros(len(point_data[i]))
-
-			viable_drop_f = []
-
-
-			if global_control:
-				if len(np.shape(point_data[i])) == 1:
-					point_data[i] = [point_data[i]]
-
-
-			for k in range(len(track_n[i])):
-
-				thresh = MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k])
-				self.unrestricted_msd.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-				if thresh > self.MSD_avg_threshold and global_control:
-
-					pc_th = []
-
-			            
-					for j in range(len(point_data[i])):
-						if len(point_data[i][j]) != 0:
-
-							n_dist=dist(np.array(x_n[i][k]),np.array(y_n[i][k]),point_data[i][j][0],point_data[i][j][1])
-							if (np.sum(n_dist < point_data[i][j][2]))/float(len(n_dist)) >= self.minimum_percent_per_drop_in:
-								occupency_per_drop[j] += 1
-			if global_control:
-				for j in range(len(point_data[i])):
-					if len(point_data[i][j]) != 0:
-						if occupency_per_drop[j] > self.minimum_tracks_per_drop:
-							viable_drop_f.append(point_data[i][j])
-
-				occupency_per_drop__per_frame.append(occupency_per_drop)       
-			            
-
-			for k in range(len(track_n[i])):
-				thresh = MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k])
-				if thresh > self.MSD_avg_threshold:
-					counter += 1
-					xf.append(x_n[i][k])
-					yf.append(y_n[i][k])
-					ipf.append(i_n[i][k])	
-					ff.append(f_n[i][k])
-					pc_th = []
-					if global_control:
-						if len(np.shape(point_data[i])) == 1:
-							print("hi")
-							point_data[i] = [point_data[i]]
-		                
-					dist_center = []
-					msd_center = []
-					cm_distance = [] #center of mass of track distance to the center of drop
-					if global_control:
-						for j in range(len(point_data[i])):
-							if len(point_data[i][j]) != 0:
-								if occupency_per_drop[j] > self.minimum_tracks_per_drop:
-									dist_center.append(np.min(dist(np.array(x_n[i][k]),np.array(y_n[i][k]),point_data[i][j][0],point_data[i][j][1])))
-									msd_center.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-									cm_distx,cm_disty = cm_normal(np.array(x_n[i][k]),np.array(y_n[i][k]))
-									
-									cm_distance.append(dist(cm_distx,cm_disty,point_data[i][j][0],point_data[i][j][1]))
-
-									n_dist=dist(np.array(x_n[i][k]),np.array(y_n[i][k]),point_data[i][j][0],point_data[i][j][1])
-									self.distances.append(n_dist)
-									pc_th.append((np.sum(n_dist < point_data[i][j][2]))/float(len(n_dist)))
-					if len(dist_center) != 0:
-						index = np.where(np.array(dist_center) == np.array(dist_center).min())
-						self.minimum_center.append(np.array(dist_center).min())
-						#self.mean_center.append(np.mean(np.array(dist_center)))
-						self.minimum_msd.append(msd_center[index[0][0]])
-
-					if len(cm_distance) !=0:
-
-						min_index = np.where(np.array(cm_distance) == np.min(np.array(cm_distance)))
-
-						for index_min in min_index[0]:
-							self.mean_center.append(cm_distance[index_min])
-							self.mean_center_msd.append(msd_center[index_min])
-					if len(pc_th) != 0 and global_control:
-						if np.sum(np.array(pc_th)==0.0) < len(point_data[i]): #asking for how many drops does the track in question not interact with.
-		                	#for all tracks which interact with any drop < all drops; find the mean occupation of track taken over all said drops
-							frame_occ.append(np.mean(np.array(pc_th)[np.array(pc_th)>=0.0]))
-							w_1 = np.where(np.array(pc_th)==1) #where are the occupation 1? i.e when is it alway in the drop?
-
-							if len(w_1[0])>0: #if it is in the drop (atleast in one drop all the time) calculate MSD
-		                    
-								in_tracks.append([x_n[i][k],y_n[i][k]])
-								in_msd_ff.append(con_pix_si(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]),which = 'msd'))
-								in_drop_f.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k])) #if track is inside atleast one drop all the T.
-								self.i_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-								self.temp_i_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-								self.i_d_tavg_x.append(MSD_tavg_single(x_n[i][k],f_n[i][k]))
-								self.i_d_tavg_y.append(MSD_tavg_single(y_n[i][k],f_n[i][k]))
-								self.in_length.append(len(x_n[i][k]))
-								self.in_dist+=list(dif_dis(x_n[i][k],y_n[i][k]))
-								self.in_radius_g.append(radius_of_gyration(x_n[i][k],y_n[i][k]))
-								self.in_ete.append(end_distance(x_n[i][k],y_n[i][k]))
-
-								self.in_distances_x += list(np.diff(x_n[i][k]))
-								self.in_distances_y += list(np.diff(y_n[i][k]))
-								self.master_trag_list.append(Trajectory(k, track_n[i][k], "IN", [x_n[i][k],y_n[i][k]], self.convert_ordere_list(f_n[i][k]), movie_ID))
-
-								self.in_angle.append(angle_trajectory_2d(x_n[i][k],y_n[i][k]))
-
-								for ang in angle_trajectory_2d(x_n[i][k],y_n[i][k]):
-
-									self.in_angle_tot.append(ang)
-
-								track_info = track_decomp(x_n[i][k],y_n[i][k],f_n[i][k],self.max_track_decomp)
-								track_info_x = track_decomp_single(x_n[i][k],f_n[i][k],self.max_track_decomp)
-								track_info_y = track_decomp_single(y_n[i][k],f_n[i][k],self.max_track_decomp)
-								in_msd_track_f.append(track_info)
-								if len(track_info) > ki:
-								    ki=len(track_info)
-								diff_in_f.append(cumsum(x_n[i][k],y_n[i][k]))
-								self.all_tracks_x += x_n[i][k]
-								self.all_tracks_y += y_n[i][k]
-								self.all_msd += len(x_n[i][k])*[MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k])]
-		                
-							else: #if not count it as in and out of the drop; not counting if never in any drop
-		                    #####test
-								if np.max(pc_th) > self.lower_bp and np.max(pc_th) < self.upper_bp:
-									io_tracks.append([x_n[i][k],y_n[i][k]])
-									io_msd_ff.append(con_pix_si(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]),which = 'msd'))
-									in_out_drop_f.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-									self.io_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-									self.temp_io_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-									self.io_d_tavg_x.append(MSD_tavg_single(x_n[i][k],f_n[i][k]))
-									self.io_d_tavg_y.append(MSD_tavg_single(y_n[i][k],f_n[i][k]))
-									self.inout_length.append(len(x_n[i][k]))
-									self.io_dist+=list(dif_dis(x_n[i][k],y_n[i][k]))
-									self.io_radius_g.append(radius_of_gyration(x_n[i][k],y_n[i][k]))
-									self.io_ete.append(end_distance(x_n[i][k],y_n[i][k]))
-
-
-									self.io_distances_x += list(np.diff(x_n[i][k]))
-									self.io_distances_y += list(np.diff(y_n[i][k]))
-									self.master_trag_list.append(Trajectory(k, track_n[i][k], "IO", [x_n[i][k],y_n[i][k]], self.convert_ordere_list(f_n[i][k]), movie_ID))
-
-
-									self.io_angle.append(angle_trajectory_2d(x_n[i][k],y_n[i][k]))
-
-									for ang in angle_trajectory_2d(x_n[i][k],y_n[i][k]):
-
-										self.io_angle_tot.append(ang)
-
-
-
-									track_info = track_decomp(x_n[i][k],y_n[i][k],f_n[i][k],self.max_track_decomp)
-									track_info_x = track_decomp_single(x_n[i][k],f_n[i][k],self.max_track_decomp)
-									track_info_y = track_decomp_single(y_n[i][k],f_n[i][k],self.max_track_decomp)
-
-									io_msd_track_f.append(track_info)
-									if len(track_info) > kio:
-										kio=len(track_info)
-									diff_io_f.append(cumsum(x_n[i][k],y_n[i][k]))
-									self.all_tracks_x += x_n[i][k]
-									self.all_tracks_y += y_n[i][k]
-									self.all_msd += len(x_n[i][k])*[MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k])]
+		self.Movie[i].Cells[k].sorted_tracks_frame = sorted_tracks
+		list_drop_track = [{} for i in range(len(self.Movie[i].Cells[k].All_Drop_Collection))]
+		
+		drop_ID_list = []
+		for ii,j in self.Movie[i].Cells[k].All_Drop_Collection.items():
+			drop_ID_list.append(ii)
+			for kk in range(len(sorted_tracks[0])):
+				if int(ii[0]) == kk:
+					for l in range(len(sorted_tracks[0][kk])): #running over the tracks in frame k
+						n_dist=dist(np.array(sorted_tracks[1][kk][l]),np.array(sorted_tracks[2][kk][l]),j[0],j[1])
+						percent_drop_in = np.float(np.sum(n_dist <= j[2]))/len(n_dist)
+						if percent_drop_in >= self.minimum_percent_per_drop_in:
+							key = str(kk)+","+str(l)
+							checks_low = 0
+							checks_none = 0 #need 5 to go forward and use this track
+							for list_drop in range(len(list_drop_track)):
+								if key in list_drop_track[list_drop]:
+									#is the value of the percent drop in larger that the one we find in the database?
+									if list_drop_track[list_drop][key] < percent_drop_in:
+										del list_drop_track[list_drop][key]
+										checks_low = 1
 								else:
-									out_tracks.append([x_n[i][k],y_n[i][k]])
-									ot_msd_ff.append(con_pix_si(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]),which = 'msd'))
-									out_drop_f.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-									self.o_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-									self.temp_o_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-									self.o_d_tavg_x.append(MSD_tavg_single(x_n[i][k],f_n[i][k]))
-									self.o_d_tavg_y.append(MSD_tavg_single(y_n[i][k],f_n[i][k]))
-									self.out_length.append(len(x_n[i][k]))
-									self.ot_dist+=list(dif_dis(x_n[i][k],y_n[i][k]))
-									self.ot_radius_g.append(radius_of_gyration(x_n[i][k],y_n[i][k]))
-									self.ot_ete.append(end_distance(x_n[i][k],y_n[i][k]))
+									checks_none+=1
+							if (checks_low == 1) or (checks_none == len(list_drop_track)):
+								list_drop_track[len(drop_ID_list)-1][key] = percent_drop_in
+		
+		true_drop_per_frame = [[] for kk in range(len(sorted_tracks[0]))]
+		
+		#if the updated list of occupancies matches a critetion make it a true drop
+		for ii,j in self.Movie[i].Cells[k].All_Drop_Collection.items():
+			ind = drop_ID_list.index(ii)
+			len_drop_tracks = len(list_drop_track[ind])
+			if len_drop_tracks > self.minimum_tracks_per_drop:
+				self.Movie[i].Cells[k].Drop_Collection[ii] = j
+				true_drop_per_frame[int(ii[0])].append(j)
 
-									self.ot_distances_x += list(np.diff(x_n[i][k]))
-									self.ot_distances_y += list(np.diff(y_n[i][k]))
-									self.master_trag_list.append(Trajectory(k, track_n[i][k], "IO", [x_n[i][k],y_n[i][k]], self.convert_ordere_list(f_n[i][k]), movie_ID))
-
-
-									self.ot_angle.append(angle_trajectory_2d(x_n[i][k],y_n[i][k]))
-									
-									for ang in angle_trajectory_2d(x_n[i][k],y_n[i][k]):
-
-										self.ot_angle_tot.append(ang)
-
-
-									track_info = track_decomp(x_n[i][k],y_n[i][k],f_n[i][k],self.max_track_decomp)
-									track_info_x = track_decomp_single(x_n[i][k],f_n[i][k],self.max_track_decomp)
-									track_info_y = track_decomp_single(y_n[i][k],f_n[i][k],self.max_track_decomp)
-									out_msd_track_f.append(track_info)
-									if len(track_info) > ko:
-										ko=len(track_info)
-									diff_out_f.append(cumsum(x_n[i][k],y_n[i][k]))
-									self.all_tracks_x += x_n[i][k]
-									self.all_tracks_y += y_n[i][k]
-									self.all_msd += len(x_n[i][k])*[MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k])]
-		                    
-		                
-		                
-						else:
-							out_tracks.append([x_n[i][k],y_n[i][k]])
-							ot_msd_ff.append(con_pix_si(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]),which = 'msd'))
-							frame_occ.append(0) #if track interacts with none of the drops then input 0 occupancy average. 
-							out_drop_f.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-							self.o_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-							self.temp_o_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-							self.o_d_tavg_x.append(MSD_tavg_single(x_n[i][k],f_n[i][k]))
-							self.o_d_tavg_y.append(MSD_tavg_single(y_n[i][k],f_n[i][k]))
-							self.out_length.append(len(x_n[i][k]))
-							self.ot_dist+=list(dif_dis(x_n[i][k],y_n[i][k]))
-							self.ot_radius_g.append(radius_of_gyration(x_n[i][k],y_n[i][k]))
-							self.ot_ete.append(end_distance(x_n[i][k],y_n[i][k]))
+		#if true drops don't exist make all the tracks out tracks
+		for ii in range(len(sorted_tracks[0])):
+			if len(true_drop_per_frame[ii]) == 0:
+				for l in range(len(sorted_tracks[0][ii])): #running over the tracks in frame k
+					#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
+					track = Trajectory(Track_ID = str(ii)+','+str(l), Frame_number = ii, X = sorted_tracks[1][ii][l], Y = sorted_tracks[2][ii][l], Classification = None, Drop_Identifier = None, Frames = sorted_tracks[4][ii][l], MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][ii][l],sorted_tracks[2][ii][l],sorted_tracks[4][ii][l]),which = 'msd'))
+					self.Movie[i].Cells[k].All_Tracjectories[str(ii)+','+str(l)] = track
+					self.Movie[i].Cells[k].No_Drops_Trajectory_Collection[str(ii)+','+str(l)] = track
 
 
-							self.ot_distances_x += list(np.diff(x_n[i][k]))
-							self.ot_distances_y += list(np.diff(y_n[i][k]))
-							self.master_trag_list.append(Trajectory(k, track_n[i][k], "OT", [x_n[i][k],y_n[i][k]], self.convert_ordere_list(f_n[i][k]), movie_ID))
 
-
-							self.ot_angle.append(angle_trajectory_2d(x_n[i][k],y_n[i][k]))
+		#create the mapping for each viable drop
+		for ii,j in self.Movie[i].Cells[k].Drop_Collection.items():
+			self.Movie[i].Cells[k].Trajectory_Collection[ii] = Trajectory_Drop_Mapping(ii)
+		for kk in range(len(sorted_tracks[0])):
+			if len(true_drop_per_frame[kk]) != 0:
+				for l in range(len(sorted_tracks[0][kk])):
+					temp_in = {}
+					temp_io = {}
+					temp_ot = {}
+					inx_in = 0
+					inx_io = 0
+					inx_ot = 0
+					for ii,j in self.Movie[i].Cells[k].Drop_Collection.items():
+						if int(ii[0]) == kk:
 							
-							for ang in angle_trajectory_2d(x_n[i][k],y_n[i][k]):
+							n_dist=dist(np.array(sorted_tracks[1][kk][l]),np.array(sorted_tracks[2][kk][l]),j[0],j[1])
+							#for in/out and out we need to know the percentage of in and out.
+							percent_in = np.float(np.sum(n_dist <= j[2]))/len(n_dist) 
+							
 
-								self.ot_angle_tot.append(ang)
+							if (n_dist <= j[2]).all():
+								if len(temp_in) == 0:
+									temp_in[ii] = [n_dist,percent_in]
+									inx_in = ii
+								else:
+									print("IN track occurs twice! Indexs={0}".format(str(i)+","+str(k)+","+str(kk)+","+str(l)))
+							
+							#if the distances are all out then class as "OUT" also for <50% occupency
+							elif (n_dist >= j[2]).all() or (percent_in <= self.lower_bp):
+								if len(temp_ot) == 0:
+									temp_ot[ii] = [n_dist,percent_in]
+									inx_ot = ii
+								else:
+									index_tt = 0
+									for tt,tv in temp_ot.items():
+										index_tt=tt
+									if temp_ot[index_tt][1]<percent_in:
+										del temp_ot[index_tt]
+										temp_ot[ii] = [n_dist,percent_in]
+										inx_ot = ii
+									elif temp_ot[index_tt][1]==percent_in:
+										if np.mean(temp_ot[index_tt][0]) > np.mean(n_dist):
+											del temp_ot[index_tt]
+											temp_ot[ii] = [n_dist,percent_in]
+											inx_ot = ii
 
-							track_info = track_decomp(x_n[i][k],y_n[i][k],f_n[i][k],self.max_track_decomp)
-							track_info_x = track_decomp_single(x_n[i][k],f_n[i][k],self.max_track_decomp)
-							track_info_y = track_decomp_single(y_n[i][k],f_n[i][k],self.max_track_decomp)
-							out_msd_track_f.append(track_info)
-							if len(track_info) > ko:
-							    ko=len(track_info)
-							diff_out_f.append(cumsum(x_n[i][k],y_n[i][k]))
-							self.all_tracks_x += x_n[i][k]
-							self.all_tracks_y += y_n[i][k]
-							self.all_msd += len(x_n[i][k])*[MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k])]
+							elif (percent_in > self.lower_bp) and (percent_in < self.upper_bp):
+								if len(temp_io) == 0:
+									temp_io[ii] = [n_dist,percent_in]
+									inx_io = ii
+								else:
+									index_tt = 0
+									for tt,tv in temp_io.items():
+										index_tt=tt
+									if temp_io[index_tt][1]<percent_in:
+										del temp_io[index_tt]
+										temp_io[ii] = [n_dist,percent_in]
+										inx_io = ii
+									elif temp_io[index_tt][1]==percent_in:
+										if np.mean(temp_io[index_tt][0]) > np.mean(n_dist):
+											del temp_io[index_tt]
+											temp_io[ii] = [n_dist,percent_in]
+											inx_io = ii
+					
 
-						pc_tf.append(pc_th)
-
+					if len(temp_in) == 0:
+						if len(temp_io) == 0:
+							#now store this is the Trajectory_Collection array of the specific cell that this trajectory belongs to
+							track = Trajectory(Track_ID = str(kk)+','+str(l), Frame_number = kk, X = sorted_tracks[1][kk][l], Y = sorted_tracks[2][kk][l], Classification = "OUT", Drop_Identifier = inx_ot, Frames = sorted_tracks[4][kk][l], MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][kk][l],sorted_tracks[2][kk][l],sorted_tracks[4][kk][l]),which = 'msd'))
+							self.Movie[i].Cells[k].Trajectory_Collection[inx_ot].OUT_Trajectory_Collection[str(kk)+','+str(l)] = track
+							#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
+							self.Movie[i].Cells[k].All_Tracjectories[str(kk)+','+str(l)] = track
+						else:
+							track = Trajectory(Track_ID = str(kk)+','+str(l), Frame_number = kk, X = sorted_tracks[1][kk][l], Y = sorted_tracks[2][kk][l], Classification = "IO", Drop_Identifier = inx_io, Frames = sorted_tracks[4][kk][l], MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][kk][l],sorted_tracks[2][kk][l],sorted_tracks[4][kk][l]),which = 'msd'))
+							self.Movie[i].Cells[k].Trajectory_Collection[inx_io].IO_Trajectory_Collection[str(kk)+','+str(l)] = track
+							#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
+							self.Movie[i].Cells[k].All_Tracjectories[str(kk)+','+str(l)] = track
 					else:
-						out_tracks.append([x_n[i][k],y_n[i][k]])
-						pc_tf.append(0)
-						ot_msd_ff.append(con_pix_si(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]),which = 'msd'))
-						frame_occ.append(0) #if track interacts with none of the drops then input 0 occupancy average. 
-						out_drop_f.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-						self.o_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-						self.temp_o_d_tavg.append(MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k]))
-						self.o_d_tavg_x.append(MSD_tavg_single(x_n[i][k],f_n[i][k]))
-						self.o_d_tavg_y.append(MSD_tavg_single(y_n[i][k],f_n[i][k]))
-						self.out_length.append(len(x_n[i][k]))
-						self.ot_dist+=list(dif_dis(x_n[i][k],y_n[i][k]))
-						self.ot_radius_g.append(radius_of_gyration(x_n[i][k],y_n[i][k]))
-						self.ot_ete.append(end_distance(x_n[i][k],y_n[i][k]))
-
-
-						self.ot_distances_x += list(np.diff(x_n[i][k]))
-						self.ot_distances_y += list(np.diff(y_n[i][k]))
-						self.master_trag_list.append(Trajectory(k, track_n[i][k], "OT", [x_n[i][k],y_n[i][k]], self.convert_ordere_list(f_n[i][k]), movie_ID))
-
-
-
-
-						self.ot_angle.append(angle_trajectory_2d(x_n[i][k],y_n[i][k]))
-
-						for ang in angle_trajectory_2d(x_n[i][k],y_n[i][k]):
-
-							self.ot_angle_tot.append(ang)
-
-						track_info = track_decomp(x_n[i][k],y_n[i][k],f_n[i][k],self.max_track_decomp)
-						track_info_x = track_decomp_single(x_n[i][k],f_n[i][k],self.max_track_decomp)
-						track_info_y = track_decomp_single(y_n[i][k],f_n[i][k],self.max_track_decomp)
-						out_msd_track_f.append(track_info)
-						if len(track_info) > ko:
-						    ko=len(track_info)
-						diff_out_f.append(cumsum(x_n[i][k],y_n[i][k]))
-						self.all_tracks_x += x_n[i][k]
-						self.all_tracks_y += y_n[i][k]
-						self.all_msd += len(x_n[i][k])*[MSD_tavg(x_n[i][k],y_n[i][k],f_n[i][k])]
-			
-
-			if len(frame_occ) != 0:        
-				self.in_tracksf.append(in_tracks) 
-				self.io_tracksf.append(io_tracks) 
-				self.out_tracksf.append(out_tracks) 
-				print(counter)
-				self.in_msd_track[i] += in_msd_track_f
-				self.out_msd_track[i] += out_msd_track_f
-				self.io_msd_track[i] += io_msd_track_f
-
-				self.in_msd_track_x[i] += in_msd_track_f
-				self.out_msd_track_x[i] += out_msd_track_f_x
-				self.io_msd_track_x[i] += io_msd_track_f_x
-
-				self.in_msd_track_y[i] += in_msd_track_f
-				self.out_msd_track_y[i] += out_msd_track_f_y
-				self.io_msd_track_y[i] += io_msd_track_f_y
-
-				self.max_in[i] = np.max([self.max_in[i],ki])
-				self.max_out[i] = np.max([self.max_out[i],ko])
-				self.max_io[i] = np.max([self.max_io[i],kio])
-
-				diff_in.append(diff_in_f)
-				diff_out.append(diff_out_f)
-				diff_io.append(diff_io_f)
-
-				x_f.append(xf)
-				y_f.append(yf)
-				i_f.append(ipf)
-				self.tmframe_occ[i] = self.tmframe_occ[i]+frame_occ
-				tmframe_occ_f.append(frame_occ)
-				self.in_drop[i] = self.in_drop[i] + in_drop_f
-				self.out_drop[i] = self.out_drop[i] + out_drop_f
-				self.in_out_drop[i] = self.in_out_drop[i] + in_out_drop_f
-				
-				pc_h.append(pc_tf)
-
-				viable_drop_t.append(viable_drop_f)
-
-			in_track_t.append(in_tracks)
-			io_track_t.append(io_tracks)
-			ot_track_t.append(out_tracks)
-
-			in_msd_f.append(in_msd_ff)
-			io_msd_f.append(io_msd_ff)
-			ot_msd_f.append(ot_msd_ff)
-
-		self.in_msd_all.append(in_msd_f)
-		self.io_msd_all.append(io_msd_f)
-		self.ot_msd_all.append(ot_msd_f)
-
-
-		self.occupency_per_drop__per_frame_per_experiment.append(occupency_per_drop__per_frame)
-		self.viable_drop_total.append(viable_drop_t)
-
-		self.in_track_total.append(in_track_t)
-		self.io_track_total.append(io_track_t)
-		self.ot_track_total.append(ot_track_t)
-
-		return 
-
+						#now store this is the Trajectory_Collection array of the specific cell that this trajectory belongs to
+						track = Trajectory(Track_ID = str(kk)+','+str(l), Frame_number = kk, X = sorted_tracks[1][kk][l], Y = sorted_tracks[2][kk][l], Classification = "IN", Drop_Identifier = inx_in, Frames = sorted_tracks[4][kk][l], MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][kk][l],sorted_tracks[2][kk][l],sorted_tracks[4][kk][l]),which = 'msd'))
+						self.Movie[i].Cells[k].Trajectory_Collection[inx_in].IN_Trajectory_Collection[str(kk)+','+str(l)] = track
+						#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
+						self.Movie[i].Cells[k].All_Tracjectories[str(kk)+','+str(l)] = track
 
 	def run_flow(self):
-
-		tracks, drops = self.read_track_data(self.wd,self.t_string)
+		'''
+		Controls the flow of this dataset analysis
+		'''
+		tracks, drops, blobs = self.read_track_data(self.wd,self.t_string)
 		self.total_experiments = len(tracks)
-		for i in range(len(tracks)):
-			track_n,x_n,y_n,i_n,f_n = self.convert_track_frame(tracks[i])	
-			self.analyse_tracks(drops[i],track_n,x_n,y_n,i_n,f_n,i)
-			self.in_sorted_experiment.append(self.temp_i_d_tavg)
-			self.io_sorted_experiment.append(self.temp_io_d_tavg)
-			self.ot_sorted_experiment.append(self.temp_o_d_tavg)
-			self.temp_i_d_tavg  = []
-			self.temp_io_d_tavg  = []
-			self.temp_o_d_tavg  = []
+		self.analyse_cell_tracks()
 
 		return
 
 	def read_parameters(self,frame_step = 1000,frame_total = 5000,t_len_l = 10,t_len_u = 1000,
-		MSD_avg_threshold  = 0.0001,upper_bp = 0.99 ,lower_bp = 0.80,max_track_decomp = 1.0,
+		MSD_avg_threshold  = 0.0001,upper_bp = 0.99 ,lower_bp = 0.50,max_track_decomp = 1.0,
 		conversion_p_nm = 130,minimum_tracks_per_drop = 3, minimum_percent_per_drop_in = 1.0):
+		'''
+		Reads in the parameters needed for the analysis
+
+		Parameters
+		----------
+		TODO
+
+		Notes
+		-----
+		This function reads in variables and assigns them to the attributed of this class instance
+		'''
 		self.pixel_to_um = conversion_p_nm/1000.
 		self.pixel_to_nm = conversion_p_nm
 		self.frame_step = frame_step #change manual
@@ -763,111 +661,225 @@ class run_analysis:
 		self.minimum_percent_per_drop_in = minimum_percent_per_drop_in
 		self.frames = int(self.frame_total/self.frame_step)
 
-		self.tmframe_occ = [[] for i in range(self.frames)]
-				#averaged MSD (time) per frame step
-		self.in_drop = [[] for i in range(self.frames)]
-		self.out_drop = [[] for i in range(self.frames)]
-		self.in_out_drop = [[] for i in range(self.frames)]
-
-		self.in_drop_x = [[] for i in range(self.frames)]
-		self.out_drop_x = [[] for i in range(self.frames)]
-		self.in_out_drop_x = [[] for i in range(self.frames)]
-
-		self.in_drop_y = [[] for i in range(self.frames)]
-		self.out_drop_y = [[] for i in range(self.frames)]
-		self.in_out_drop_y = [[] for i in range(self.frames)]
-
-		#single track decomposition per frame step over all experiments
-		self.max_in = np.zeros(self.frames)
-		self.max_out = np.zeros(self.frames)
-		self.max_io = np.zeros(self.frames)
-
-
-		self.in_msd_track = [[] for i in range(self.frames)]
-		self.out_msd_track = [[] for i in range(self.frames)]
-		self.io_msd_track = [[] for i in range(self.frames)]
-
-		self.in_msd_track_x = [[] for i in range(self.frames)]
-		self.out_msd_track_x = [[] for i in range(self.frames)]
-		self.io_msd_track_x = [[] for i in range(self.frames)]
-
-		self.in_msd_track_y = [[] for i in range(self.frames)]
-		self.out_msd_track_y = [[] for i in range(self.frames)]
-		self.io_msd_track_y = [[] for i in range(self.frames)]
-
-
 		return 
 
-	def correct_msd_vectors(self):
-
-		######################################################################################################################
-		#pad msd vectors with NaNs
-		  
+	def _correct_msd_vectors(self):
+		'''
+		pad msd vectors with NaNs so they are the same length as you increase tau
+		'''
 		for i in range(len(self.in_msd_track)):
-		    for j in range(len(self.in_msd_track[i])):
-		        self.in_msd_track[i][j] = np.pad(self.in_msd_track[i][j],(0,int(self.max_in[i]-len(self.in_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan))
+			for j in range(len(self.in_msd_track[i])):
+				self.in_msd_track[i][j] = np.pad(self.in_msd_track[i][j],(0,int(self.max_in[i]-len(self.in_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan))
 		for i in range(len(self.out_msd_track)):
-		    for j in range(len(self.out_msd_track[i])):
-		        self.out_msd_track[i][j] = np.pad(self.out_msd_track[i][j],(0,int(self.max_out[i]-len(self.out_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan)) 
+			for j in range(len(self.out_msd_track[i])):
+				self.out_msd_track[i][j] = np.pad(self.out_msd_track[i][j],(0,int(self.max_out[i]-len(self.out_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan)) 
 		for i in range(len(self.io_msd_track)):
-		    for j in range(len(self.io_msd_track[i])):
-		        self.io_msd_track[i][j] = np.pad(self.io_msd_track[i][j],(0,int(self.max_io[i]-len(self.io_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan))
+			for j in range(len(self.io_msd_track[i])):
+				self.io_msd_track[i][j] = np.pad(self.io_msd_track[i][j],(0,int(self.max_io[i]-len(self.io_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan))
 		return 
+
+
+class Movie_frame:
+	'''
+	Frame of reference for one movie
+
+	Parameters
+	----------
+	TODO
+
+	'''
+	def __init__(self,Movie_ID,Movie_name,Movie_location=0,nucleoid_location = 0):
+		self.Movie_ID = Movie_ID
+		self.Movie_name = Movie_name
+		self.Movie_location = Movie_location
+		self.Movie_nucleoid = nucleoid_location
+
+		self.Cells = {}
+
+class Cell:
+	'''
+	each cell class is built of two main things:
+	1) A dictionary of drops (x,y,r) identified by a label (0,1,...,n)
+	2) A collection of Trajectory class objects defining the trajectories in that Cell class object
 	
-	def convert_ordere_list(self,list):
-		return np.array(range(len(list))) + 1
-	# def write_mat_SMAUG(self,path,track_all,frame_all,loc_all):
-	# 	''' convert these datasets into the format needed for SMAUG '''
-	# 	for i in range(len(track_all)):
+	Parameters
+	----------
+	TODO
+	'''
+	def __init__(self, Cell_ID, Cell_Movie_Name,bounding_box=0,r_offset=0,cell_area=0,cell_center=0,cell_long_axis=0,cell_short_axis=0,cell_axis_lengths=0,cell_mask=0,Cell_Nucleoid_Mask=0):
+
+		self.Cell_ID = Cell_ID
+		self.Cell_Movie_Name = Cell_Movie_Name
+
+		self.Cell_Nucleoid_Mask = Cell_Nucleoid_Mask
+
+		#Cell global variables
+		self.cell_mask = cell_mask
+		self.cell_area = cell_area
+		self.cell_center = cell_center
+		self.bounding_box = bounding_box
+		self.r_offset = r_offset
+		self.cell_long_axis = cell_long_axis
+		self.cell_short_axis = cell_short_axis
+		self.cell_axis_lengths = cell_axis_lengths
+
+		#keys in Trajectory_Collection are String(i,j) (frame,viable_drop index) while the values are instances of Trajectory_Drop_Mapping
+		self.Trajectory_Collection = {}
+		#If no drops are identified in this frame then put all "OUT" trajectories in this collection with (i,k) -> (frame,trajectory index)
+		self.No_Drops_Trajectory_Collection = {}
+		#viable drops only
+		self.Drop_Collection = {}
+		#all drops before viability test
+		self.All_Drop_Collection = {}
+		#dict for all trajectories without mapping but still classified
+		self.All_Tracjectories = {}
 
 
-		return
+		#unsorted raw track data 
+		self.raw_tracks = []
+		#sorted tracks per sub frame
+		self.sorted_tracks_frame = []
 
+class Trajectory_Drop_Mapping:
+	'''
+	create a mapping for each viable drop to store all the Trajectory instances that belong to it in terms of Classification
+	
+	Parameters
+	----------
+	TODO
+	'''
+	def __init__(self,Drop_ID):
 
-class Localization:
-
-	def __init__(self,label,localizations,frame, fframe_ID):
-
-		self.label = label
-		self.localizations = localizations
-		self.frame_num = frame
-		self.frame_ID = fframe_ID
-
-	def update_loc(self,localizations,frame_num,frame_ID):
-
-		self.localizations = localizations
-		self.frame_num = frame_num
-		self.frame_ID = frame_ID
-
-		return 
+		self.Drop_ID = Drop_ID
+		self.IN_Trajectory_Collection = {}
+		self.OUT_Trajectory_Collection = {}
+		self.IO_Trajectory_Collection = {}
 
 class Trajectory:
+	'''
+	Trajectory attribute class
 
-	def __init__(self,ID,T_ID,label,localizations,frame,m_ID):
+	Parameters
+	----------
+	TODO
+	'''
+	def __init__(self, Track_ID, Frame_number, X, Y, Classification, Drop_Identifier, Frames, MSD_total_um = None):
 
-		self.self_ID = 0
-		self.track_IDs = T_ID
-		self.label = label
-		self.localizations = localizations
-		self.frames = frame
-		self.step_number = 0
-		self.full_track = []
-		self.dim = len(self.localizations)
-		self.trajectory = []
-		self.movie_ID = m_ID #movie_ID
+		self.Track_ID = Track_ID
+		self.Frame_number = Frame_number
+		self.Frames = Frames
+		self.X = X 
+		self.Y = Y 
+		self.Classification = Classification
+		self.Drop_Identifier = Drop_Identifier
+		self.MSD_total_um = MSD_total_um
+		self.distance_from_OUT = 0
 
-		self.create_trajectory()
 
-	def create_trajectory(self):
 
-		for i in range(len(self.localizations[0])):
-			self.trajectory.append(Localization(self.label,[self.localizations[k][i] for k in range(self.dim)],self.frames[i],i+1))
 
+
+#define a custom class for boundary analysis
+
+class boundary_analysis:
+	'''
+	class for storing analysis intermediates and boundary analysis
+	'''
+	def __init__(self,**kwargs) -> None:
+		self.dataset = kwargs.get("dataset",None)
+	
+	def	distance_from_boundary(self):
 		return
 
+	@staticmethod
+	def directional_displacement(collection_traj,cell_obj):
+		angles = []
+		dist_center = []
+		directional_displacement = []
+		for i,k in collection_traj.items():
+			track = k
+			x_val = track.X
+			y_val = track.Y
+			drop_data = cell_obj.Drop_Collection[track.Drop_Identifier]
+
+			drop_center_dist = (dist(x_val,y_val,drop_data[0],drop_data[1]))/drop_data[2]
+			v1 = list(zip(x_val-drop_data[0],y_val-drop_data[1]))
+			angles += list(angle_multi(v1))[:-1]
+
+			#direction of the trajectory
+			#r2 -r1 > 0 moving out, r2 - r1 < 0 moving in
+			directional = con_pix_si(np.diff(dist(x_val,y_val,drop_data[0],drop_data[1])),which = 'um')
+			directional_displacement+=list(directional)
+			dist_center+=list(drop_center_dist)[:-1]
+		return [angles,dist_center,directional_displacement]
+		
+	def directional_displacement_bulk(self,**kwargs):
+		'''
+		return the directional_displacement vs distance from center with angles
+		'''
+		displacements = []
+		dist_centers = []
+		angles = []
+		for k,i in self.dataset.items(): #movies
+			for n,m in i.Cells.items(): #cells
+				for o,p in m.Trajectory_Collection.items(): #drop trajectory mapping
+					if kwargs.get("IN",False) == True:
+						angle,dist_center,dir_displacement = self.directional_displacement(p.IN_Trajectory_Collection,m)
+						angles+=angle
+						displacements+=dir_displacement
+						dist_centers+=dist_center
+					if kwargs.get("IO",False) == True:
+						angle,dist_center,dir_displacement = self.directional_displacement(p.IO_Trajectory_Collection,m)
+						angles+=angle
+						displacements+=dir_displacement
+						dist_centers+=dist_center
+					if kwargs.get("OT",False) == True:
+						angle,dist_center,dir_displacement = self.directional_displacement(p.OUT_Trajectory_Collection,m)
+						angles+=angle
+						displacements+=dir_displacement
+						dist_centers+=dist_center
+		return [displacements,dist_centers,angles]
+	
+	@staticmethod
+	def plot_directional_displacements(**kwargs):
+		displacements = kwargs.get("dir_displacements")
+		dist_center = kwargs.get("dist_center")
+		angles = kwargs.get("angles")
+		x = np.array(dist_center)
+		y = np.array(displacements)
+		xy = np.vstack([x,y])
+		z = gaussian_kde(xy)(xy)
+		idx = z.argsort()
+		x, y, z = x[idx], y[idx], z[idx]
+		angles = np.array(angles)
+		n, _ = np.histogram(x,bins = 20)
+		sy, _ = np.histogram(x,bins = 20,weights = y)
+		sy2, _ = np.histogram(x,bins = 20,weights = y*y)
+		#h, x_bins, y_bins = np.histogram2d(x,y,bins = 20)
+
+		mean = sy/n
+		std = np.sqrt(sy2/n - mean*mean)
+		fig = plt.figure()
+		ax_1 = fig.add_subplot(211)
+		ax_2 = fig.add_subplot(212)
+		a = ax_1.scatter(x,y,c = z, s = 50)
 
 
+		b = ax_2.scatter(*rt_to_xy(np.array(dist_center),angles),s = 0.1)
+		cir = plt.Circle( (0,0) ,1,fill = False )
+		ax_2.plot(0,0,'bo',markersize = 2)
+		plt.colorbar(b,ax = ax_2)
+		ax_2.add_artist(cir)
 
-
-
+		ax_1.plot((_[1:] + _[:-1])/2,mean, 'r-')
+		ax_1.errorbar((_[1:] + _[:-1])/2, mean,yerr = std/np.sqrt(len(mean)),fmt = 'r-')
+		ax_1.set_xlabel("Ralative Distance of Localization to Boundary (relative to radius)")
+		ax_1.set_ylabel("Displacements (um)")
+		plt.colorbar(a,ax = ax_1)
+		fig.tight_layout()
+		if kwargs.get("plot",False):
+			plt.show()
+			return
+		else:
+			return [fig,ax_1,ax_2] 
 
