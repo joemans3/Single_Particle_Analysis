@@ -13,6 +13,142 @@ from matplotlib.collections import PatchCollection
 import numpy as np 
 import matplotlib.pyplot as plt
 
+
+class run_analysis_plotting:
+    
+    def __init__(self) -> None:
+        pass
+    
+    @staticmethod
+    def draw_item(which_object,plots=1,all_tracks = False,movie_ID = '0',cell_ID = ['0','1'],movie_frame_index = 3):
+        '''
+        Plot the projected frame (movie_frame_index) of a movie (movie_ID) with specific cells (cell_ID, can be
+        marray of cells). 
+        If plots == 1, plot only one subfigure, else plot a hard coded identicle set of subplots (2,3)
+        If all_tracks == True use the raw_tracks variable for each cell (all possible localization)
+
+
+        Parameters
+        ----------
+        which_object : run_analysis object from trajectory_analysis_script.py
+            eg. rp_ez,nusa_ez,ll_ez
+        plots : int, tuple (n,m)
+            number of total subplots
+            if 1 plot only one subplot
+            else plot (n,m)
+        all_tracks : bool
+            if true use all raw_tracks localizations
+            else use only "viable" tracks
+        movie_ID : str
+            key identifier of the movie in this dataset
+        cell_ID : str, array-like of str
+            key identifier of the cell in this movie
+            if array plot multiple cell attributes
+        movie_frame_index : int
+            the subframe of the movie (usually 0-4 for 5 total subframes) 
+
+        RETURNS
+        -------
+
+        Array-like 
+            [x,y,fig,ax]
+            x : float
+                x coordinates of all tracks used
+            y : float
+                y coordinates of all tracks used
+            fig : figure object
+                the figure object which defines the plotting
+            ax :  Axes object
+                All the sub_plot ax (if plots == 1, this is a single ax, else it is of shape (n,m))
+        '''
+        viable_drop_circles = []
+        fig,ax = run_analysis_plotting.plot_img(which_object, plots, movie_ID, cell_ID, movie_frame_index)
+        x = []
+        y = []
+        for k in cell_ID:
+            for i in range(len(which_object.Movie[movie_ID].Cells[k].sorted_tracks_frame[0][movie_frame_index])):
+                x+=which_object.Movie[movie_ID].Cells[k].sorted_tracks_frame[1][movie_frame_index][i]
+                y+=which_object.Movie[movie_ID].Cells[k].sorted_tracks_frame[2][movie_frame_index][i]
+
+        if all_tracks == True:
+            x = []
+            y = []
+            for k in cell_ID:
+                arr_1 = np.array(which_object.Movie[movie_ID].Cells[k].raw_tracks)
+                x+=list(arr_1[:,2])
+                y+=list(arr_1[:,3])
+        for k in cell_ID:
+            for i,j in which_object.Movie[movie_ID].Cells[k].Drop_Collection.items():
+                if i[0] == str(movie_frame_index+1):
+                    viable_drop_circles.append(j)
+                    if plots == 1:
+                        Drawing_uncolored_circle = create_circle_obj(j,fill = False)
+                        ax.add_artist(Drawing_uncolored_circle)
+                    else:
+                        for art in range(len(ax)):
+                            for art2 in range(len(ax[art])):
+                                Drawing_uncolored_circle = create_circle_obj(j,fill = False)
+                                ax[art,art2].add_artist(Drawing_uncolored_circle)
+        return [x,y,fig,ax]
+
+    @staticmethod
+    def plot_img(which_object, plots = 1, movie_ID = '0', cell_ID = '0', movie_frame_index = 3):
+        '''
+        Given the location of the image in our dataset, plot it given the plotting rules and return the figure/axis objects
+        
+        Parameters
+        ----------
+        which_object : run_analysis object from trajectory_analysis_script.py
+            eg. rp_ez,nusa_ez,ll_ez
+        plots : int, tuple (n,m)
+            number of total subplots
+            if 1 plot only one subplot
+            else plot (n,m)
+        movie_ID : str
+            key identifier of the movie in this dataset
+        cell_ID : str, array-like of str
+            key identifier of the cell in this movie
+            if array plot multiple cell attributes
+        movie_frame_index : int
+            the subframe of the movie (usually 0-4 for 5 total subframes) 
+        
+        Returns
+        -------
+        array-like of figure,ax objects
+            returns the object of the figure and axis created by the plotting of the image
+
+        Notes 
+        -----
+        squeeze is used in plt.subplots(... ,squeeze) to change the shape of the ax objects created
+
+
+        squeeze : bool, default: True
+            - If True, extra dimensions are squeezed out from the returned
+            array of `~matplotlib.axes.Axes`:
+            - if only one subplot is constructed (nrows=ncols=1), the
+                resulting single Axes object is returned as a scalar.
+            - for Nx1 or 1xM subplots, the returned object is a 1D numpy
+                object array of Axes objects.
+            - for NxM, subplots with N>1 and M>1 are returned as a 2D array.
+            - If False, no squeezing at all is done: the returned Axes object is
+            always a 2D array containing Axes instances, even if it ends up
+            being 1x1.
+        '''
+
+        img = read_file(which_object.get_movie_path(movie_ID,movie_frame_index))
+
+        if plots == 1:
+            fig, ax = plt.subplots(plots,squeeze=True)
+            ax.imshow(img)
+        else:
+            fig, ax = plt.subplots(*plots,squeeze = False)
+            for i in range(plots[0]):
+                for j in range(plots[1]):
+                    ax[i,j].imshow(img)
+        return [fig,ax]
+
+
+
 def circles(x, y, s, c='b', vmin=None, vmax=None, **kwargs):
     """
     Make a scatter of circles plot of x vs y, where x and y are sequence 
@@ -92,143 +228,6 @@ def create_circle_obj(dims, fill = False):
 
     cir_object = plt.Circle( (dims[0],dims[1]) ,dims[2],fill = fill )
     return cir_object
-
-def draw_item(which_object,plots=1,all_tracks = False,movie_ID = '0',cell_ID = ['0','1'],movie_frame_index = 3):
-    '''
-    Plot the projected frame (movie_frame_index) of a movie (movie_ID) with specific cells (cell_ID, can be
-    marray of cells). 
-    If plots == 1, plot only one subfigure, else plot a hard coded identicle set of subplots (2,3)
-    If all_tracks == True use the raw_tracks variable for each cell (all possible localization)
-
-
-    Parameters
-    ----------
-    which_object : run_analysis object from trajectory_analysis_script.py
-        eg. rp_ez,nusa_ez,ll_ez
-    plots : int, tuple (n,m)
-        number of total subplots
-        if 1 plot only one subplot
-        else plot (n,m)
-    all_tracks : bool
-        if true use all raw_tracks localizations
-        else use only "viable" tracks
-    movie_ID : str
-        key identifier of the movie in this dataset
-    cell_ID : str, array-like of str
-        key identifier of the cell in this movie
-        if array plot multiple cell attributes
-    movie_frame_index : int
-        the subframe of the movie (usually 0-4 for 5 total subframes) 
-
-    RETURNS
-    -------
-    
-    Array-like 
-        [x,y,fig,ax]
-        x : float
-            x coordinates of all tracks used
-        y : float
-            y coordinates of all tracks used
-        fig : figure object
-            the figure object which defines the plotting
-        ax :  Axes object
-            All the sub_plot ax (if plots == 1, this is a single ax, else it is of shape (n,m))
-    '''
-    viable_drop_circles = []
-    fig,ax = plot_img(which_object, plots, movie_ID, cell_ID, movie_frame_index)
-    x = []
-    y = []
-    for k in cell_ID:
-        for i in range(len(which_object.Movie[movie_ID].Cells[k].sorted_tracks_frame[0][movie_frame_index])):
-            x+=which_object.Movie[movie_ID].Cells[k].sorted_tracks_frame[1][movie_frame_index][i]
-            y+=which_object.Movie[movie_ID].Cells[k].sorted_tracks_frame[2][movie_frame_index][i]
-
-    if all_tracks == True:
-        x = []
-        y = []
-        for k in cell_ID:
-            arr_1 = np.array(which_object.Movie[movie_ID].Cells[k].raw_tracks)
-            x+=list(arr_1[:,2])
-            y+=list(arr_1[:,3])
-    for k in cell_ID:
-        for i,j in which_object.Movie[movie_ID].Cells[k].Drop_Collection.items():
-            if i[0] == str(movie_frame_index+1):
-                viable_drop_circles.append(j)
-                if plots == 1:
-                    Drawing_uncolored_circle = create_circle_obj(j,fill = False)
-                    ax.add_artist(Drawing_uncolored_circle)
-                else:
-                    for art in range(len(ax)):
-                        for art2 in range(len(ax[art])):
-                            Drawing_uncolored_circle = create_circle_obj(j,fill = False)
-                            ax[art,art2].add_artist(Drawing_uncolored_circle)
-    return [x,y,fig,ax]
-
-
-#def cumdist(which,name):
-    plt.hist(which.in_dist,cumulative = True, label = "{0}_in".format(name),histtype = 'step',normed = 'True')
-    plt.hist(which.io_dist,cumulative = True, label = "{0}_io".format(name),histtype = 'step',normed = 'True')
-    plt.hist(which.ot_dist,cumulative = True, label = "{0}_ot".format(name),histtype = 'step',normed = 'True')
-    plt.legend()
-    plt.xlabel("Distance (pixel)")
-    plt.ylabel("Probability")
-    plt.show()
-    return 
-
-def plot_img(which_object, plots = 1, movie_ID = '0', cell_ID = '0', movie_frame_index = 3):
-    '''
-    Given the location of the image in our dataset, plot it given the plotting rules and return the figure/axis objects
-    
-    Parameters
-    ----------
-    which_object : run_analysis object from trajectory_analysis_script.py
-        eg. rp_ez,nusa_ez,ll_ez
-    plots : int, tuple (n,m)
-        number of total subplots
-        if 1 plot only one subplot
-        else plot (n,m)
-    movie_ID : str
-        key identifier of the movie in this dataset
-    cell_ID : str, array-like of str
-        key identifier of the cell in this movie
-        if array plot multiple cell attributes
-    movie_frame_index : int
-        the subframe of the movie (usually 0-4 for 5 total subframes) 
-    
-    Returns
-    -------
-    array-like of figure,ax objects
-        returns the object of the figure and axis created by the plotting of the image
-
-    Notes 
-    -----
-    squeeze is used in plt.subplots(... ,squeeze) to change the shape of the ax objects created
-
-
-    squeeze : bool, default: True
-        - If True, extra dimensions are squeezed out from the returned
-          array of `~matplotlib.axes.Axes`:
-          - if only one subplot is constructed (nrows=ncols=1), the
-            resulting single Axes object is returned as a scalar.
-          - for Nx1 or 1xM subplots, the returned object is a 1D numpy
-            object array of Axes objects.
-          - for NxM, subplots with N>1 and M>1 are returned as a 2D array.
-        - If False, no squeezing at all is done: the returned Axes object is
-          always a 2D array containing Axes instances, even if it ends up
-          being 1x1.
-    '''
-
-    img = read_file(which_object.get_movie_path(movie_ID,movie_frame_index))
-
-    if plots == 1:
-        fig, ax = plt.subplots(plots,squeeze=True)
-        ax.imshow(img)
-    else:
-        fig, ax = plt.subplots(*plots,squeeze = False)
-        for i in range(plots[0]):
-            for j in range(plots[1]):
-                ax[i,j].imshow(img)
-    return [fig,ax]
 
 def create_box_plot(box_data,tick_list,y_label = "",x_label = "",y_lim = (),title = "",show = False):
     ticks = tick_list

@@ -104,7 +104,7 @@ class run_analysis:
 		self.Cells = {}
 		self.Movie = {}
 
-	def get_movie_path(self,movie_ID,frame):
+	def _get_movie_path(self,movie_ID,frame):
 		'''
 		Gives the path of the specific time projected frame (0-4) of the movie (reference frame)
 
@@ -134,7 +134,7 @@ class run_analysis:
 				return np.asarray(self.Movie[movie_ID].Movie_location)[frame]
 		else:
 			raise Exception("There are no Movies in this dataset yet.")
-	def blob_detection_utility(self,seg_files,plot = False):
+	def _blob_detection_utility(self,seg_files,plot = False,**kwargs):
 		'''
 		Utility function for the use of blob_dections to find the candidate spots
 
@@ -155,7 +155,7 @@ class run_analysis:
 
 		blob_data = []
 		for ff in range(len(seg_files)):
-			blob_class = blob_detection(seg_files[ff],threshold = 1e-4,overlap = 0.0)
+			blob_class = blob_detection(seg_files[ff],threshold = kwargs.get("Threshold",1e-4),overlap = kwargs.get("Overlap",0))
 			blobs = blob_class.detection()
 			for ppp in blobs:
 				self.radius.append(ppp)
@@ -176,7 +176,7 @@ class run_analysis:
 			blob_data.append(blobs)
 		return blob_data
 
-	def read_supersegger(self,sorted_cells):
+	def _read_supersegger(self,sorted_cells):
 		'''
 		Reads the structured cell data from supersegger and returns a nested array with the structure
 
@@ -211,7 +211,7 @@ class run_analysis:
 			movies.append(cells)
 		return movies
 	
-	def read_track_data(self,wd,t_string):
+	def read_track_data(self,wd,t_string,**kwargs):
 		'''
 		TODO: full explination
 
@@ -239,12 +239,12 @@ class run_analysis:
 		'''
 
 		cd = wd
-		nucleoid_path = cd + '/gfp'
+		nucleoid_path = kwargs.get("nucleoid_path",cd + '/gfp')
 		nucleoid_imgs = find_image(nucleoid_path,full_path=True)
 		nucleoid_imgs_sorted = sorted_alphanumeric(nucleoid_imgs)
 
 
-		xy_frame_dir_names =[]
+		xy_frame_dir_names = []
 		#load the data of segmented cells from SuperSegger (cell files)
 		for root, subdirs, files in os.walk(cd + '/gfp/Inverted_Images'):
 			for d in subdirs:
@@ -291,7 +291,7 @@ class run_analysis:
 				else:
 					seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
 
-			blob_total.append(self.blob_detection_utility(seg_files,plot = False))
+			blob_total.append(self._blob_detection_utility(seg_files,plot = False))
 			point_data = []
 			segf.append(seg_files)
 
@@ -317,7 +317,7 @@ class run_analysis:
 														movies[pp][i][3],movies[pp][i][4],movies[pp][i][5],movies[pp][i][6],
 														padded_mask,nuc_img*padded_mask)
 				
-				bb_nucl, regions = self.find_nucleoid(str(pp),str(i),nuc_img*padded_mask)
+				bb_nucl, regions = self._find_nucleoid(str(pp),str(i),nuc_img*padded_mask)
 				
 				#sort points into cells
 				poly_cord = []
@@ -344,7 +344,7 @@ class run_analysis:
 
 		return [tracks,drops,blob_total]
 	
-	def find_nucleoid(self,movie_ID,cell_ID,img=0):
+	def _find_nucleoid(self,movie_ID,cell_ID,img=0):
 		
 		
 		#find the location of the the nucleoid labeled images
@@ -358,7 +358,7 @@ class run_analysis:
 		# plt.show()
 
 		return nucleoid_detection.test(img)
-	def convert_track_frame(self,track_set):
+	def _convert_track_frame(self,track_set):
 		'''
 		This function preps the data such that the tracks satisfy a length
 		and segregates the data in respect to the frame step.
@@ -468,7 +468,7 @@ class run_analysis:
 
 		return [track_n,x_n,y_n,i_n,f_n]
 
-	def analyse_cell_tracks(self):
+	def _analyse_cell_tracks(self):
 		'''
 		Helper function to create mapping of Movie.Cell.Drop.Trajectory
 		'''
@@ -482,7 +482,7 @@ class run_analysis:
 					self.analyse_cell_tracks_utility(i,k,sorted_track)
 		return
 
-	def analyse_cell_tracks_utility(self,i,k,sorted_tracks):
+	def _analyse_cell_tracks_utility(self,i,k,sorted_tracks):
 		'''
 		Main function that: 
 			1) Identifies viable drops
@@ -624,9 +624,9 @@ class run_analysis:
 		'''
 		Controls the flow of this dataset analysis
 		'''
-		tracks, drops, blobs = self.read_track_data(self.wd,self.t_string)
+		tracks, drops, blobs = self._read_track_data(self.wd,self.t_string)
 		self.total_experiments = len(tracks)
-		self.analyse_cell_tracks()
+		self._analyse_cell_tracks()
 
 		return
 
