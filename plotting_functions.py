@@ -135,7 +135,7 @@ class run_analysis_plotting:
             being 1x1.
         '''
 
-        img = read_file(which_object.get_movie_path(movie_ID,movie_frame_index))
+        img = read_file(which_object._get_movie_path(movie_ID,movie_frame_index))
 
         if plots == 1:
             fig, ax = plt.subplots(plots,squeeze=True)

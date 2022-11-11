@@ -103,7 +103,13 @@ class run_analysis:
 		#Cells in the specific movie being analysed
 		self.Cells = {}
 		self.Movie = {}
-
+	def _reinitalizeVariables(self):
+		self.segmented_drop_files = []
+		##########################
+		#condensed analysis data
+		#Cells in the specific movie being analysed
+		self.Cells = {}
+		self.Movie = {}
 	def _get_movie_path(self,movie_ID,frame):
 		'''
 		Gives the path of the specific time projected frame (0-4) of the movie (reference frame)
@@ -134,6 +140,13 @@ class run_analysis:
 				return np.asarray(self.Movie[movie_ID].Movie_location)[frame]
 		else:
 			raise Exception("There are no Movies in this dataset yet.")
+	def _get_nucleoid_path(self,movie_ID,cell_ID,full_path = False):
+		''' Returns the gfp image location or the image used to nuceloid segmentation'''
+		if len(self.Movie) != 0:
+			if full_path == True:
+				return self.Movie[movie_ID].Movie_nucleoid
+			else:
+				return self.Movie[movie_ID].Cells[cell_ID].Cell_Nucleoid_Mask
 	def _blob_detection_utility(self,seg_files,plot = False,**kwargs):
 		'''
 		Utility function for the use of blob_dections to find the candidate spots
@@ -155,7 +168,15 @@ class run_analysis:
 
 		blob_data = []
 		for ff in range(len(seg_files)):
-			blob_class = blob_detection(seg_files[ff],threshold = kwargs.get("Threshold",1e-4),overlap = kwargs.get("Overlap",0))
+
+			blob_class = blob_detection(seg_files[ff],\
+										threshold = kwargs.get("Threshold",1e-4),\
+										overlap = kwargs.get("Overlap",0),\
+										median=kwargs.get("median",False),\
+										min_sigma=kwargs.get("min_sigma",1),\
+										max_sigma=kwargs.get("max_sigma",2),\
+										num_sigma=kwargs.get("num_sigma",500))
+
 			blobs = blob_class.detection()
 			for ppp in blobs:
 				self.radius.append(ppp)
@@ -171,11 +192,10 @@ class run_analysis:
 					cir = create_circle_obj(ppp)
 					ax.add_artist(cir)
 				print(blobs)
-			plt.show()
+				plt.show()
 			
 			blob_data.append(blobs)
 		return blob_data
-
 	def _read_supersegger(self,sorted_cells):
 		'''
 		Reads the structured cell data from supersegger and returns a nested array with the structure
@@ -210,54 +230,40 @@ class run_analysis:
 
 			movies.append(cells)
 		return movies
-	
-	def read_track_data(self,wd,t_string,**kwargs):
-		'''
-		TODO: full explination
+	def _load_segmented_image_locations(self,pp,cd,t_string,max_tag,min_tag):
 
-		Parameters
-		----------
-		wd : str
-			directory location of the dataset
-		t_string : str
-			unique identifier string for the dataset. Eg. NUSA, nusA, rpoC, RPOC etc.
-		
-		Returns
-		-------
-		array-like : [tracks,drops,blob_total]
-			tracks : array-like
-				all raw tracks from the dataset of trajectories from TrackMate
-			drops : array-like
-				drop statistics from TrackMate on time projected images
-			blob_total
-				drop statistics from blob_detection on time projected images
+		if len(pp) == max_tag:
+			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
+		else: 
+			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
 
-		Notes
-		-----
-		This function does more than just the returns.
-		It also sets up the class substructure for the Movie.Cell.Drop.Trajectory mapping and updates many of their attributes
-		'''
+		drop_files = 0
+		seg_files = 0
 
-		cd = wd
-		nucleoid_path = kwargs.get("nucleoid_path",cd + '/gfp')
-		nucleoid_imgs = find_image(nucleoid_path,full_path=True)
-		nucleoid_imgs_sorted = sorted_alphanumeric(nucleoid_imgs)
+		if max_tag != min_tag:
+			drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
+			if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
+				seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
+			else:
+				seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
+		else:
+			drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
+			if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
+				seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
+			else:
+				seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
+		return drop_files,seg_files
+	def _load_segmented_image_data(self,drop_files):
+		point_data = []
 
+		for i in drop_files:
 
-		xy_frame_dir_names = []
-		#load the data of segmented cells from SuperSegger (cell files)
-		for root, subdirs, files in os.walk(cd + '/gfp/Inverted_Images'):
-			for d in subdirs:
-				if d[:2] == 'xy':
-					xy_frame_dir_names.append(cd+'/gfp/Inverted_Images/'+d)
-		
-		movies = self.read_supersegger(np.sort(xy_frame_dir_names))
+			points = np.loadtxt("{0}".format(i),delimiter=",",usecols=(0,1,2))
 
-		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + "_**.tif_spots.csv"))
-		
-		self.mat_path_dir = cd + "/Analysis/" + t_string + "MATLAB_dat/"
-		
-		max_tag = np.max([len(i) for i in all_files]) 
+			point_data.append(points)
+		return point_data
+
+#	def _load_segmented_image_data(self,all_files,cd,t_string,max_tag):
 
 		blob_total = []
 		tracks = []
@@ -266,8 +272,7 @@ class run_analysis:
 		for pp in range(len(all_files)):
 
 			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
-			fmt = '%d', '%d', '%1.9f', '%1.9f', '%d'
-			np.savetxt(all_files[pp][:-4] + '_sptsanalysis.csv',test,delimiter = "\t",fmt=fmt)
+			IO_run_analysis._save_sptanalysis_data(pp,test)
 
 			tracks.append(test)
 			if len(all_files[pp]) == max_tag:
@@ -302,8 +307,86 @@ class run_analysis:
 				point_data.append(points)
 
 			drops.append(point_data)
+		return blob_total,tracks,drops,segf
+	def _read_track_data(self,wd,t_string,**kwargs):
+		'''
+		TODO: full explination
 
+		Parameters
+		----------
+		wd : str
+			directory location of the dataset
+		t_string : str
+			unique identifier string for the dataset. Eg. NUSA, nusA, rpoC, RPOC etc.
 		
+		Returns
+		-------
+		array-like : [tracks,drops,blob_total]
+			tracks : array-like
+				all raw tracks from the dataset of trajectories from TrackMate
+			drops : array-like
+				drop statistics from TrackMate on time projected images
+			blob_total
+				drop statistics from blob_detection on time projected images
+
+		Notes
+		-----
+		This function does more than just the returns.
+		It also sets up the class substructure for the Movie.Cell.Drop.Trajectory mapping and updates many of their attributes
+		'''
+
+		cd = wd
+		#use gfp images for nuceloid segmentation
+		nucleoid_path = kwargs.get("nucleoid_path",cd + '/gfp')
+		nucleoid_imgs = find_image(nucleoid_path,full_path=True)
+		nucleoid_imgs_sorted = sorted_alphanumeric(nucleoid_imgs)
+
+		#load the data of segmented cells from SuperSegger (cell files)
+		xy_frame_dir_names = IO_run_analysis._load_superSegger(cd,'/gfp/Inverted_Images')
+		
+		movies = self._read_supersegger(np.sort(xy_frame_dir_names))
+
+		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + "_**.tif_spots.csv"))
+		
+		#make a matlab folder to store data for SMAUG analysis
+		self.mat_path_dir = cd + "/Analysis/" + t_string + "MATLAB_dat/"
+		
+		#tag for segmented images
+
+		max_tag = np.max([len(i) for i in all_files]) 
+		min_tag = np.min([len(i) for i in all_files])
+
+		blob_total = []
+		tracks = []
+		drops = []
+		segf = []
+		for pp in range(len(all_files)):
+
+			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
+
+			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
+
+			tracks.append(test)
+
+			drop_files, seg_files = self._load_segmented_image_locations(pp = all_files[pp], \
+											cd = cd, \
+											t_string = t_string, \
+											max_tag = max_tag, \
+											min_tag = min_tag)
+			#store seg_files
+			segf.append(seg_files)
+			#blob analysis
+			blob_total.append(self._blob_detection_utility(seg_files,plot = False,\
+										threshold = kwargs.get("Threshold",1e-2),\
+										overlap = kwargs.get("Overlap",0),\
+										median=kwargs.get("median",False),\
+										min_sigma=kwargs.get("min_sigma",1),\
+										max_sigma=kwargs.get("max_sigma",2),\
+										num_sigma=kwargs.get("num_sigma",500)))
+			#blob segmented data
+			drops.append(self._load_segmented_image_data(drop_files))
+
+		#initialize data structure
 		for pp in range(len(movies)):
 			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
 			drop_s = blob_total[pp]
@@ -313,12 +396,22 @@ class run_analysis:
 				nuc_img = import_functions.read_file(self.Movie[str(pp)].Movie_nucleoid)
 				padded_mask = pad_array(movies[pp][i][7],np.shape(nuc_img),movies[pp][i][1])
 
-				self.Movie[str(pp)].Cells[str(i)] = Cell(i,all_files[pp],movies[pp][i][0],movies[pp][i][1],movies[pp][i][2],
-														movies[pp][i][3],movies[pp][i][4],movies[pp][i][5],movies[pp][i][6],
-														padded_mask,nuc_img*padded_mask)
+				self.Movie[str(pp)].Cells[str(i)] = Cell(Cell_ID = i, \
+														Cell_Movie_Name = all_files[pp], \
+														bounding_box = movies[pp][i][0], \
+														r_offset = movies[pp][i][1], \
+														cell_area = movies[pp][i][2], \
+														cell_center = movies[pp][i][3], \
+														cell_long_axis = movies[pp][i][4], \
+														cell_short_axis = movies[pp][i][5], \
+														cell_axis_lengths = movies[pp][i][6], \
+														cell_mask = padded_mask, \
+														Cell_Nucleoid_Mask = nuc_img*padded_mask)
+				'''
+				TODO integrate the nucleoid segmentation into the database 
 				
 				bb_nucl, regions = self._find_nucleoid(str(pp),str(i),nuc_img*padded_mask)
-				
+				'''
 				#sort points into cells
 				poly_cord = []
 				for temp in movies[pp][i][0]:
@@ -339,7 +432,6 @@ class run_analysis:
 							#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
 							self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][k]
 
-				
 		self.segmented_drop_files = segf
 
 		return [tracks,drops,blob_total]
@@ -358,7 +450,7 @@ class run_analysis:
 		# plt.show()
 
 		return nucleoid_detection.test(img)
-	def _convert_track_frame(self,track_set):
+	def _convert_track_frame(self,track_set,**kwargs):
 		'''
 		This function preps the data such that the tracks satisfy a length
 		and segregates the data in respect to the frame step.
@@ -383,6 +475,10 @@ class run_analysis:
 				frame of the movie the localization belonging to index of track_ID
 		'''
 
+		frame_total = kwargs.get("frame_total", self.frame_total)
+		frame_step = kwargs.get("frame_step", self.frame_step)
+		track_len_upper = kwargs.get("t_len_u",self.t_len_u)
+		track_len_lower = kwargs.get("t_len_l",self.t_len_l)
 		
 		track_ID = track_set[:,0]
 		frame_ID = track_set[:,1]
@@ -390,21 +486,12 @@ class run_analysis:
 		y_ID = track_set[:,3]
 		intensity_ID = track_set[:,4]
 
-
-
-
-
-
-
-
-
-
 		tp=[]
 		tp_x=[]
 		tp_y=[]
 		tp_intensity=[]
 		fframe_ID = []
-		for i in np.arange(0,self.frame_total,self.frame_step):
+		for i in np.arange(0,frame_total,frame_step):
 			a=(i<frame_ID) & (frame_ID<(i + self.frame_step))
 			fframe_ID.append(frame_ID[a])
 			tp.append(track_ID[a])
@@ -433,7 +520,7 @@ class run_analysis:
 			y_t=[]
 			i_t=[]
 			f_t=[]
-			cut = u_track[(utrack_count>=self.t_len_l)*(utrack_count<=self.t_len_u)]
+			cut = u_track[(utrack_count>=track_len_lower)*(utrack_count<=track_len_upper)]
 
 			for j in range(len(cut)):
 				tind=(tp[i]==cut[j])
@@ -478,53 +565,84 @@ class run_analysis:
 			for k,l in j.Cells.items():
 				#sort the tracks based on the frame segmentation and cutoff criteria
 				if len(l.raw_tracks)!=0:
-					sorted_track = self.convert_track_frame(np.array(l.raw_tracks))
-					self.analyse_cell_tracks_utility(i,k,sorted_track)
+					sorted_track = self._convert_track_frame(np.array(l.raw_tracks))
+					self._analyse_cell_tracks_utility(i,k,sorted_track)
 		return
-
+	def _map_TrackstoDrops(self,i,k,sorted_tracks):
+		#can i use scipy tree to do this?
+		
+		#make a list of dics to store the drops (index of list) and tracks (key in drop), with values (value of dic key) that 
+		#defines the percent of the track inside the drop
+		list_drop_track = [{} for i in range(len(self.Movie[i].Cells[k].All_Drop_Collection))]
+		#list of all IDs of the drops
+		drop_ID_list = []
+		#go over all drops
+		for ii,j in self.Movie[i].Cells[k].All_Drop_Collection.items():
+			drop_ID_list.append(ii)#add ID 
+			for kk in range(len(sorted_tracks[0])):#go over all sorted tracks subframes
+				if int(ii[0]) == kk: #make sure tracks are of the same subframe ID as the drop we are looping over
+					for l in range(len(sorted_tracks[0][kk])): #running over the tracks in frame k
+						#find the distance of track from the drop center
+						n_dist=dist(np.array(sorted_tracks[1][kk][l]),np.array(sorted_tracks[2][kk][l]),j[0],j[1]) 
+						percent_drop_in = np.float(np.sum(n_dist <= j[2]))/len(n_dist) #find percentage of track loc inside
+						if percent_drop_in >= self.minimum_percent_per_drop_in: #if condition holds
+							key = str(kk)+","+str(l)
+							checks_low = 0
+							checks_none = 0 #need len(seg frames) to go forward and use this track
+							for list_drop in range(len(list_drop_track)): #loop over all the drops
+								if key in list_drop_track[list_drop]: #is this track already in a drop? 
+									#is the value of the percent drop in larger that the one we find in the database?
+									if list_drop_track[list_drop][key] < percent_drop_in:
+										del list_drop_track[list_drop][key] #delete that mapping from the database
+										checks_low = 1 #tells us to store this track in a drop later
+								else:
+									checks_none+=1 #if its not found in that drop, add 1 for all such drops
+							#if we deleted the track fromt he database in the check or if it doesnt exist in any drop
+							if (checks_low == 1) or (checks_none == len(list_drop_track)):
+								list_drop_track[len(drop_ID_list)-1][key] = percent_drop_in
+		return list_drop_track,drop_ID_list
+	def _make_TrueDrop(self,i,k,drop_ID_list,list_drop_track,sorted_tracks):
+		true_drop_per_frame = [[] for kk in range(len(sorted_tracks[0]))] #holder to true drops per frame
+		#if the updated list of occupancies matches a critetion make it a true drop
+		for ii,j in self.Movie[i].Cells[k].All_Drop_Collection.items():
+			ind = drop_ID_list.index(ii)
+			len_drop_tracks = len(list_drop_track[ind])
+			if len_drop_tracks >= self.minimum_tracks_per_drop:
+				self.Movie[i].Cells[k].Drop_Collection[ii] = j
+				true_drop_per_frame[int(ii[0])].append(j)
+		return true_drop_per_frame
+	def _makeTrackCls(self,temp,which_type,drop_ID,sorted_tracks,kk,l):
+		track = Trajectory(Track_ID = str(kk)+','+str(l), \
+					Frame_number = kk, X = sorted_tracks[1][kk][l], \
+					Y = sorted_tracks[2][kk][l], \
+					Classification = which_type, \
+					Drop_Identifier = drop_ID, \
+					Frames = sorted_tracks[4][kk][l], \
+					MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][kk][l], \
+													sorted_tracks[2][kk][l], \
+													sorted_tracks[4][kk][l]), \
+													which = 'msd'), \
+					distance_from_drop = temp[drop_ID])
+		return track
 	def _analyse_cell_tracks_utility(self,i,k,sorted_tracks):
 		'''
 		Main function that: 
 			1) Identifies viable drops
 			2) Classifies trajecotries based on 1)
 		'''
-
+		#store the sorted frames in the database
 		self.Movie[i].Cells[k].sorted_tracks_frame = sorted_tracks
-		list_drop_track = [{} for i in range(len(self.Movie[i].Cells[k].All_Drop_Collection))]
-		
-		drop_ID_list = []
-		for ii,j in self.Movie[i].Cells[k].All_Drop_Collection.items():
-			drop_ID_list.append(ii)
-			for kk in range(len(sorted_tracks[0])):
-				if int(ii[0]) == kk:
-					for l in range(len(sorted_tracks[0][kk])): #running over the tracks in frame k
-						n_dist=dist(np.array(sorted_tracks[1][kk][l]),np.array(sorted_tracks[2][kk][l]),j[0],j[1])
-						percent_drop_in = np.float(np.sum(n_dist <= j[2]))/len(n_dist)
-						if percent_drop_in >= self.minimum_percent_per_drop_in:
-							key = str(kk)+","+str(l)
-							checks_low = 0
-							checks_none = 0 #need 5 to go forward and use this track
-							for list_drop in range(len(list_drop_track)):
-								if key in list_drop_track[list_drop]:
-									#is the value of the percent drop in larger that the one we find in the database?
-									if list_drop_track[list_drop][key] < percent_drop_in:
-										del list_drop_track[list_drop][key]
-										checks_low = 1
-								else:
-									checks_none+=1
-							if (checks_low == 1) or (checks_none == len(list_drop_track)):
-								list_drop_track[len(drop_ID_list)-1][key] = percent_drop_in
-		
-		true_drop_per_frame = [[] for kk in range(len(sorted_tracks[0]))]
-		
-		#if the updated list of occupancies matches a critetion make it a true drop
-		for ii,j in self.Movie[i].Cells[k].All_Drop_Collection.items():
-			ind = drop_ID_list.index(ii)
-			len_drop_tracks = len(list_drop_track[ind])
-			if len_drop_tracks > self.minimum_tracks_per_drop:
-				self.Movie[i].Cells[k].Drop_Collection[ii] = j
-				true_drop_per_frame[int(ii[0])].append(j)
+		list_drop_track,drop_ID_list = self._map_TrackstoDrops(i=i,\
+																k=k,\
+																sorted_tracks=sorted_tracks)
+		#find the true drops
+		true_drop_per_frame = self._make_TrueDrop(i=i,\
+													k=k,\
+													drop_ID_list=drop_ID_list,\
+													list_drop_track=list_drop_track,\
+													sorted_tracks=sorted_tracks)
 
+		
 		#if true drops don't exist make all the tracks out tracks
 		for ii in range(len(sorted_tracks[0])):
 			if len(true_drop_per_frame[ii]) == 0:
@@ -539,24 +657,26 @@ class run_analysis:
 		#create the mapping for each viable drop
 		for ii,j in self.Movie[i].Cells[k].Drop_Collection.items():
 			self.Movie[i].Cells[k].Trajectory_Collection[ii] = Trajectory_Drop_Mapping(ii)
-		for kk in range(len(sorted_tracks[0])):
-			if len(true_drop_per_frame[kk]) != 0:
-				for l in range(len(sorted_tracks[0][kk])):
+
+		
+		for kk in range(len(sorted_tracks[0])): #loop over the subframes
+			if len(true_drop_per_frame[kk]) != 0: #make sure we only consider drops in this subframe
+				for l in range(len(sorted_tracks[0][kk])): #loop over tracks in this subframe
 					temp_in = {}
 					temp_io = {}
 					temp_ot = {}
 					inx_in = 0
 					inx_io = 0
 					inx_ot = 0
-					for ii,j in self.Movie[i].Cells[k].Drop_Collection.items():
-						if int(ii[0]) == kk:
-							
+					for ii,j in self.Movie[i].Cells[k].Drop_Collection.items(): #loop over viable drops
+						if int(ii[0]) == kk: #make sure its in this subframe
+							#find distance from drop center
 							n_dist=dist(np.array(sorted_tracks[1][kk][l]),np.array(sorted_tracks[2][kk][l]),j[0],j[1])
 							#for in/out and out we need to know the percentage of in and out.
 							percent_in = np.float(np.sum(n_dist <= j[2]))/len(n_dist) 
 							
 
-							if (n_dist <= j[2]).all():
+							if (n_dist <= j[2]).all():#if all localizations are inside 
 								if len(temp_in) == 0:
 									temp_in[ii] = [n_dist,percent_in]
 									inx_in = ii
@@ -565,24 +685,24 @@ class run_analysis:
 							
 							#if the distances are all out then class as "OUT" also for <50% occupency
 							elif (n_dist >= j[2]).all() or (percent_in <= self.lower_bp):
-								if len(temp_ot) == 0:
+								if len(temp_ot) == 0:#if this track doesn't belong to any drop add it this drop
 									temp_ot[ii] = [n_dist,percent_in]
 									inx_ot = ii
-								else:
+								else: #if it does, find the drop it is closest to
 									index_tt = 0
 									for tt,tv in temp_ot.items():
-										index_tt=tt
-									if temp_ot[index_tt][1]<percent_in:
+										index_tt=tt #find the drop it belonged to
+									if temp_ot[index_tt][1]<percent_in: #if the percent in smaller delete the entry and add this one
 										del temp_ot[index_tt]
 										temp_ot[ii] = [n_dist,percent_in]
 										inx_ot = ii
-									elif temp_ot[index_tt][1]==percent_in:
+									elif temp_ot[index_tt][1]==percent_in: #if percent is same, base it on which is closer in distance
 										if np.mean(temp_ot[index_tt][0]) > np.mean(n_dist):
 											del temp_ot[index_tt]
 											temp_ot[ii] = [n_dist,percent_in]
 											inx_ot = ii
 
-							elif (percent_in > self.lower_bp) and (percent_in < self.upper_bp):
+							elif (percent_in > self.lower_bp) and (percent_in < self.upper_bp): #repeat for in/out
 								if len(temp_io) == 0:
 									temp_io[ii] = [n_dist,percent_in]
 									inx_io = ii
@@ -604,22 +724,36 @@ class run_analysis:
 					if len(temp_in) == 0:
 						if len(temp_io) == 0:
 							#now store this is the Trajectory_Collection array of the specific cell that this trajectory belongs to
-							track = Trajectory(Track_ID = str(kk)+','+str(l), Frame_number = kk, X = sorted_tracks[1][kk][l], Y = sorted_tracks[2][kk][l], Classification = "OUT", Drop_Identifier = inx_ot, Frames = sorted_tracks[4][kk][l], MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][kk][l],sorted_tracks[2][kk][l],sorted_tracks[4][kk][l]),which = 'msd'))
+							track = self._makeTrackCls(temp = temp_ot, \
+														which_type = "OUT", \
+														drop_ID = inx_ot, \
+														sorted_tracks = sorted_tracks, \
+														kk = kk, \
+														l = l)
 							self.Movie[i].Cells[k].Trajectory_Collection[inx_ot].OUT_Trajectory_Collection[str(kk)+','+str(l)] = track
 							#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
 							self.Movie[i].Cells[k].All_Tracjectories[str(kk)+','+str(l)] = track
 						else:
-							track = Trajectory(Track_ID = str(kk)+','+str(l), Frame_number = kk, X = sorted_tracks[1][kk][l], Y = sorted_tracks[2][kk][l], Classification = "IO", Drop_Identifier = inx_io, Frames = sorted_tracks[4][kk][l], MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][kk][l],sorted_tracks[2][kk][l],sorted_tracks[4][kk][l]),which = 'msd'))
+							track = self._makeTrackCls(temp = temp_io, \
+														which_type = "IO", \
+														drop_ID = inx_io, \
+														sorted_tracks = sorted_tracks, \
+														kk = kk, \
+														l = l)
 							self.Movie[i].Cells[k].Trajectory_Collection[inx_io].IO_Trajectory_Collection[str(kk)+','+str(l)] = track
 							#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
 							self.Movie[i].Cells[k].All_Tracjectories[str(kk)+','+str(l)] = track
 					else:
 						#now store this is the Trajectory_Collection array of the specific cell that this trajectory belongs to
-						track = Trajectory(Track_ID = str(kk)+','+str(l), Frame_number = kk, X = sorted_tracks[1][kk][l], Y = sorted_tracks[2][kk][l], Classification = "IN", Drop_Identifier = inx_in, Frames = sorted_tracks[4][kk][l], MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][kk][l],sorted_tracks[2][kk][l],sorted_tracks[4][kk][l]),which = 'msd'))
+						track = self._makeTrackCls(temp = temp_in, \
+														which_type = "IN", \
+														drop_ID = inx_in, \
+														sorted_tracks = sorted_tracks, \
+														kk = kk, \
+														l = l)
 						self.Movie[i].Cells[k].Trajectory_Collection[inx_in].IN_Trajectory_Collection[str(kk)+','+str(l)] = track
 						#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
 						self.Movie[i].Cells[k].All_Tracjectories[str(kk)+','+str(l)] = track
-
 	def run_flow(self):
 		'''
 		Controls the flow of this dataset analysis
@@ -717,7 +851,9 @@ class Cell:
 		self.cell_mask = cell_mask
 		self.cell_area = cell_area
 		self.cell_center = cell_center
-		self.bounding_box = bounding_box
+		#bounding box is first coordinate is the bottom right one. Highest x -> counter clockwise (i.e lowest x -> rest)
+		self.bounding_box = bounding_box 
+		#r_offset is the top left edge of the cell's bounding box.
 		self.r_offset = r_offset
 		self.cell_long_axis = cell_long_axis
 		self.cell_short_axis = cell_short_axis
@@ -739,7 +875,11 @@ class Cell:
 		self.raw_tracks = []
 		#sorted tracks per sub frame
 		self.sorted_tracks_frame = []
-
+	def _convert_viableDrop_list(self,subframes = 5):
+		list_sorted = [[] for i in range(subframes)]
+		for i,j in self.Drop_Collection.items():
+			list_sorted[int(i[0])].append(j)
+		return list_sorted
 class Trajectory_Drop_Mapping:
 	'''
 	create a mapping for each viable drop to store all the Trajectory instances that belong to it in terms of Classification
@@ -763,7 +903,7 @@ class Trajectory:
 	----------
 	TODO
 	'''
-	def __init__(self, Track_ID, Frame_number, X, Y, Classification, Drop_Identifier, Frames, MSD_total_um = None):
+	def __init__(self, Track_ID, Frame_number, X, Y, Classification, Drop_Identifier, Frames, MSD_total_um = None,**kwargs):
 
 		self.Track_ID = Track_ID
 		self.Frame_number = Frame_number
@@ -773,7 +913,7 @@ class Trajectory:
 		self.Classification = Classification
 		self.Drop_Identifier = Drop_Identifier
 		self.MSD_total_um = MSD_total_um
-		self.distance_from_OUT = 0
+		self.distance_from_drop = kwargs.get("distance_from_drop",0)
 
 
 
@@ -787,9 +927,51 @@ class boundary_analysis:
 	'''
 	def __init__(self,**kwargs) -> None:
 		self.dataset = kwargs.get("dataset",None)
-	
-	def	distance_from_boundary(self):
-		return
+	@staticmethod
+	def _xy_angle_from_drop(collection_traj,cell_obj):
+		angles = []
+		for i,k in collection_traj.items():
+			track = k
+			x_val = track.X
+			y_val = track.Y
+			drop_data = cell_obj.Drop_Collection[track.Drop_Identifier]
+			drop_center_dist = (dist(x_val,y_val,drop_data[0],drop_data[1]))/drop_data[2]
+			v1 = list(zip(x_val-drop_data[0],y_val-drop_data[1]))
+			angles += list(angle_multi(v1))[:-1]
+		return angles
+	@staticmethod
+	def _track_to_closest_drop(x,y,drops):
+		''' for a track defined by x,y returns the closest circle it is from a collenction of circles [[d_x,d_y,d_r],...]'''
+		drop_x = np.asarray(drops)[:,0]
+		drop_y = np.asarray(drops)[:,1]
+		dists = dist(drop_x,drop_y,x,y)
+		if len(drops) > 1:
+			return drops[np.argmin(dists)]
+		else:
+			return drops[0]
+
+	@staticmethod
+	def	_directional_variableTracks(x,y,drops):
+		mapped = []
+		for i in range(len(x)):
+			min_drop = boundary_analysis._track_to_closest_drop(x[i],y[i],drops)
+			mapped.append([x[i],y[i],min_drop])
+		angles,dist_center,directional_displacements = boundary_analysis._directional_displacement_utility(mapped)
+		return [angles,dist_center,directional_displacements]
+
+	@staticmethod
+	def _directional_displacement_utility(obj):
+		angles = []
+		dist_center = []
+		directional_displacement = []
+		for i in obj:
+			drop_center_dist = (dist(i[0],i[1],i[2][0],i[2][1]))/i[2][2]
+			v1 = list(zip(i[0]-i[2][0],i[1]-i[2][1]))
+			angles += list(angle_multi(v1))[:-1]
+			directional = con_pix_si(np.diff(dist(i[0],i[1],i[2][0],i[2][1])),which = 'um')
+			directional_displacement+=list(directional)
+			dist_center+=list(drop_center_dist)[:-1]
+		return [angles,dist_center,directional_displacement]
 
 	@staticmethod
 	def directional_displacement(collection_traj,cell_obj):
@@ -882,4 +1064,3 @@ class boundary_analysis:
 			return
 		else:
 			return [fig,ax_1,ax_2] 
-

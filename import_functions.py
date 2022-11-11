@@ -8,6 +8,25 @@ import PIL.ImageOps
 import sys
 import glob as glob
 
+class IO_run_analysis:
+	
+	def __init__(self) -> None:
+		pass
+
+	@staticmethod
+	def _save_sptanalysis_data(pp,test):
+		fmt = '%d', '%d', '%1.9f', '%1.9f', '%d'
+		np.savetxt(pp[:-4] + '_sptsanalysis.csv',test,delimiter = "\t",fmt=fmt)
+
+	@staticmethod
+	def _load_superSegger(cd,_string):
+		xy_frame_dir_names = []
+		#load the data of segmented cells from SuperSegger (cell files)
+		for root, subdirs, files in os.walk(cd + _string):
+			for d in subdirs:
+				if d[:2] == 'xy':
+					xy_frame_dir_names.append(cd + _string+ '/' +d)
+		return xy_frame_dir_names
 
 
 def read_data(path, delimiter = ',',skiprow = 1):
@@ -147,23 +166,6 @@ def save_img(object, path):
 	object.save(path)
 	return 
 
-
-
-def read_imag(path,fig = False,ax = False):
-	if fig == False:
-		fig = plt.figure()
-		ax = fig.add_subplot(111)
-	ori_img = io.imread(path)
-	print(np.shape(ori_img))
-	print(ori_img)
-	ax.imshow(ori_img)
-	plt.show()
-	return
-
-# def rgb_to_grey(rgb_img):
-#     '''Convert rgb image to greyscale'''
-#     return rgb2gray(rgb_img)
-    
 
 if __name__ == "__main__":
 	print("This is running as the main script./n")

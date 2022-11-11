@@ -43,7 +43,7 @@ def test(img,regions = True,**kwargs):
 def get_training_set(img):
     return
 
-def get_region(image,type = regionprops, connectivity = 2):
+def get_region(image,type = regionprops, connectivity = 2, **kawrgs):
     '''
     Parameters
     ----------
@@ -242,7 +242,7 @@ def get_region(image,type = regionprops, connectivity = 2):
     regions = regionprops(label(image,connectivity=connectivity))
     return regions
 
-def plot_regions(regions,fig,ax,colorbar_mappable):
+def plot_regions(regions,fig,ax,colorbar_mappable,plot = False):
     '''
     Parameters
     ----------
@@ -259,6 +259,9 @@ def plot_regions(regions,fig,ax,colorbar_mappable):
     -------
 
     '''
+    if fig != isinstance(fig,plt.figure):
+        fig = plt.figure()
+        
     for props in regions:
         y0, x0 = props.centroid
         orientation = props.orientation
@@ -277,6 +280,10 @@ def plot_regions(regions,fig,ax,colorbar_mappable):
         ax.plot(bx, by, '-b', linewidth=2.5)
     ax.set_xlim((minc - 5,maxc + 5))
     ax.set_ylim((minr - 5,maxr + 5))
+    
     plt.colorbar(colorbar_mappable)
-    plt.show()
+    if plot:
+        plt.show()
+    else:
+        return fig,ax
     
