@@ -1,12 +1,11 @@
-from ast import Raise
 import glob
 import math
 import os
 import pdb
-from re import L
 import shutil
 import sys
-from typing_extensions import Self
+from ast import Raise
+from re import L
 
 import h5py
 import matplotlib.cm as cm
@@ -20,10 +19,10 @@ from matplotlib.collections import PatchCollection
 from matplotlib.colors import LogNorm
 from matplotlib.patches import Circle
 from scipy.optimize import curve_fit
+from scipy.stats import binned_statistic_2d, gaussian_kde
 from shapely.geometry import Point, Polygon
 from sklearn import mixture
-from scipy.stats import binned_statistic_2d
-from scipy.stats import gaussian_kde
+from typing_extensions import Self
 
 import import_functions
 import nucleoid_detection
@@ -70,10 +69,9 @@ class run_analysis:
 
 	'''
 	def __init__(self,wd,t_string,sim = False):
-		self.radius = []
+		#global system parameters
 		self.pixel_to_nm = 0
 		self.pixel_to_um = 0
-		self.master_trag_list = []
 
 		self.total_experiments = 0
 
@@ -97,6 +95,22 @@ class run_analysis:
 		self.frames = int(self.frame_total/self.frame_step)
 
 		self.segmented_drop_files = []
+		##########################
+		#blob detection parameters
+		self.threshold_blob = 1e-2
+		self.overlap_blob = 0.5
+		self.min_sigma_blob = 0.5
+		self.max_sigma_blob = 3
+		self.num_sigma_blob = 500
+		self.blob_median_filter = False
+		self.detection_name = 'bp'
+		self.blob_parameters = {"threshold": self.threshold_blob, \
+					"overlap": self.overlap_blob, \
+					"median": self.blob_median_filter, \
+					"min_sigma": self.min_sigma_blob, \
+					"max_sigma": self.max_sigma_blob, \
+					"num_sigma": self.num_sigma_blob, \
+					"detection": self.detection_name}
 
 		##########################
 		#condensed analysis data
@@ -147,7 +161,7 @@ class run_analysis:
 				return self.Movie[movie_ID].Movie_nucleoid
 			else:
 				return self.Movie[movie_ID].Cells[cell_ID].Cell_Nucleoid_Mask
-	def _blob_detection_utility(self,seg_files,plot = False,**kwargs):
+	def _blob_detection_utility(self,seg_files,plot = False,kwargs={}):
 		'''
 		Utility function for the use of blob_dections to find the candidate spots
 
@@ -170,16 +184,15 @@ class run_analysis:
 		for ff in range(len(seg_files)):
 
 			blob_class = blob_detection(seg_files[ff],\
-										threshold = kwargs.get("Threshold",1e-4),\
-										overlap = kwargs.get("Overlap",0),\
+										threshold = kwargs.get("threshold",1e-4),\
+										overlap = kwargs.get("overlap",0.5),\
 										median=kwargs.get("median",False),\
 										min_sigma=kwargs.get("min_sigma",1),\
 										max_sigma=kwargs.get("max_sigma",2),\
 										num_sigma=kwargs.get("num_sigma",500))
 
-			blobs = blob_class.detection()
-			for ppp in blobs:
-				self.radius.append(ppp)
+			blobs = blob_class.detection(type = kwargs.get("detection",'bp'))
+
 			blobs_copy = np.copy(blobs)
 			blobs[:,0] = blobs_copy[:,1]
 			blobs[:,1] = blobs_copy[:,0]
@@ -360,6 +373,8 @@ class run_analysis:
 		tracks = []
 		drops = []
 		segf = []
+
+
 		for pp in range(len(all_files)):
 
 			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
@@ -376,13 +391,8 @@ class run_analysis:
 			#store seg_files
 			segf.append(seg_files)
 			#blob analysis
-			blob_total.append(self._blob_detection_utility(seg_files,plot = False,\
-										threshold = kwargs.get("Threshold",1e-2),\
-										overlap = kwargs.get("Overlap",0),\
-										median=kwargs.get("median",False),\
-										min_sigma=kwargs.get("min_sigma",1),\
-										max_sigma=kwargs.get("max_sigma",2),\
-										num_sigma=kwargs.get("num_sigma",500)))
+
+			blob_total.append(self._blob_detection_utility(seg_files,plot = False, kwargs=self.blob_parameters))
 			#blob segmented data
 			drops.append(self._load_segmented_image_data(drop_files))
 
@@ -600,6 +610,7 @@ class run_analysis:
 							#if we deleted the track fromt he database in the check or if it doesnt exist in any drop
 							if (checks_low == 1) or (checks_none == len(list_drop_track)):
 								list_drop_track[len(drop_ID_list)-1][key] = percent_drop_in
+		
 		return list_drop_track,drop_ID_list
 	def _make_TrueDrop(self,i,k,drop_ID_list,list_drop_track,sorted_tracks):
 		true_drop_per_frame = [[] for kk in range(len(sorted_tracks[0]))] #holder to true drops per frame
@@ -765,8 +776,8 @@ class run_analysis:
 		return
 
 	def read_parameters(self,frame_step = 1000,frame_total = 5000,t_len_l = 10,t_len_u = 1000,
-		MSD_avg_threshold  = 0.0001,upper_bp = 0.99 ,lower_bp = 0.50,max_track_decomp = 1.0,
-		conversion_p_nm = 130,minimum_tracks_per_drop = 3, minimum_percent_per_drop_in = 1.0):
+						MSD_avg_threshold  = 0.0001,upper_bp = 0.99 ,lower_bp = 0.50,max_track_decomp = 1.0,
+						conversion_p_nm = 130,minimum_tracks_per_drop = 3, minimum_percent_per_drop_in = 1.0):
 		'''
 		Reads in the parameters needed for the analysis
 
@@ -796,6 +807,23 @@ class run_analysis:
 		self.frames = int(self.frame_total/self.frame_step)
 
 		return 
+	def get_blob_parameters(self,threshold = 1e-4,median= False,overlap = 0.5,num_sigma = 500,
+							min_sigma = 1, max_sigma = 3, detection_name = 'bp'):
+		self.max_sigma_blob = max_sigma
+		self.min_sigma_blob = min_sigma
+		self.num_sigma_blob = num_sigma
+		self.overlap_blob = overlap
+		self.threshold_blob = threshold
+		self.blob_median_filter = median
+		self.detection_name = detection_name
+		self.blob_parameters = {"threshold": self.threshold_blob, \
+			"overlap": self.overlap_blob, \
+			"median": self.blob_median_filter, \
+			"min_sigma": self.min_sigma_blob, \
+			"max_sigma": self.max_sigma_blob, \
+			"num_sigma": self.num_sigma_blob, \
+			"detection": self.detection_name}
+		return
 
 	def _correct_msd_vectors(self):
 		'''

@@ -67,6 +67,8 @@ class blob_detection:
 			2D array of the image data
 		'''
 		file_gray = import_functions.read_file(self.path)
+		if self.median:
+			file_gray = filters.median_filter(file_gray,size = 1)
 		return file_gray
 
 	def detection(self,type = 'skimage'):
@@ -128,7 +130,7 @@ class blob_detection:
 		else:
 			for (i, j) in pairs:
 				blob1, blob2 = blobs_array[i], blobs_array[j]
-				if blob._blob_overlap(blob1, blob2, sigma_dim=sigma_dim) > overlap:
+				if blob._blob_overlap(blob1, blob2, sigma_dim=sigma_dim) >= overlap:
 					# note: this test works even in the anisotropic case because
 					# all sigmas increase together.
 					if max_lap[-1] > max_lap[-1]:

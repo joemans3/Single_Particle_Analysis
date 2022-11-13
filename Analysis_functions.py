@@ -708,8 +708,28 @@ def cumsum(x,y):
 def dot(a,b):
     return a[0]*b[0] + a[1]*b[1]
 
+from numpy import zeros, sqrt, pi, mean, arange, histogram
+def centered_pairCorrelation_2D(x, y, center, rMax, dr, **kwargs):
+    edges = arange(0., rMax + 1.1 * dr, dr)
+    num_increments = len(edges) - 1
+    g = zeros([1, num_increments])
+    radii = zeros(num_increments)
+    xy_dist = dist(x,y,center[0],center[1])
+    num_in_radius = len(np.where(xy_dist <= rMax)[0])
+    numberDensity = num_in_radius / pi*(rMax**2)
+    # Compute pairwise correlation for each interior particle
+    for p in range(1):
+        d = sqrt((center[0] - x)**2 + (center[1] - y)**2)
 
-
+        (result, _) = histogram(d, bins=edges, normed=False)
+        g[p, :] = result/numberDensity
+    g_average = zeros(num_increments)
+    for i in range(num_increments):
+        radii[i] = (edges[i] + edges[i+1]) / 2.
+        rOuter = edges[i + 1]
+        rInner = edges[i]
+        g_average[i] = mean(g[:, i]) / (pi * (rOuter**2 - rInner**2))
+    return (g_average, radii, center)
 
 
 #define a function to calculate the angle between 3 points in 2D
