@@ -104,13 +104,15 @@ class run_analysis:
 		self.num_sigma_blob = 500
 		self.blob_median_filter = False
 		self.detection_name = 'bp'
+		self.log_scale = False
 		self.blob_parameters = {"threshold": self.threshold_blob, \
 					"overlap": self.overlap_blob, \
 					"median": self.blob_median_filter, \
 					"min_sigma": self.min_sigma_blob, \
 					"max_sigma": self.max_sigma_blob, \
 					"num_sigma": self.num_sigma_blob, \
-					"detection": self.detection_name}
+					"detection": self.detection_name, \
+					"log_scale": self.log_scale}
 
 		##########################
 		#condensed analysis data
@@ -189,7 +191,8 @@ class run_analysis:
 										median=kwargs.get("median",False),\
 										min_sigma=kwargs.get("min_sigma",1),\
 										max_sigma=kwargs.get("max_sigma",2),\
-										num_sigma=kwargs.get("num_sigma",500))
+										num_sigma=kwargs.get("num_sigma",500),\
+										logscale=kwargs.get("log_scale",False))
 
 			blobs = blob_class.detection(type = kwargs.get("detection",'bp'))
 
@@ -693,7 +696,13 @@ class run_analysis:
 									inx_in = ii
 								else:
 									print("IN track occurs twice! Indexs={0}".format(str(i)+","+str(k)+","+str(kk)+","+str(l)))
-							
+									index_tt = 0
+									for tt,tv in temp_in.items():
+										index_tt=tt #find the drop it belonged to
+									if np.mean(temp_in[index_tt][0]) > np.mean(n_dist):
+										del temp_in[index_tt]
+										temp_in[ii] = [n_dist,percent_in]
+										inx_in = ii
 							#if the distances are all out then class as "OUT" also for <50% occupency
 							elif (n_dist >= j[2]).all() or (percent_in <= self.lower_bp):
 								if len(temp_ot) == 0:#if this track doesn't belong to any drop add it this drop
@@ -808,7 +817,7 @@ class run_analysis:
 
 		return 
 	def get_blob_parameters(self,threshold = 1e-4,median= False,overlap = 0.5,num_sigma = 500,
-							min_sigma = 1, max_sigma = 3, detection_name = 'bp'):
+							min_sigma = 1, max_sigma = 3, log_scale = False, detection_name = 'bp'):
 		self.max_sigma_blob = max_sigma
 		self.min_sigma_blob = min_sigma
 		self.num_sigma_blob = num_sigma
@@ -816,13 +825,15 @@ class run_analysis:
 		self.threshold_blob = threshold
 		self.blob_median_filter = median
 		self.detection_name = detection_name
+		self.log_scale = log_scale
 		self.blob_parameters = {"threshold": self.threshold_blob, \
 			"overlap": self.overlap_blob, \
 			"median": self.blob_median_filter, \
 			"min_sigma": self.min_sigma_blob, \
 			"max_sigma": self.max_sigma_blob, \
 			"num_sigma": self.num_sigma_blob, \
-			"detection": self.detection_name}
+			"detection": self.detection_name, \
+			"log_scale": self.log_scale}
 		return
 
 	def _correct_msd_vectors(self):

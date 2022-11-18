@@ -10,6 +10,16 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import re
 
+
+
+def reshape_col2d(arr,permutations):
+    idx = np.empty_like(permutations)
+    idx[permutations] = np.arange(len(permutations))
+    arr[:]=arr[:, idx]
+    return arr
+
+
+
 def rt_to_xy(r,theta):
     y = r*np.sin(theta)
     x = r*np.cos(theta)
@@ -108,7 +118,9 @@ def flatten(t):
     '''
     return [item for sublist in t for item in sublist]
 
-
+def rescale_range(x,min_x,max_x,a,b):
+    '''https://stats.stackexchange.com/questions/281162/scale-a-number-between-a-range'''
+    return ((b-a)*(x - min_x)/(max_x - min_x)) + a
 
 # displacemnt cum distribution
 
