@@ -1,28 +1,10 @@
 import glob
-import math
-import os
-import pdb
-import shutil
-import sys
-from ast import Raise
-from re import L
 
-import h5py
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
-import mpl_toolkits.mplot3d.art3d as art3d
 import numpy as np
-import pandas
 import scipy.io as sio
-from matplotlib.animation import MovieWriterRegistry
-from matplotlib.collections import PatchCollection
-from matplotlib.colors import LogNorm
-from matplotlib.patches import Circle
-from scipy.optimize import curve_fit
-from scipy.stats import binned_statistic_2d, gaussian_kde
+from scipy.stats import gaussian_kde
 from shapely.geometry import Point, Polygon
-from sklearn import mixture
-from typing_extensions import Self
 
 import import_functions
 import nucleoid_detection
@@ -185,14 +167,15 @@ class run_analysis:
 		blob_data = []
 		for ff in range(len(seg_files)):
 
-			blob_class = blob_detection(seg_files[ff],\
-										threshold = kwargs.get("threshold",1e-4),\
-										overlap = kwargs.get("overlap",0.5),\
-										median=kwargs.get("median",False),\
-										min_sigma=kwargs.get("min_sigma",1),\
-										max_sigma=kwargs.get("max_sigma",2),\
-										num_sigma=kwargs.get("num_sigma",500),\
-										logscale=kwargs.get("log_scale",False))
+			blob_class = blob_detection(
+				seg_files[ff],
+				threshold = kwargs.get("threshold",1e-4),
+				overlap = kwargs.get("overlap",0.5),
+				median=kwargs.get("median",False),
+				min_sigma=kwargs.get("min_sigma",1),
+				max_sigma=kwargs.get("max_sigma",2),
+				num_sigma=kwargs.get("num_sigma",500),
+				logscale=kwargs.get("log_scale",False))
 
 			blobs = blob_class.detection(type = kwargs.get("detection",'bp'))
 
@@ -234,7 +217,7 @@ class run_analysis:
 			for j in range(len(all_files)):
 				
 				f = sio.loadmat(all_files[j])
-				bounding_box = f['CellA'][0][0]['coord'][0][0]['box'][0][0][:-1]
+				bounding_box = f['CellA'][0][0]['coord'][0][0]['box'][0][0]
 				r_offset = f['CellA'][0][0]['r_offset'][0][0][0]
 				cell_area = f['CellA'][0][0]['coord'][0][0]['A'][0][0][0]
 				cell_center = f['CellA'][0][0]['coord'][0][0]['r_center'][0][0]
@@ -377,9 +360,8 @@ class run_analysis:
 		drops = []
 		segf = []
 
-
-		for pp in range(len(all_files)):
-
+		#initialize data structure
+		for pp in range(len(movies)):
 			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
 
 			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
@@ -394,16 +376,15 @@ class run_analysis:
 			#store seg_files
 			segf.append(seg_files)
 			#blob analysis
-
+			#TODO make sure to use the bounder box image created from Analysis_functions.subarray2D()
 			blob_total.append(self._blob_detection_utility(seg_files,plot = False, kwargs=self.blob_parameters))
 			#blob segmented data
 			drops.append(self._load_segmented_image_data(drop_files))
 
-		#initialize data structure
-		for pp in range(len(movies)):
 			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
 			drop_s = blob_total[pp]
 			self.Movie[str(pp)].Movie_nucleoid = nucleoid_imgs_sorted[pp]
+
 			for i in range(len(movies[pp])):
 
 				nuc_img = import_functions.read_file(self.Movie[str(pp)].Movie_nucleoid)
@@ -962,6 +943,7 @@ class Trajectory:
 
 class boundary_analysis:
 	'''
+	TODO
 	class for storing analysis intermediates and boundary analysis
 	'''
 	def __init__(self,**kwargs) -> None:

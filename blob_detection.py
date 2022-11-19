@@ -1,19 +1,18 @@
-import csv
 import os
-import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy import stats
-from scipy.ndimage import median_filter
-import import_functions
-from skimage.util import dtype
+from lmfit import Parameters, minimize, report_fit
+from matplotlib.patches import Circle, Ellipse
+from scipy import spatial
 from scipy.ndimage import filters
 from skimage.feature import blob
-from scipy import spatial
+from skimage.util import dtype
+
+import import_functions
 from Analysis_functions import rescale_range
-import lmfit
-from lmfit import Parameters, minimize, report_fit
-from matplotlib.patches import Ellipse, Circle
+
+
 class blob_detection:
 	'''
 	Parameters
@@ -49,6 +48,9 @@ class blob_detection:
 	
 	'''
 	def __init__(self,path,median = False,threshold = 0.0005,min_sigma = 1.0,max_sigma = 1.5,num_sigma = 500,overlap = 1.,logscale = False):
+		'''
+		TODO update docstring
+		'''
 		self.img = path
 		self.median = median
 		self.threshold = threshold
@@ -57,18 +59,59 @@ class blob_detection:
 		self.num_sigma = num_sigma
 		self.overlap = overlap
 		self.log_scale = logscale
+
+		self.median_filter_size = 1
 		
 		self.fitting_parameters = {}
 	def _update_fitting_parameters(self,**kwargs):
-		##TODO
-		pass
+		'''
+		Updates the fitting_parameters to be used in each iteration of this class object
+
+		Kwargs
+		------
+		mask_size: int
+			when fitting the image with a function this is size of square round a reference point to use for fit
+		radius_func: functional
+			function to use when defining the residuals for the fitting
+		fit_method: string, default 'least squares'
+			method of the fitting to use 
+		radius_func: functional, default numpy.mean
+			function to use as a method to take two sigams and convert to one radius 
+		plot_fit: bool
+			if True, plots each fit with the fit statistics
+		centroid_range: int or float-like
+			controls the bounds on the fit for the centroid (x,y). Ie: the min fit is x-centroid_range, and max is x+centroid_range
+			same for y.
+		sigma_range: int or float-like
+			controls the bounds on the fit for the sigmas (s_x,s_y). Ie: the min fit is s_x-sigma_range, and max is s_x+sigma_range
+			same for y.
+		fitting_image: string
+			if "Original" use the original image to fit function
+			else use the Laplacian image created with the sigma that maximized the laplacian
+		
+		Notes
+		-----
+		Some of these expect a certain type to work. This is not fully coded yet and might break if you give inputs which dont make sense
+		to it.
+		'''
+	
+		if len(self.fitting_parameters) == 0:
+			self.fitting_parameters = kwargs
+		else:
+			for i,j in kwargs.items():
+				self.fitting_parameters[i] = j
+
 	def open_file(self):
 		'''
 		Opens and retuns array of the image data
 
-		TODO:
-		-----
-		Greyscale or not implimentation. 
+		Parameters
+		----------
+		self.img: string of a path or path object, or 2D image
+			if path provided opens the file and reads in image data to apply filter or applies filter is self.img is 2D array
+		self.median: bool
+			if True applies a median filter of size self.median_filter_size before returning 2D array
+		 
 
 		Returns
 		-------
@@ -77,11 +120,19 @@ class blob_detection:
 		'''
 		file_gray = import_functions.read_file(self.img)
 		if self.median:
-			file_gray = filters.median_filter(file_gray,size = 1)
+			file_gray = filters.median_filter(file_gray,size = self.median_filter_size)
 		return file_gray
 
 	def detection(self,type = 'skimage'):
 		'''
+		Applies the blob_log scheme to detect blobs in an image using the parameters of this class object
+		Full list see __init__().__doc__
+
+		Parameters
+		----------
+		type: string
+			if "bp" use the custom blob_logv2() elif "skimage" use the skimage implimentation of blob_log
+
 		Returns
 		-------
 		array-like
@@ -99,7 +150,7 @@ class blob_detection:
 			file = self.open_file()
 		else:
 			file = self.img
-		if type == 'skimage':
+		if type == 'skimage': #default method based on blob_log from skimage 
 			blobs = blob.blob_log(file,threshold = self.threshold,min_sigma = self.min_sigma,max_sigma = self.max_sigma,num_sigma = self.num_sigma, overlap = self.overlap,log_scale=self.log_scale)
 			blobs[:,2]*=np.sqrt(2) #converting the standard deviation of the gaussian fit to radius of the circle 
 		elif type == "bp": 
@@ -109,8 +160,9 @@ class blob_detection:
 	
 	
 	def _prune_blobs(self,blobs_array, overlap, *, sigma_dim=1,**kwargs):
-		"""Eliminated blobs with area overlap.
-
+		"""Eliminated blobs with area overlap. UPDATED: compared to the skimage implimentation this prunes based on the 
+		maximum value of the laplacian of the blobs rather than if the blob is bigger or not.
+		
 		Parameters
 		----------
 		blobs_array : ndarray
@@ -126,11 +178,23 @@ class blob_detection:
 		sigma_dim : int, optional
 			The number of columns in ``blobs_array`` corresponding to sigmas rather
 			than positions.
+		
+		KWARGS
+		------
+		max_lap: N-array
+			array of values for each blob indicating the max value of the laplacian that created it
+		sigma_indx: n-array
+			array of indexes of the sigmas for the blob, this is just inputted for conveniecne in later calulations. Not used here
 
 		Returns
 		-------
 		A : ndarray
 			`array` with overlapping blobs removed.
+
+		Notes
+		-----
+		Example: blob1 = [100,100,3], blob2 = [101,101,3]
+		max_lap = [1,2]. If the overlap is larger than the threshold used then blob2 is choosen because it produces a larger max_lap
 		"""
 		max_lap = kwargs.get("max_lap",None)
 		sigma_indx = kwargs.get("sigma_indx",None)
@@ -175,7 +239,7 @@ class blob_detection:
 		Blobs are found using the Laplacian of Gaussian (LoG) method [1]_.
 		For each blob found, the method returns its coordinates and the standard
 		deviation of the Gaussian kernel that detected the blob.
-
+		TODO update docstring
 		Parameters
 		----------
 		image : 2D or 3D ndarray
@@ -338,20 +402,49 @@ class blob_detection:
 		sigma_dim = sigmas_of_peaks.shape[1]
 
 		#return blob_detection._prune_blobs(lm, overlap, sigma_dim=sigma_dim,max_lap = max_lap) #save for testing
-		blobs_pruned,sigma_indx_pruned = self._prune_blobs(lm, overlap, \
-																	sigma_dim=sigma_dim,\
-																	max_lap = max_lap,\
-																	sigma_indx = local_max_sigma_indx)
-		fit_objects = self._create_mask(image_cube,blobs_pruned,\
-									size=5,\
-									sigma_indx=sigma_indx_pruned)
+		blobs_pruned,sigma_indx_pruned = self._prune_blobs(
+			lm, overlap,
+			sigma_dim=sigma_dim,
+			max_lap = max_lap,
+			sigma_indx = local_max_sigma_indx)
+			
+		if self.fitting_parameters.get("fit_image","Original") == "Original":
+			fit_objects = self._create_mask(
+				image,blobs_pruned,
+				size=self.fitting_parameters.get("mask_size",5),
+				sigma_indx=sigma_indx_pruned)
+		else:
+			fit_objects = self._create_mask(
+				image_cube,blobs_pruned,
+				size=self.fitting_parameters.get("mask_size",5),
+				sigma_indx=sigma_indx_pruned)
+
 
 		if kwargs.get("verbose",False):
-			return self._update_blob_estimate(blobs_pruned=blobs_pruned,fit_object=fit_objects,radius_func=np.mean),blobs_pruned,fit_objects
+			return self._update_blob_estimate(blobs_pruned=blobs_pruned,fit_object=fit_objects,radius_func=self.fitting_parameters.get("radius_func",None)),blobs_pruned,fit_objects
 		else:
-			return self._update_blob_estimate(blobs_pruned=blobs_pruned,fit_object=fit_objects,radius_func=None)[0]
+			return self._update_blob_estimate(blobs_pruned=blobs_pruned,fit_object=fit_objects,radius_func=self.fitting_parameters.get("radius_func",None))[0]
 
 	def _update_blob_estimate(self,blobs_pruned,fit_object,radius_func=None):
+		"""Using fitted parameters update the esimates of the centroid and sigmas for blob fit
+
+		Parameters
+		----------
+		blobs_pruned: (ndarry) 
+			output from self._prune_blobs()
+		fit_object: (lmfit.minimize.fit object)
+			instances of the .fit object from lmfit's minimize
+		radius_func: (functional, optional)
+			Which function to use to remap anisotropic sigmas into isotropic sigma. Defaults to None.
+
+
+		Returns
+		-------
+		(N,3) array 
+			first output is [(x,y,s),...] of the blobs updates
+		(N,3) array 
+			second is the original blobs inputed for comparison
+		"""		
 		blobs = []
 		for i,obj in enumerate(blobs_pruned):
 			x = fit_object[i].params["centroid_x"].value
@@ -366,22 +459,47 @@ class blob_detection:
 
 
 	def _create_mask(self,img,coords,size,sigma_indx):
-		'''
-		mask of the image at the center point of the pixel coordinate
+		'''mask of the image at the center point of the pixel coordinate. Also applies the fits
+		TODO make this modular and seperate the mask creation and the fitting to allow better user control.
+
+		Parameters
+		----------
+		img : 2D array
+			array defining the image 
+		coords : (N,3) array
+			array defining the [x,y,radius] of the blobs 
+		size : int
+			size of the square box around coord[:2] in which to fit 
+		sigma_indx : N array
+			array defining the index of the sigmas used for each blob in coords
+
+		Returns
+		-------
+		lmfit.minimize.fit objects in a list: [object, object, ... ]
+			the fit objects created by lmfit.minizie for each coord. 
+
+		Raises
+		------
+		TypeError
+			"size needs to an integer value"
+		Exception
+			"simga_indx needs to be same shape as coords"
 		'''
 
 		if not isinstance(size,int):
 			raise TypeError("size needs to an integer value")
 		if len(sigma_indx) != len(coords):
 			raise Exception("simga_indx needs to be same shape as coords")
-		if img.ndim != 3:
-			raise Exception("img needs to be a stack of 2d arrays")
 
 		fit_objects = []
 
 		for inx,val in enumerate(coords):
-			#find the lap image that created this blob and get a mask
-			lap_img = img[:,:,sigma_indx[inx]]
+
+			if img.ndim() == 3:
+				#find the lap image that created this blob and get a mask
+				lap_img = img[:,:,sigma_indx[inx]]
+			else:
+				lap_img = img
 			if val[-1] > np.inf*size: #fix this condition, right now defalts to using defined size
 				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr = [val[-1],val[-1]])
 
@@ -395,11 +513,11 @@ class blob_detection:
 							sigma_x = max(1,val[-1]),\
 							sigma_y = max(1,val[-1]),\
 							background = np.min(view))		
-			fit = minimize(residuals_gaus2d, initials, args=(x, y, view),method = 'least_squares')
+			fit = minimize(self.fitting_parameters.get("residual_func",residuals_gaus2d), initials, args=(x, y, view),method = self.fitting_parameters.get("fit_method",'least_squares'))
 			fit_objects.append(fit)
 
 			#check fit
-			if inx ==1:
+			if self.fitting_parameters.get("plot_fit",False):
 				z1 = gaussian2D(x,y,\
 								height=fit.params["height"],\
 								sig_x=fit.params["sigma_x"],\
@@ -417,15 +535,31 @@ class blob_detection:
 				fig = plt.figure()
 				ax = fig.add_subplot()
 				ax.imshow(lap_img)
-				elip = Ellipse(xy=(fit.params["centroid_y"].value,fit.params["centroid_x"].value), width=fit.params["sigma_x"].value,height=fit.params["sigma_y"].value,fill = False)
+				elip = Ellipse(xy=(fit.params["centroid_y"].value,fit.params["centroid_x"].value), width=fit.params["sigma_y"].value,height=fit.params["sigma_x"].value,fill = False)
 				ax.add_artist(elip)
 				plt.show()
 		return fit_objects
 
 	def _gaussian_mesh_helper(self,mesh_2d,initial_xy,sub_arr = [3,3]):
-		''' 
-		takes a 2d_mesh (image data) and a bounding box to return a list of (x,y,z) in that bounding box
-		box is implimented from the center point of the pixel.
+		'''takes a 2d_mesh (image data) and a bounding box to return a list of (x,y,z) in that bounding box
+		box is implimented from the center point of the pixel. this function works similar to Analysis_functions.subarray2D()
+
+		Parameters
+		----------
+		mesh_2d : 2D array
+			image data in 2D array format
+		initial_xy : tuple or array-like of len 2
+			[x,y] coordinate of the center point around which to create the subarray
+		sub_arr : tuple or 1D array, optional
+			the grid size from the center to create the mesh, by default [3,3]
+
+		Returns
+		-------
+		1D list
+			array containing: 
+				x,y: the x,y coordinates of the meshgrid
+				mesh_view: subarray defined from the original image
+				centers: centers of the mesh
 		'''
 		#make x,y,z list from mesh data
 		#find dims
@@ -442,12 +576,21 @@ class blob_detection:
 		return [x,y,mesh_view,centers]
 
 	def initalize_2dgaus(self,**kwargs):
+		'''initalizes lmfit parameters
+
+		Returns
+		-------
+		Parameter() class object
+			class object defining the parameters with bounds for the fit later on
+		'''
 		initial = Parameters()
 		for i,j in kwargs.items():
 			if (i == "centroid_x") or (i=="centroid_y"):
-				initial.add(i,value = j,min=j-1,max= j+1)
+				disp = self.fitting_parameters.get("centroid_range",1)
+				initial.add(i,value = j,min=j-disp,max= j+disp)
 			elif (i == "sigma_x") or (i=="sigma_y"):
-				initial.add(i,value = j,min=j-1,max= j+1)
+				disp = self.fitting_parameters.get("sigma_range",1)
+				initial.add(i,value = j,min=j-disp,max= j+disp)
 			else:
 				initial.add(i,value = j)
 		# initial.add("height",value=.3)
@@ -459,38 +602,77 @@ class blob_detection:
 		return initial
 
 def residuals_centered_isotropic_gaus(p, x, y, z,**kwargs):
-		height = p["height"].value
-		#cen_x = p["centroid_x"].value
-		#cen_y = p["centroid_y"].value
-		sigma_x = p["sigma_x"].value
-		#sigma_y = p["sigma_y"].value
-		offset = p["background"].value
-		return (z - isotropic_gaus_centered(x,y,sigma_x,offset,height,kwargs=kwargs))
+	'''Residual calculator for a centered isotropic gaus for lmfit.minimize
+
+	Parameters
+	----------
+	p : Parameter() object
+		Parameters 
+	x : independent variable
+		x values
+	y : independent variable
+		y values
+	z : z = f(x,y)
+		function values at x,y. Where function is the one we are trying to fit
+
+	Returns
+	-------
+	array-like
+		residuals of the function z-f(x,y) (centered isotropic gaussian)
+	'''
+	height = p["height"].value
+	#cen_x = p["centroid_x"].value
+	#cen_y = p["centroid_y"].value
+	sigma_x = p["sigma_x"].value
+	#sigma_y = p["sigma_y"].value
+	offset = p["background"].value
+	return (z - isotropic_gaus_centered(x,y,sigma_x,offset,height,kwargs=kwargs))
 def residuals_gaus2d(p,x,y,z,**kwargs):
-		height = p["height"].value
-		cen_x = p["centroid_x"].value
-		cen_y = p["centroid_y"].value
-		sigma_x = p["sigma_x"].value
-		sigma_y = p["sigma_y"].value
-		offset = p["background"].value
-		return (z - gaussian2D(x=x,\
-							y=y,\
-							cen_x=cen_x,\
-							cen_y=cen_y,\
-							sig_x=sigma_x,\
-							sig_y=sigma_y,\
-							offset=offset,\
-							height=height,\
-							kwargs=kwargs))
+	'''Residual calculator for a 2D gaussian for lmfit.minimize
+
+	Parameters
+	----------
+	p : Parameter() object
+		Parameters 
+	x : independent variable
+		x values
+	y : independent variable
+		y values
+	z : z = f(x,y)
+		function values at x,y. Where function is the one we are trying to fit
+
+	Returns
+	-------
+	array-like
+		residuals of the function z-f(x,y) (2D gaussian)
+	'''
+	height = p["height"].value
+	cen_x = p["centroid_x"].value
+	cen_y = p["centroid_y"].value
+	sigma_x = p["sigma_x"].value
+	sigma_y = p["sigma_y"].value
+	offset = p["background"].value
+	return (z - gaussian2D(x=x,\
+						y=y,\
+						cen_x=cen_x,\
+						cen_y=cen_y,\
+						sig_x=sigma_x,\
+						sig_y=sigma_y,\
+						offset=offset,\
+						height=height,\
+						kwargs=kwargs))
 def gaussian2D(x, y, cen_x, cen_y, sig_x, sig_y, offset,height,kwargs ={}):
+	''' 2d gaussian anistropic '''
 	return height*np.exp(-(((cen_x-x)/sig_x)**2 + ((cen_y-y)/sig_y)**2)/2.0) + offset
 def isotropic_gaus_centered(x,y,sig_x,offset,height,kwargs = {}):
+	''' Centered isotropic gaussian'''
 	return gaussian2D(x, y, height = height, \
 							cen_x = kwargs.get("cen_x",100), \
 							cen_y = kwargs.get("cen_y",100), \
 							sig_x = sig_x, \
 							sig_y = kwargs.get("sig_y",sig_x), \
 							offset = offset)				
+
 if __name__ == "__main__":
 	os.chdir('..')
 	path = 'DATA/new_days/20190527/rpoc_ez/gfp/rpoc_ez_2.tif'

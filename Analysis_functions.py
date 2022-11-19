@@ -1,15 +1,12 @@
-import PIL
-from joblib import PrintTime
-import numpy as np
-from skimage.color import rgb2gray
 import math
-import sys
-from scipy.optimize import curve_fit
-from sklearn import mixture
-import matplotlib.pyplot as plt
-from PIL import Image
 import re
 
+import matplotlib.pyplot as plt
+import numpy as np
+from joblib import PrintTime
+from scipy.optimize import curve_fit
+from skimage.color import rgb2gray
+from sklearn import mixture
 
 
 def reshape_col2d(arr,permutations):
@@ -47,7 +44,7 @@ def pad_array(subarray, shape, top_left_coord, pad = 0):
         full_array = np.zeros(shape) + pad
     except:
         PrintTime("shape is not the correct type")
-
+        return
     shape_sub = np.shape(subarray)
     full_array[top_left_coord[1]-1:top_left_coord[1]+shape_sub[0]-1,top_left_coord[0]-1:top_left_coord[0]+shape_sub[1]-1] = subarray
 
@@ -136,8 +133,8 @@ def rescale(x,a,b):
     x = np.array(x)
     max_x = np.max(x)
     min_x = np.min(x)
-    a = np.float(a)
-    b = np.float(b)
+    a = np.float(a)  # type: ignore
+    b = np.float(b)  # type: ignore
     return np.array((((b-a)*(x-min_x)))/np.array((max_x - min_x))) + a
 
 
@@ -150,8 +147,6 @@ def gaus1D(x,a,b,c):
 def gaus2D(x,a,b,c,a1,b1,c1):
     return a*np.exp(-(x-b)/(2.*(c**2))) + a1*np.exp(-(x-b1)/(2.*(c1**2)))
 
-def fit_MSD(t,p_0,p_1):
-    return p_0 * (t**(p_1))
 
 def dif_dis(x,y):
     c = np.sqrt(np.diff(x)**2 + np.diff(y)**2)
@@ -720,7 +715,9 @@ def cumsum(x,y):
 def dot(a,b):
     return a[0]*b[0] + a[1]*b[1]
 
-from numpy import zeros, sqrt, pi, mean, arange, histogram
+from numpy import arange, histogram, mean, pi, sqrt, zeros
+
+
 def centered_pairCorrelation_2D(x, y, center, rMax, dr, **kwargs):
     edges = arange(0., rMax + 1.1 * dr, dr)
     num_increments = len(edges) - 1
@@ -1115,10 +1112,10 @@ def distance_from_drop_OUT(data_set,cm_distance = False, minimum_distance = True
 
                 track_x = k.X
                 track_y = k.Y
-                distance_drop_center = con_pix_si(dist(track_x,track_y,droplet_x,droplet_y), which = 'um')
+                distance_drop_center = con_pix_si(dist(track_x,track_y,droplet_x,droplet_y), which = 'um')  # type: ignore
                 if cm_distance:
-                    k.distance_from_OUT = np.mean(distance_drop_center)
-                    per_droplet.append(np.mean(distance_drop_center))
+                    k.distance_from_OUT = np.mean(distance_drop_center)  # type: ignore
+                    per_droplet.append(np.mean(distance_drop_center))  # type: ignore
                     msd_per_drop.append(k.MSD_total_um)
                 elif minimum_distance:
                     k.distance_from_OUT = np.min(distance_drop_center)
@@ -1170,10 +1167,10 @@ def pairCorrelationFunction_2D(x, y, S, rMax, dr):
     -----
     Implimentation taken from: https://github.com/cfinch/Shocksolution_Examples/blob/master/PairCorrelation/paircorrelation.py
     """
-    from numpy import zeros, sqrt, where, pi, mean, arange, histogram
+    from numpy import arange, histogram, mean, pi, sqrt, where, zeros
+
     # Number of particles in ring/area of ring/number of reference particles/number density
     # area of ring = pi*(r_outer**2 - r_inner**2)
-
     # Find particles which are close enough to the box center that a circle of radius
     # rMax will not cross any edge of the box
     bools1 = x > rMax
