@@ -9,13 +9,13 @@ from scipy.ndimage import filters
 from skimage.feature import blob
 from skimage.util import dtype
 
-import import_functions
-from Analysis_functions import rescale_range
+import src.helpers.import_functions
+from src.helpers.Analysis_functions import rescale_range
 
 
 class blob_detection:
 	'''
-	Parameters
+	Parameters TODO
 	----------
 	Path : string
 		Full path of the image to be read
@@ -32,7 +32,7 @@ class blob_detection:
 	overlap : float
 		Allowed overlap of identified blobs. If 1, full overlap is allowed
 
-	Methods
+	Methods TODO
 	-------
 	open_file()
 		opens the file and applied media filter if true
@@ -71,7 +71,7 @@ class blob_detection:
 		------
 		mask_size: int
 			when fitting the image with a function this is size of square round a reference point to use for fit
-		radius_func: functional
+		residual_func: functional
 			function to use when defining the residuals for the fitting
 		fit_method: string, default 'least squares'
 			method of the fitting to use 
@@ -407,7 +407,7 @@ class blob_detection:
 			sigma_dim=sigma_dim,
 			max_lap = max_lap,
 			sigma_indx = local_max_sigma_indx)
-			
+
 		if self.fitting_parameters.get("fit_image","Original") == "Original":
 			fit_objects = self._create_mask(
 				image,blobs_pruned,
@@ -495,7 +495,7 @@ class blob_detection:
 
 		for inx,val in enumerate(coords):
 
-			if img.ndim() == 3:
+			if img.ndim == 3:
 				#find the lap image that created this blob and get a mask
 				lap_img = img[:,:,sigma_indx[inx]]
 			else:

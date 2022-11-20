@@ -1,17 +1,12 @@
-import numpy as np
 import matplotlib.pylab as plt
-from sklearn import mixture
-import matplotlib.image as mpimg
-from skimage import io
-from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.animation as animation
-from Analysis_functions import *
-from import_functions import *
-
-from matplotlib.patches import Circle
+import numpy as np
 from matplotlib.collections import PatchCollection
-import numpy as np 
-import matplotlib.pyplot as plt
+from matplotlib.patches import Circle
+from skimage import io
+from sklearn import mixture
+
+from src.helpers.Analysis_functions import *
+from src.helpers.import_functions import *
 
 
 class run_analysis_plotting:
@@ -628,8 +623,9 @@ def create_circular_mask(h, w, center=None, radius=None):
     return mask
 
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+
 
 def plot_stacked_bar(data, series_labels, category_labels=None, 
                      show_values=False, value_format="{}", y_label=None, 

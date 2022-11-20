@@ -3,7 +3,7 @@ import numpy as np
 import glob
 import os
 import sys
-import Analysis_functions
+import src.helpers.Analysis_functions
 
 
 class Prepare_Tracks:
