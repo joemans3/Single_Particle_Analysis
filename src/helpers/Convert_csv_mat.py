@@ -2,8 +2,6 @@ from scipy.io import savemat
 import numpy as np
 import glob
 import os
-import sys
-import src.helpers.Analysis_functions
 
 
 class Prepare_Tracks:
@@ -16,7 +14,7 @@ class Prepare_Tracks:
 		self.t_len_u = upper_length
 		self.tracks_clist = []
 
-	def update_lengths(lower_length,upper_length):
+	def update_lengths(self,lower_length,upper_length):
 		self.t_len_l = lower_length
 		self.t_len_u = upper_length
 		return

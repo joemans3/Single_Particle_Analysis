@@ -247,7 +247,7 @@ def create_box_plot(box_data,tick_list,y_label = "",x_label = "",y_lim = (),titl
 
 
 
-def BGMM_utility(data, n, biners=50, inclusion_thresh = [0,100], verbose=True, title_1d="", title_2d="", x_label="", y_label_2d="", log=True, x_limit = ()):
+#def BGMM_utility(data, n, biners=50, inclusion_thresh = [0,100], verbose=True, title_1d="", title_2d="", x_label="", y_label_2d="", log=True, x_limit = ()):
     
     data = np.array(data)
     

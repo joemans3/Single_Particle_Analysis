@@ -6,8 +6,8 @@ import scipy.io as sio
 from scipy.stats import gaussian_kde
 from shapely.geometry import Point, Polygon
 
-import src.helpers.import_functions
-import src.helpers.nucleoid_detection
+import src.helpers.import_functions as import_functions
+import src.helpers.nucleoid_detection as nucleoid_detection
 from src.helpers.Analysis_functions import *
 from src.helpers.blob_detection import *
 from src.helpers.Convert_csv_mat import *

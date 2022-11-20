@@ -7,7 +7,7 @@ import numpy as np
 import scipy as sci
 
 from Analysis_functions import *
-from trajectory_analysis_script import *
+from src.databases.trajectory_analysis_script import *
 
 #cols in datafile
 #2 =Track_ID

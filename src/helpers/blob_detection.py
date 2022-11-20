@@ -9,7 +9,7 @@ from scipy.ndimage import filters
 from skimage.feature import blob
 from skimage.util import dtype
 
-import src.helpers.import_functions
+import src.helpers.import_functions as import_functions
 from src.helpers.Analysis_functions import rescale_range
 
 
