@@ -87,6 +87,7 @@ class run_analysis:
 		self.blob_median_filter = False
 		self.detection_name = 'bp'
 		self.log_scale = False
+
 		self.blob_parameters = {"threshold": self.threshold_blob, \
 					"overlap": self.overlap_blob, \
 					"median": self.blob_median_filter, \
@@ -96,6 +97,7 @@ class run_analysis:
 					"detection": self.detection_name, \
 					"log_scale": self.log_scale}
 
+		self.fitting_parameters = {}
 		##########################
 		#condensed analysis data
 		#Cells in the specific movie being analysed
@@ -138,6 +140,14 @@ class run_analysis:
 				return np.asarray(self.Movie[movie_ID].Movie_location)[frame]
 		else:
 			raise Exception("There are no Movies in this dataset yet.")
+	def _get_frame_cell_mask(self,mask,frame,movie_ID):
+		if len(self.Movie) != 0:
+			if isinstance(frame, int):
+				return mask*self.Movie[movie_ID].Movie_location[frame]
+			else:
+				return mask*np.asarray(self.Movie[movie_ID].Movie_location)[frame] #what does this do?
+		else:
+			raise Exception("There are no Movies in this dataset yet.")
 	def _get_nucleoid_path(self,movie_ID,cell_ID,full_path = False):
 		''' Returns the gfp image location or the image used to nuceloid segmentation'''
 		if len(self.Movie) != 0:
@@ -145,14 +155,14 @@ class run_analysis:
 				return self.Movie[movie_ID].Movie_nucleoid
 			else:
 				return self.Movie[movie_ID].Cells[cell_ID].Cell_Nucleoid_Mask
-	def _blob_detection_utility(self,seg_files,plot = False,kwargs={}):
+	def _blob_detection_utility(self,seg_files,movie_ID,plot = False,kwargs={}):
 		'''
 		Utility function for the use of blob_dections to find the candidate spots
 
 		Parameteres
 		-----------
-		seg_files : array-like of img objects
-			img objects of 2D img or 2D array of the img
+		seg_files : array-like of img locations (str)
+			location of the images
 		plot : bool
 			if true plot the images with the circles ontop
 			else don't plot and don't print the possible drops
@@ -176,6 +186,9 @@ class run_analysis:
 				max_sigma=kwargs.get("max_sigma",2),
 				num_sigma=kwargs.get("num_sigma",500),
 				logscale=kwargs.get("log_scale",False))
+
+			blob_class._update_fitting_parameters(kwargs=self.fitting_parameters)
+			
 
 			blobs = blob_class.detection(type = kwargs.get("detection",'bp'))
 
@@ -377,7 +390,10 @@ class run_analysis:
 			segf.append(seg_files)
 			#blob analysis
 			#TODO make sure to use the bounder box image created from Analysis_functions.subarray2D()
-			blob_total.append(self._blob_detection_utility(seg_files,plot = False, kwargs=self.blob_parameters))
+			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
+														movie_ID=pp,
+														plot = False,
+														kwargs=self.blob_parameters))
 			#blob segmented data
 			drops.append(self._load_segmented_image_data(drop_files))
 
@@ -386,7 +402,6 @@ class run_analysis:
 			self.Movie[str(pp)].Movie_nucleoid = nucleoid_imgs_sorted[pp]
 
 			for i in range(len(movies[pp])):
-
 				nuc_img = import_functions.read_file(self.Movie[str(pp)].Movie_nucleoid)
 				padded_mask = pad_array(movies[pp][i][7],np.shape(nuc_img),movies[pp][i][1])
 
@@ -799,6 +814,27 @@ class run_analysis:
 		return 
 	def get_blob_parameters(self,threshold = 1e-4,median= False,overlap = 0.5,num_sigma = 500,
 							min_sigma = 1, max_sigma = 3, log_scale = False, detection_name = 'bp'):
+		'''_summary_
+
+		Parameters
+		----------
+		threshold : _type_, optional
+			_description_, by default 1e-4
+		median : bool, optional
+			_description_, by default False
+		overlap : float, optional
+			_description_, by default 0.5
+		num_sigma : int, optional
+			_description_, by default 500
+		min_sigma : int, optional
+			_description_, by default 1
+		max_sigma : int, optional
+			_description_, by default 3
+		log_scale : bool, optional
+			_description_, by default False
+		detection_name : str, optional
+			_description_, by default 'bp'
+		'''
 		self.max_sigma_blob = max_sigma
 		self.min_sigma_blob = min_sigma
 		self.num_sigma_blob = num_sigma
@@ -816,6 +852,39 @@ class run_analysis:
 			"detection": self.detection_name, \
 			"log_scale": self.log_scale}
 		return
+
+	def get_fitting_parameters(self,kwargs={}):
+		'''
+		Updates the fitting_parameters to be used in each iteration of this class object
+
+		Kwargs
+		------
+		mask_size: int
+			when fitting the image with a function this is size of square round a reference point to use for fit
+		residual_func: functional
+			function to use when defining the residuals for the fitting
+		fit_method: string, default 'least squares'
+			method of the fitting to use 
+		radius_func: functional, default numpy.mean
+			function to use as a method to take two sigams and convert to one radius 
+		plot_fit: bool
+			if True, plots each fit with the fit statistics
+		centroid_range: int or float-like
+			controls the bounds on the fit for the centroid (x,y). Ie: the min fit is x-centroid_range, and max is x+centroid_range
+			same for y.
+		sigma_range: int or float-like
+			controls the bounds on the fit for the sigmas (s_x,s_y). Ie: the min fit is s_x-sigma_range, and max is s_x+sigma_range
+			same for y.
+		fitting_image: string
+			if "Original" use the original image to fit function
+			else use the Laplacian image created with the sigma that maximized the laplacian
+		
+		Notes
+		-----
+		Some of these expect a certain type to work. This is not fully coded yet and might break if you give inputs which dont make sense
+		to it.
+		'''
+		self.fitting_parameters = kwargs
 
 	def _correct_msd_vectors(self):
 		'''

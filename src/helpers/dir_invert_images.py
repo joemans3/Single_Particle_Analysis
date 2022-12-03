@@ -23,12 +23,13 @@ if __name__ == "__main__":
 
 
 
-def save_invert_images(path):
+def save_invert_images(path,**kwargs):
     '''
     Makes directory to store inverted images and put files there
     '''
+
     #make new directory inside the provided dir_path to store the inverted images
-    invert_path = os.path.join(path,'Inverted_Images')
+    invert_path = kwargs.get("invert_path",os.path.join(path,'Inverted_Images'))
     if not os.path.exists(invert_path):
         os.makedirs(invert_path)
     image_paths = import_functions.find_image(path,ends_with = '.tif',full_path = True)

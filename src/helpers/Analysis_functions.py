@@ -8,6 +8,30 @@ from scipy.optimize import curve_fit
 from skimage.color import rgb2gray
 from sklearn import mixture
 
+# is a point inside a circle
+def point_inside_circle2D(circle,point):
+    '''_summary_
+
+    Parameters
+    ----------
+    circle : _type_
+        _description_
+    point : _type_
+        _description_
+
+    Returns
+    -------
+    _type_
+        _description_
+    '''
+    circle_x,circle_y,rad = circle
+    x,y = point
+    if ((x - circle_x) * (x - circle_x) +
+        (y - circle_y) * (y - circle_y) <= rad * rad):
+        return True
+    else:
+        return False
+
 
 def reshape_col2d(arr,permutations):
     idx = np.empty_like(permutations)
