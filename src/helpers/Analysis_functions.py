@@ -1006,24 +1006,24 @@ def GMM_utility2(data, n, biners=50, inclusion_thresh = [0,100], verbose=True, t
     return 
 
 
-def create_box_plot(box_data,tick_list,y_label = "",x_label = "",y_lim = (),title = ""):
-    ticks = tick_list
-    plt.boxplot(box_data,positions = range(1,len(tick_list)+1))
-    for i in range(1,len(tick_list)+1):
-        y = box_data[i-1]
-        x = np.random.normal(i, 0.04, size=len(y))
-        plt.plot(x, y, 'r.', alpha=0.2)
-    try:
-        plt.ylim(y_lim) 
-    except:
-        print("Warning: y_lim not valid")
-    plt.xticks(xrange(1, len(ticks) * 1 + 1, 1), ticks)
-    plt.ylabel(y_label)
-    plt.xlabel(x_label)
-    plt.title(title)
-    plt.show()
+# def create_box_plot(box_data,tick_list,y_label = "",x_label = "",y_lim = (),title = ""):
+#     ticks = tick_list
+#     plt.boxplot(box_data,positions = range(1,len(tick_list)+1))
+#     for i in range(1,len(tick_list)+1):
+#         y = box_data[i-1]
+#         x = np.random.normal(i, 0.04, size=len(y))
+#         plt.plot(x, y, 'r.', alpha=0.2)
+#     try:
+#         plt.ylim(y_lim) 
+#     except:
+#         print("Warning: y_lim not valid")
+#     plt.xticks(xrange(1, len(ticks) * 1 + 1, 1), ticks)
+#     plt.ylabel(y_label)
+#     plt.xlabel(x_label)
+#     plt.title(title)
+#     plt.show()
         
-    return
+#     return
 
 
 
@@ -1097,11 +1097,11 @@ def norm_weights(data):
   weights = np.ones_like(data)/float(len(data))
   return weights
 
-def log_p(which):
-  plt.hist(np.log10(which))
-  plt.show()
-  m, s = stats.norm.fit(np.log10(which))
-  return 10**(m),10**(s)
+# def log_p(which):
+#   plt.hist(np.log10(which))
+#   plt.show()
+#   m, s = stats.norm.fit(np.log10(which))
+#   return 10**(m),10**(s)
 
 def run_gmm_all(which,n):
   GMM_utility(which,n,log = True)

@@ -202,7 +202,6 @@ class blob_detection:
 		"""
 		
 		max_lap = kwargs.get("max_lap",None)
-		print(max_lap)
 		sigma_indx = kwargs.get("sigma_indx",None)
 
 		if max_lap is None:
@@ -221,7 +220,6 @@ class blob_detection:
 				#but depending on the pairs which are choosen first it assigns a -1 to a blob that is likely larger than others
 				#find a way to do a ranked list of sorts for this. 
 				blob1, blob2 = blobs_array[i], blobs_array[j]
-				print(blob1,blob2,max_lap[i],max_lap[j])
 				
 				overlap_blob = blob._blob_overlap(blob1, blob2, sigma_dim=sigma_dim)
 				if (overlap_blob > overlap):
@@ -231,7 +229,6 @@ class blob_detection:
 						blob2[-1] = -1 
 					else:
 						blob1[-1] = -1
-		print(blobs_array,max_lap[i],max_lap[j])
 		blobs_pruned = []
 		sigma_indx_pruned = []
 		for inx,val in enumerate(blobs_array):
@@ -239,7 +236,6 @@ class blob_detection:
 				blobs_pruned.append(val)
 				sigma_indx_pruned.append(sigma_indx[inx])
 		#return np.stack([b for b in blobs_array if b[-1] > -1]) #save for testing
-		print(blobs_pruned,sigma_indx_pruned)
 		return np.stack(blobs_pruned),np.stack(sigma_indx_pruned)
 	
 	def blob_logv2(self,image, min_sigma=1, max_sigma=50, num_sigma=10, threshold=.2,
@@ -381,11 +377,11 @@ class blob_detection:
 			exclude_border=exclude_border,
 		)
 
-		# view laplacian slices for all local maxima sigmas
-		for i in local_maxima:
-			x,y,s_indx = i
-			plt.imshow(image_cube[:,:,s_indx])
-			plt.show()
+		# # view laplacian slices for all local maxima sigmas
+		# for i in local_maxima:
+		# 	x,y,s_indx = i
+		# 	plt.imshow(image_cube[:,:,s_indx])
+		# 	plt.show()
 
 		# Catch no peaks
 		if local_maxima.size == 0:
@@ -394,7 +390,6 @@ class blob_detection:
 		#find the max of the laplacian for each peak found
 		#figure out a way to vectorize it using slicing: https://numpy.org/doc/stable/user/basics.indexing.html
 		max_lap = image_cube[local_maxima[:,0],local_maxima[:,1],local_maxima[:,2]]
-		print(np.max(image_cube[:,:,local_maxima[:,2]]))
 
 		# Convert local_maxima to float64
 		lm = local_maxima.astype(np.float64)
@@ -402,7 +397,6 @@ class blob_detection:
 		# translate final column of lm, which contains the index of the
 		# sigma that produced the maximum intensity value, into the sigma
 		sigmas_of_peaks = sigma_list[local_max_sigma_indx]
-		print(sigmas_of_peaks)
 		if scalar_sigma:
 			# select one sigma column, keeping dimension
 			sigmas_of_peaks = sigmas_of_peaks[:, 0:1]

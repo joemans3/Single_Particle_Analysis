@@ -9,6 +9,7 @@ if __name__=="__main__":
 	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts')
 import src.helpers.blob_detection as blob_detection
 import src.helpers.Analysis_functions as Analysis_functions
+import src.helpers.fbm_utility as fbm
 
 class sim_foci():
 	'''_summary_
@@ -34,8 +35,14 @@ class sim_foci():
 		self.uniform_blob = kwargs.get("unifrom",False)
 	
 	def _define_space(self,**kwargs):
-		'''_summary_
-
+		''' 
+		Docstring for _define_space:
+		---------------------------
+		Defines the space probability for the points to be generated in the space.
+		Parameters
+		----------
+		_type_ : _description_, optional
+			_description_, by default _default_value_
 		Returns
 		-------
 		_type_
@@ -45,7 +52,15 @@ class sim_foci():
 		return b/(self.max_x*self.max_x)
 	
 	def _makePoints(self):
-		'''_summary_
+		''' 
+		Docstring for _makePoints:
+		---------------------------
+		Generates the points in the space.
+
+		Parameters
+		----------
+		_type_ : _description_, optional
+			_description_, by default _default_value_
 
 		Returns
 		-------
@@ -68,7 +83,15 @@ class sim_foci():
 								density_dif = self.density_dif)
 
 	def simulate_point(self,**kwargs):
-		'''_summary_
+		''' 
+		Docstring for simulate_point:
+		---------------------------
+		Simulates the point in space and returns the point and the space map.
+
+		Parameters
+		----------
+		_type_ : _description_, optional
+			_description_, by default _default_value_
 
 		Returns
 		-------
@@ -85,7 +108,6 @@ class sim_foci():
 		for i in points:
 			space_map += get_gaussian(i,np.ones(2)*self.psf_sigma,domain=[x,x])
 		return space_map,points
-		
 class sim_focii(sim_foci): #is this usefull or not? Turns out to be slower ~x2 than the brute force way.
 	def __init__(self,radii=None,repeats=3,detection_kwargs={},sim_kwargs={},fitting_parm={}) -> None:
 		'''_summary_
@@ -264,7 +286,24 @@ class sim_focii(sim_foci): #is this usefull or not? Turns out to be slower ~x2 t
 		'''
 		self.total_points = total_points
 		return self.radius_analysis()
-	
+
+class Track_generator(sim_foci):
+	def __init__(self,track_parameters={},sim_parameters={}) -> None:
+		super.__init__(**sim_parameters)
+		self.track_length_mean=track_parameters.get("track_length_mean",10)
+		self.track_type=track_parameters.get("track_type","fbm")
+		self.track_hurst=track_parameters.get("track_hurst",0.5)
+		self.track_distribution=track_parameters.get("track_distribution","exponential")
+		pass
+	def _get_Track(self):
+		pass
+	def _get_fbm(self):
+		pass
+	def _get_crw(self):
+		pass
+
+
+
 def tophat_function_2d(var,center,radius,bias_subspace,space_prob):
 	'''
 	Defines a circular top hat probability distribution with a single biased region defining the hat.
@@ -358,7 +397,7 @@ def generate_radial_points(total_points,center,radius):
 	x = rad*np.cos(theta)+center[0]
 	y = rad*np.sin(theta)+center[1]
 	return np.stack((x,y),axis =-1)
-
+ 
 def get_gaussian(mu, sigma,domain = [list(range(10)),list(range(10))]):
 	'''
 	Parameters
