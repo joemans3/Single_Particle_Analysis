@@ -29,13 +29,8 @@ Classes:
 
 7. boundary_analysis: class for each boundary analysis of a dataset
 
-Author: Baljyo Singh Parmar
+Author: Baljyot Singh Parmar
 '''
-
-
-
-
-
 import glob
 
 import matplotlib.pyplot as plt

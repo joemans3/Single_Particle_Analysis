@@ -1,3 +1,17 @@
+'''
+This module contains functions for generating fractional brownian motion samples and computing the mean squared displacement
+
+Functions:
+----------
+get_fbm_sample(l=1,h=0.5,d=1,n=1)
+    Generates a sample of fractional brownian motion
+compute_msd_np(xy, t, t_step)
+    Computes the mean squared displacement for a given sample
+
+Author: Baljyot Singh Parmar
+
+'''
+
 import numpy as np
 import pandas as pd
 from fbm import FBM

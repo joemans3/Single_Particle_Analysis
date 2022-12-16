@@ -1,5 +1,14 @@
 '''
+Documentation for blob_detection.py
 
+This file contains the class blob_detection which is used to detect blobs in an image. It uses the skimage.blob_log() function to detect blobs in an image. 
+It also has the option to fit the blobs with a 2D gaussian function.
+The class also has the option to fit the blobs with a 2D gaussian function. This is done by using the lmfit package to fit the blobs with a 2D gaussian function.
+Detection can be done using the skimage.blob_log() function or a custom function. The custom function is a modified version of the skimage.blob_log() function. Named blob_logv2()
+
+Classes:
+--------
+blob_detection: see class docstring for more info, this is the main class that is used to detect blobs in an image
 '''
 import os
 
@@ -16,7 +25,7 @@ import src.helpers.import_functions as import_functions
 from src.helpers.Analysis_functions import rescale_range
 
 
-#global vars
+#global vars for fitting functions
 FWHM_FACTOR = 2.*(np.log(2.+np.sqrt(3)))
 
 class blob_detection:

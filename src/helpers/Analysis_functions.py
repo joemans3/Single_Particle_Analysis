@@ -1,3 +1,9 @@
+'''
+This module contains a collection of functions for analysis
+
+Some of the functions are old and not used anymore, but I am keeping them here for now
+Author: Baljyot Singh Parmar
+'''
 import math
 import re
 

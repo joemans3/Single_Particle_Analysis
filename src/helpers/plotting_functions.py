@@ -1,3 +1,9 @@
+'''
+This script contains all the plotting functions used in the trajectory_analysis_script.py
+
+Author: Baljyot Singh Parmar
+
+'''
 import matplotlib.pylab as plt
 import numpy as np
 from matplotlib.collections import PatchCollection

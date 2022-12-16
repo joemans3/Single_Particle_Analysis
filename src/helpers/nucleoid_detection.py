@@ -1,3 +1,10 @@
+'''
+This module contains the functions used to detect the nucleoids in the images
+
+It uses the Random Forest Classifier to detect the nucleoids in the images and then uses the regionprops function to get the properties of the nucleoids
+
+Author: Baljyot Singh Parmar
+'''
 import math
 from functools import partial
 

@@ -1,3 +1,9 @@
+'''
+This file contains most functions used in Input/Output of different files and directories
+
+Author: Baljyot Singh Parmar
+
+'''
 import os
 import numpy as np
 import matplotlib.pyplot as plt

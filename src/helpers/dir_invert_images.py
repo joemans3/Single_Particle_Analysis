@@ -1,3 +1,8 @@
+'''
+This script takes input at runtime to a directory where images are kept to invert them and save them in a new directory
+
+Author: Baljyot Singh Parmar
+'''
 import os
 import numpy as np 
 from PIL import Image
@@ -5,10 +10,6 @@ import PIL.ImageOps
 import sys
 import glob as glob
 import import_functions
-
-'''
-This script takes input at runtime to a directory where images are kept to 
-'''
 
 if __name__ == "__main__":
     try:
