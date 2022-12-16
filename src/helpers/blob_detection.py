@@ -1,3 +1,6 @@
+'''
+
+'''
 import os
 
 import matplotlib.pyplot as plt
@@ -53,6 +56,7 @@ class blob_detection:
 	def __init__(self,path,median = False,threshold = 0.0005,min_sigma = 1.0,max_sigma = 1.5,num_sigma = 500,overlap = 1.,logscale = False,verbose=False):
 		'''
 		TODO update docstring
+
 		'''
 		self.img = path
 		self.median = median
@@ -386,7 +390,6 @@ class blob_detection:
 		# Catch no peaks
 		if local_maxima.size == 0:
 			return np.empty((0, 3))
-
 		#find the max of the laplacian for each peak found
 		#figure out a way to vectorize it using slicing: https://numpy.org/doc/stable/user/basics.indexing.html
 		max_lap = image_cube[local_maxima[:,0],local_maxima[:,1],local_maxima[:,2]]
@@ -505,10 +508,10 @@ class blob_detection:
 			else:
 				lap_img = img
 			if val[-1] >=  size: #fix this condition, right now defalts to using defined size
-				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr = [int(val[-1]*FWHM_FACTOR),int(val[-1]*FWHM_FACTOR)])
+				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr=[int(val[-1]*FWHM_FACTOR),int(val[-1]*FWHM_FACTOR)])
 
 			else:
-				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr = [size,size])
+				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr=[size,size])
 
 			#initialize the fitter
 			initials=self.initalize_2dgaus(height = np.max(view)-np.min(view),\
@@ -572,7 +575,7 @@ class blob_detection:
 		maxx,maxy = initial_xy + sub_arr
 		minx,miny = int(minx),int(miny)
 		maxx,maxy =int(maxx),int(maxy)
-		centers = [rescale_range(initial_xy[0],minx,maxx,0,-2*sub_arr[1]+1),rescale_range(initial_xy[1],miny,maxy,0,-2*sub_arr[0]+1)]
+		centers = [rescale_range(initial_xy[0],minx,maxx,0,2*sub_arr[1]+1),rescale_range(initial_xy[1],miny,maxy,0,2*sub_arr[0]+1)]
 		x,y = np.meshgrid(np.arange(minx,maxx,1),np.arange(miny,maxy,1))
 		mesh_view = mesh_2d[minx:maxx,miny:maxy]
 		

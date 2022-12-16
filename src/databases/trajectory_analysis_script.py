@@ -1,3 +1,41 @@
+'''
+Documentation for trajectory_analysis_script.py
+
+This script is used to analyse the data from the trajectory analysis script
+It does this by reading the data from the trajectory analysis script and then making mappings of the SMT data to drops and cells
+
+The core of the script is the run_analysis class, which is used to analyse a single dataset
+Each database in a given experiment is analysed by a separate instance of this class
+Each instance of this class is initialised with the working directory and the unique string identifier for the dataset
+The mapping of the SMT data to drops and cells is done by the analyse_cell_tracks method among others
+The core mapping is as follows:
+Movies -> Cells -> Drops -> Trajectories
+The class also contains methods to plot the data and to save the data to a .mat file
+
+The script also contains a number of helper functions that are used by the class
+These are mostly used to read the data from the trajectory analysis script and to plot the data and make classifications
+
+The script also contains a number of functions that are used to analyse the data
+These are mostly used to analyse the data and to plot the data and make classifications
+
+Classes:
+--------
+1. run_analysis: class for each dataset to analyse
+2. Movie_frame: class for each frame of view in a movie
+3. Cell: class for each cell in a frame of view
+4. Drop: class for each drop in a cell
+5. Trajectory: class for each trajectory in a drop
+6. Tracjectory_Drop_Mapping: class for each mapping of a trajectory to a drop
+
+7. boundary_analysis: class for each boundary analysis of a dataset
+
+Author: Baljyo Singh Parmar
+'''
+
+
+
+
+
 import glob
 
 import matplotlib.pyplot as plt

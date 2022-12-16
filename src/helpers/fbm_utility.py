@@ -1,32 +1,76 @@
-import numpy as np 
-import pylab as plt
-from fbm import FBM 
-import os
-import sys
-import pandas as pd 
+import numpy as np
+import pandas as pd
+from fbm import FBM
 
-def get_fbm_sample(l = 1, h = 0.5, d = 1,n =1):
-	#l = end time (from 0)
-	#h = hurst parameter
-	#d = dimensions (x,y,z .... ) for one realization
-    #n = even intervals from 0,l
 
-	f = FBM(length = l, hurst = h,n = n)
-	samples = []
-	sample_t = []
-	for i in range(d):
-		fbm_sample = f.fbm()
-		fgn_sample = f.fgn()
-		t_values = f.times()  
-		if n == 1 and n != l:
+def get_fbm_sample(l=1,h=0.5,d=1,n=1):
+    '''
+    Generates a sample of fractional brownian motion 
+    Theory: https://en.wikipedia.org/wiki/Fractional_Brownian_motion
+    Implementation is using the fbm package: https://pypi.org/project/fbm/
+    Default values are for testing purposes only
+    
 
-			samples.append(fbm_sample[1:])
-			sample_t.append(t_values[1:])
+    Parameters:
+    -----------
+    l : float,int
+        end time (from 0)
+    h : float,int  (0 < h < 1)
+        hurst parameter, must be between 0 and 1
+    d : int 
+        dimensions (x,y,z .... ) for one realization, must be greater than 0
+    n : int
+        even intervals from 0,l, must be greater than 0
+    
+    Returns:
+    --------
+    list of lists of numpy arrays, where the first list is the time values for each sample, and the second list is the samples themselves
 
-		else:
-			samples.append(fbm_sample)
+    Raises:
+    -------
+    TypeError
+        If any of the parameters are not of the correct type
+    ValueError
+        If any of the parameters are not of the correct value
 
-	return [sample_t, samples]
+    Notes:
+    ------
+    1. The number of samples is equal to the number of dimensions
+	'''
+
+    #in the following checks we make sure to print the value of the parameter that is incorrect
+    if not isinstance(l, (float,int)):
+        raise TypeError("Please enter a valid type for length parameter, you entered: ", type(l))
+    if not isinstance(h, (float,int)):
+        raise TypeError("Please enter a valid type for hurst parameter, you entered: ", type(h))
+    if not isinstance(d, int):
+        raise TypeError("Please enter a valid type for dimensions parameter, you entered: ", type(d))
+    if not isinstance(n, (float,int)):
+        raise TypeError("Please enter a valid type for intervals parameter, you entered: ", type(n))
+    if l < 1:
+        raise ValueError("Please enter a valid value for length parameter, you entered: ", l)
+    if h < 0 or h > 1:
+        raise ValueError("Please enter a valid value for hurst parameter, you entered: ", h)
+    if d < 1:
+        raise ValueError("Please enter a valid value for dimensions parameter, you entered: ", d)
+    if n < 1:
+        raise ValueError("Please enter a valid value for intervals parameter, you entered: ", n)
+
+    f = FBM(length = l, hurst = h,n = n)
+    samples = []
+    sample_t = []
+    for i in range(d):
+        fbm_sample = f.fbm()
+        fgn_sample = f.fgn()
+        t_values = f.times()  
+        if n == 1 and n != l:
+
+            samples.append(fbm_sample[1:])
+            sample_t.append(t_values[1:])
+
+        else:
+            samples.append(fbm_sample)
+    return [sample_t, samples]
 
 	
 def compute_msd_np(xy, t, t_step):
@@ -42,26 +86,3 @@ def compute_msd_np(xy, t, t_step):
 
     msds = pd.DataFrame({'msds': msds, 'tau': t, 'msds_std': msds_std})
     return msds
-
-def track_decomp(x,y,f,max_track_decomp):
-    #takes tracks and finds MSD for various timestep conditions.
-    
-    #return array-like: 
-    #msd = msd values at all tau values considered
-    #popt = fitted parameters on MSD equation
-    #pcov = covariance matrix of fit
-    
-    max_decomp = np.floor(len(x)/max_track_decomp)
-    tau = list(range(1,int(max_decomp+1.0)))
-    msd = []
-    for i in tau:
-        if i < len(x):
-            n_x = np.array(x)[::i]
-            n_y = np.array(y)[::i]
-            n_f = np.array(f)[::i]
-            msd.append(MSD_tavg(n_x,n_y,n_f))
-        
-    #popt , pcov = curve_fit(fit_MSD,tau,np.array(msd),p0=[1,1],maxfev=10000)
-    
-    
-    return np.array([msd,tau])

@@ -8,24 +8,83 @@ from scipy.optimize import curve_fit
 from skimage.color import rgb2gray
 from sklearn import mixture
 
+
+def squared_mean_difference(a):
+    # check if the input is empty
+    if a is None:
+        return 0
+    # check if the input is a numpy array
+    if not isinstance(a, np.ndarray):
+        return 0
+    # check if the input is of length 0
+    if len(a) == 0:
+        return 0
+    # check if the input is of length 1
+    if len(a) == 1:
+        return a[0]
+    # check if the input contains any nan
+    if np.any(np.isnan(a)):
+        return np.nan
+    # check if the input contains any inf
+    if np.any(np.isinf(a)):
+        return np.inf
+    # calculate the square root of the sum of the squares of the input divided by the length of the input
+    return np.sqrt(np.sum(a**2))/len(a)
+
+
 # is a point inside a circle
 def point_inside_circle2D(circle,point):
-    '''_summary_
+    '''Check if a point is inside a circle
 
-    Parameters
-    ----------
-    circle : _type_
-        _description_
-    point : _type_
-        _description_
-
-    Returns
+    Parameters:
+    -----------
+    circle : tuple
+        (x,y,radius) of the circle
+    point : tuple
+        (x,y) of the point
+    
+    Returns:
+    --------
+    bool
+        True if the point is inside the circle, False otherwise
+    
+    Raises:
     -------
-    _type_
-        _description_
+    TypeError
+        If circle or point are not tuples
+    TypeError
+        If circle or point are not tuples of length 3 and 2 respectively
+    TypeError
+        If circle or point are not tuples of numbers
+    ValueError
+        If the radius of the circle is not positive
+    
+    Examples:
+    ---------
+    >>> point_inside_circle2D((0,0,1),(0,0))
+    True
+    >>> point_inside_circle2D((0,0,1),(0,1))
+    False
+
+    Notes:
+    ------
+    1. This function is not vectorized, so it will not work with numpy arrays
+    2. This function is not robust to floating point errors
     '''
+
     circle_x,circle_y,rad = circle
     x,y = point
+
+    if not isinstance(circle_x,(int,float)) or \
+       not isinstance(circle_y,(int,float)) or \
+       not isinstance(rad,(int,float)):
+        raise TypeError("circle parameters must be numbers")
+    if not isinstance(x,(int,float)) or \
+       not isinstance(y,(int,float)):
+        raise TypeError("point parameters must be numbers")
+    if not rad > 0:
+        raise ValueError("radius must be positive")
+
     if ((x - circle_x) * (x - circle_x) +
         (y - circle_y) * (y - circle_y) <= rad * rad):
         return True
@@ -33,7 +92,21 @@ def point_inside_circle2D(circle,point):
         return False
 
 
+
 def reshape_col2d(arr,permutations):
+    # Check that permutations is a list of integers 
+    if not isinstance(permutations,list):
+        raise TypeError('permutations must be a list')
+    if not all([isinstance(i,int) for i in permutations]):
+        raise TypeError('permutations must be a list of integers')
+    # Check that permutations is a permutation of np.arange(len(permutations))
+    if len(permutations)>len(arr):
+        raise ValueError('permutations is too long')
+    if len(permutations)<len(arr):
+        raise ValueError('permutations is too short')
+    if not all([i in permutations for i in np.arange(len(permutations))]):
+        raise ValueError('permutations is not a permutation of np.arange(len(permutations))')
+    # Check that permutations is a permutation of np.arange(len(permutations))
     idx = np.empty_like(permutations)
     idx[permutations] = np.arange(len(permutations))
     arr[:]=arr[:, idx]
@@ -42,8 +115,24 @@ def reshape_col2d(arr,permutations):
 
 
 def rt_to_xy(r,theta):
-    y = r*np.sin(theta)
+    """Converts polar coordinates to cartesian coordinates
+    """
+    # Check to see if r and theta are floats
+    if type(r) != float or type(theta) != float:
+        raise TypeError('r and theta must be floats')
+    # Check to see if r and theta are arrays
+    if type(r) == np.ndarray or type(theta) == np.ndarray:
+        raise ValueError('r and theta must be floats')
+    # Check to see if r is negative
+    if r<0:
+        raise ValueError('r must be positive')
+    # Check to see if theta is between 0 and 2pi
+    if theta < 0 or theta > 2*np.pi:
+        raise ValueError('theta must be between 0 and 2*pi')
+    # If all of the above checks pass, convert to cartesian coordinates
     x = r*np.cos(theta)
+    y = r*np.sin(theta)
+    # Return the coordinates as an array
     return np.array([x,y])
 
 
@@ -52,30 +141,39 @@ def pad_array(subarray, shape, top_left_coord, pad = 0):
     Parameters
     ----------
     subarray : 2D array-like
-        array to pad 
+        array to pad
     shape : tuple, list, array-like of length 2
         2D shape of the full array
     top_left_coord : list, array-like of length 2
         coordinate of the top left corner of the subarray in the full array of shape
-    
+
     Returns
     -------
     array-like 2D
         returns the full array of with size shape entries of the subarray are inputted relative to top_left_coord
         padded with 0s
     '''
-    try: 
+    try:
         full_array = np.zeros(shape) + pad
     except:
         PrintTime("shape is not the correct type")
         return
     shape_sub = np.shape(subarray)
+    if top_left_coord[0] + shape_sub[0] > shape[0]:
+        PrintTime("The subarray does not fit in the full array along the x axis")
+        return
+    if top_left_coord[1] + shape_sub[1] > shape[1]:
+        PrintTime("The subarray does not fit in the full array along the y axis")
+        return
     full_array[top_left_coord[1]-1:top_left_coord[1]+shape_sub[0]-1,top_left_coord[0]-1:top_left_coord[0]+shape_sub[1]-1] = subarray
 
     return full_array
 def sorted_alphanumeric(data):
+    # Function to convert text to int if text is a digit, else convert to lowercase
     convert = lambda text: int(text) if text.isdigit() else text.lower()
+    # Function to split the text into a list of digits and non-digits
     alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+    # Sort the list of data using the alphanum_key function
     return sorted(data, key=alphanum_key, reverse=False)
 
 def subarray2D(arr,mask,full = True,transpose = True):
@@ -115,6 +213,13 @@ def subarray2D(arr,mask,full = True,transpose = True):
         max_y = math.ceil(np.max(mask[:,0]))
         min_x = math.ceil(np.min(mask[:,1]))
         max_x = math.ceil(np.max(mask[:,1]))
+        
+    # Check that mask is within the bounds of arr
+    if (min_x < 0) or (max_x > arr.shape[0]) or (min_y < 0) or (max_y > arr.shape[1]):
+        raise ValueError('Mask is outside the bounds of the array.')
+    # Check that mask is not empty
+    if (max_x - min_x) < 1 or (max_y - min_y) < 1:
+        raise ValueError('Mask is empty.')
 
     if full == False:
         return arr[min_x:max_x,min_y:max_y]
@@ -137,10 +242,17 @@ def flatten(t):
     list
         flattened list along all dimensions of t.
     '''
-    return [item for sublist in t for item in sublist]
+    try:
+        return [item for sublist in t for item in sublist]
+    except TypeError:
+        return [t]
 
 def rescale_range(x,min_x,max_x,a,b):
     '''https://stats.stackexchange.com/questions/281162/scale-a-number-between-a-range'''
+    if min_x >= max_x:
+        raise ValueError("min_x={} is not less than max_x={}".format(min_x,max_x))
+    if a >= b:
+        raise ValueError("a={} is not less than b={}".format(a,b))
     return ((b-a)*(x - min_x)/(max_x - min_x)) + a
 
 # displacemnt cum distribution
@@ -159,7 +271,13 @@ def rescale(x,a,b):
     min_x = np.min(x)
     a = np.float(a)  # type: ignore
     b = np.float(b)  # type: ignore
-    return np.array((((b-a)*(x-min_x)))/np.array((max_x - min_x))) + a
+    if min_x == max_x:
+        if min_x == 0:
+            return np.array([a] * len(x))
+        else:
+            return np.array([a] * len(x)) + np.array([b-a] * len(x)) * x
+    else:
+        return np.array((((b-a)*(x-min_x)))/np.array((max_x - min_x))) + a
 
 
 
