@@ -155,12 +155,8 @@ class sim_foci():
 		point_intensity = kwargs.get("intensity",np.ones(num_points)*self.point_intensity)
 		if np.isscalar(point_intensity):
 			point_intensity *= np.ones(len(num_points))
-		x = np.arange(self.min_x,self.max_x,1.)
 		points = self._makePoints()
-		space_map = np.zeros((len(x),len(x)))
-		for i in points:
-			space_map += get_gaussian(i,np.ones(2)*self.psf_sigma,domain=[x,x])
-		return space_map,points
+		return self.generate_map_from_points(points)
 	
 	def generate_map_from_points(self,points):
 		''' 
@@ -805,7 +801,36 @@ def generate_radial_points(total_points,center,radius):
 	x = rad*np.cos(theta)+center[0]
 	y = rad*np.sin(theta)+center[1]
 	return np.stack((x,y),axis =-1)
- 
+
+def generate_sphere_points(total_points,center,radius):
+	'''Genereate uniformly distributed points in a sphere of radius.
+
+	Parameters
+	----------
+	total_points : int
+		total points from this distribution
+	center : array-like or tuple 
+		coordinate of the center of the radius. [x,y,...]
+	radius : float-like
+		radius of the region on which to 
+
+	Returns
+	-------
+	(n,2) size array
+		array of coordinates of points genereated (N,3) N = # of points, 2 = dimentions
+	'''
+	theta = 2.*np.pi*np.random.random(size=total_points)
+	phi = np.arccos(2.*np.random.random(size=total_points)-1.)
+	rad = radius*np.random.random(size=total_points)
+	x = rad*np.cos(theta)*np.sin(phi)+center[0]
+	y = rad*np.sin(theta)*np.sin(phi)+center[1]
+	z = rad*np.cos(phi)+center[2]
+	return np.stack((x,y,z),axis =-1)
+	
+def radius_spherical_cap(R,center,z_slice):
+	'''
+	'''
+	pass
 def get_gaussian(mu, sigma,domain = [list(range(10)),list(range(10))]):
 	'''
 	Parameters
