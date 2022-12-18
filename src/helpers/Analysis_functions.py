@@ -15,6 +15,91 @@ from skimage.color import rgb2gray
 from sklearn import mixture
 
 
+def bin_ndarray(ndarray, new_shape, operation='sum'):
+    '''
+    Docstring for bin_ndarray
+    Bins an ndarray in all axes based on the target shape, by summing or
+        averaging.
+    
+    Parameters:
+    -----------
+    ndarray : numpy array
+        The array to be binned
+    new_shape : tuple
+        The shape of the output array
+    operation : str, optional (default='sum')
+        The operation to be performed on the pixels, can be 'sum' or 'mean'
+    
+    Returns:
+    --------
+    numpy array
+        The binned array of shape new_shape
+    
+    Raises:
+    -------
+    ValueError
+        If the operation is not 'sum' or 'mean'
+    ValueError
+        If the number of dimensions of the input array does not match the length of the new_shape tuple
+ 
+    Examples:
+    ---------
+    >>> m = np.arange(0,100,1).reshape((10,10))
+    >>> n = bin_ndarray(m, new_shape=(5,5), operation='sum')
+    >>> print(n)
+        [[ 22  30  38  46  54]
+        [102 110 118 126 134]
+        [182 190 198 206 214]
+        [262 270 278 286 294]
+        [342 350 358 366 374]]
+    '''
+    operation = operation.lower()
+    if not operation in ['sum', 'mean']:
+        raise ValueError("Operation not supported.")
+    if ndarray.ndim != len(new_shape):
+        raise ValueError("Shape mismatch: {} -> {}".format(ndarray.shape,
+                                                           new_shape))
+    compression_pairs = [(d, c//d) for d,c in zip(new_shape,
+                                                  ndarray.shape)]
+    flattened = [l for p in compression_pairs for l in p]
+    ndarray = ndarray.reshape(flattened)
+    for i in range(len(new_shape)):
+        op = getattr(ndarray, operation)
+        ndarray = op(-1*(i+1))
+    return ndarray
+
+def bin_img(img,bin=2,operation='sum'):
+    '''
+    Docstring for bin_img
+
+    Parameters:
+    -----------
+    img : numpy array
+        The image to be binned
+    bin : int, optional (default=2)
+        The binning factor, this is the number of pixels to be binned together for each axis
+    operation : str, optional (default='sum')
+        The operation to be performed on the pixels, can be 'sum' or 'mean'
+
+    Returns:
+    --------
+    numpy array
+        The binned image of shape (img.shape[0]//bin,img.shape[1]//bin)
+    '''
+    if operation == 'sum':
+        return bin_ndarray(img, new_shape=(img.shape[0]//bin,img.shape[1]//bin), operation='sum')
+    elif operation == 'mean':
+        return bin_ndarray(img, new_shape=(img.shape[0]//bin,img.shape[1]//bin), operation='mean')
+    else:
+        raise ValueError("Operation not supported.")
+
+#convert a (N,3) array to a (N,2) array by removing the z coordinate
+def convert_3d_to_2d(a):
+    b = np.zeros((np.shape(a)[0],2))
+    b[:,0] = a[:,0]
+    b[:,1] = a[:,1]
+    return b
+
 def squared_mean_difference(a):
     # check if the input is empty
     if a is None:

@@ -64,8 +64,33 @@ class blob_detection:
 	'''
 	def __init__(self,path,median = False,threshold = 0.0005,min_sigma = 1.0,max_sigma = 1.5,num_sigma = 500,overlap = 1.,logscale = False,verbose=False):
 		'''
-		TODO update docstring
+		Initilizes the class object with the parameters for the blob detection
 
+		Parameters:
+		-----------
+		Path : string or 2d array 
+			Full path of the image to be read or the 2d array of the image
+		median : bool
+			if true apply a median filter to the image before blog detection
+		threshold : float
+			threshold for the blob detection
+		min_sigma : float
+			Minimum value of the gaussian sigma for the blobs
+		max_sigma : float
+			Maximum value of the gaussian sigma for the blobs
+		num_sigma : int
+			Eqidistant values between min_sigma and max_sigma to consider
+		overlap : float
+			Allowed overlap of identified blobs. If 1, full overlap is allowed
+		logscale : bool
+			if True, use a log scale for the sigma values
+		verbose : bool
+			if True, return out the parameters used for the blob detection and fitting
+
+		Notes:
+		------
+		1. The blob detection is done using the skimage.blob_log() function or a custom function. The custom function is a modified version of the skimage.blob_log() function. Named blob_logv2()
+		2. To use the custom function, call the method detection() with the argument type='bp' else the default is 'skimage'
 		'''
 		self.img = path
 		self.median = median

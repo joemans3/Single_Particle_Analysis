@@ -94,11 +94,25 @@ class sim_foci():
 		b = ((self.max_x**2) - (np.pi*(self.radius)**2)*self.density_dif)/((self.max_x**2) - (np.pi*(self.radius)**2))
 		return b/(self.max_x*self.max_x)
 	
-	def _makePoints(self,points=None):
+	def _makePoints(self,points=None,generator=None):
 		''' 
 		Docstring for _makePoints:
 		---------------------------
 		Generates the points in the space.
+
+		Parameters:
+		-----------
+		points: int, default is None
+			total number of points to be generated, if None, then total_points is used.
+		generator: function, default is None
+			function to generate the points, if None, then generate_points function is used.
+			Generator function should have the following parameters:
+				total_points: int
+					total number of points to be generated
+				center: list, tuple, numpy array
+					center of the blob in the space [x,y,z] or [x,y]
+				radius: int, float
+					radius of the blob
 
 		Returns:
 		--------
@@ -115,10 +129,16 @@ class sim_foci():
 			point_num = self.total_points
 		else:
 			point_num = points
-		if self.uniform_blob:
-			return generate_radial_points(total_points=point_num,\
+
+		#check if generator is a function
+		if generator!=None:
+			return generator(total_points=point_num,\
 										center=self.center,\
 										radius=self.radius)
+		if self.uniform_blob:
+			return Analysis_functions.convert_3d_to_2d(generate_sphere_points(total_points=point_num,\
+										center=self.center,\
+										radius=self.radius))
 		else:								
 			return generate_points(pdf = self.pdf, \
 								total_points = point_num, \
@@ -138,7 +158,13 @@ class sim_foci():
 
 		Parameters:
 		-----------
-		kwargs: keyword arguments
+
+		KWARGS:
+		-------
+		points: int, default is self.total_points
+			number of points to be generated
+		intensity: int, float or numpy array of shape (num_points,), default is np.ones(num_points)*self.point_intensity
+			intensity of the points
 
 		Returns:
 		--------
@@ -155,18 +181,19 @@ class sim_foci():
 		point_intensity = kwargs.get("intensity",np.ones(num_points)*self.point_intensity)
 		if np.isscalar(point_intensity):
 			point_intensity *= np.ones(len(num_points))
-		points = self._makePoints()
-		return self.generate_map_from_points(points)
+		points = self._makePoints(generator=kwargs.get("generator",None))
+		return self.generate_map_from_points(points,point_intensity)
 	
-	def generate_map_from_points(self,points):
+	def generate_map_from_points(self,points,point_intensity=None):
 		''' 
 		Docstring for generate_map_from_points:
 		---------------------------
-		Generates the space map from the points.
+		Generates the space map from the points. 2D
 
 		Parameters:
 		-----------
-		points: numpy array of shape (total_points,2)
+		points: array-like 
+			points numpy array of shape (total_points,2)
 
 		Returns:
 		--------
@@ -180,8 +207,11 @@ class sim_foci():
 		'''
 		x = np.arange(self.min_x,self.max_x,1.)
 		space_map = np.zeros((len(x),len(x)))
-		for i in points:
-			space_map += get_gaussian(i,np.ones(2)*self.psf_sigma,domain=[x,x])
+		for i,j in enumerate(points):
+			if point_intensity is None:
+				space_map += get_gaussian(j,np.ones(2)*self.psf_sigma,domain=[x,x])
+			else:
+				space_map += get_gaussian(j,np.ones(2)*self.psf_sigma,domain=[x,x])*point_intensity[i]
 		return space_map,points
 
 class Track_generator(sim_foci):
@@ -354,7 +384,8 @@ class Track_generator(sim_foci):
 
 		Parameters:
 		-----------
-		diffusion_coefficients: list of diffusion coefficients for each track, if scalar, then all tracks have the same diffusion coefficient
+		diffusion_coefficients: scalar or list of length total_tracks
+			list of diffusion coefficients for each track, if scalar, then all tracks have the same diffusion coefficient
 
 		Returns:
 		--------
@@ -379,7 +410,7 @@ class Track_generator(sim_foci):
 		points = self._tracks_to_points(tracks)
 		return points
 
-	def _bound_points(self,points):
+	def _bound_points(self,points,remove=False):
 		'''
 		Docstring for _bound_points:
 		----------------------------
@@ -391,6 +422,9 @@ class Track_generator(sim_foci):
 		Parameters:
 		-----------
 		points: numpy array of shape (n,2)
+			points to bound
+		remove: boolean, default False
+			if True, then remove the points that are outside the circle, else just shift them to the boundary of the circle
 
 		Returns:
 		--------
@@ -399,10 +433,12 @@ class Track_generator(sim_foci):
 		#make sure the points are within a circle of radius self.radius and center self.center=(x,y)
 		#first get the distance of each point from the center
 		distances = np.sqrt((points[:,0]-self.center[0])**2 + (points[:,1]-self.center[1])**2)
-		#now get the points that are outside the circle
-		outside_points = points[distances>self.radius]
 		#now get the points that are inside the circle
 		inside_points = points[distances<=self.radius]
+		if remove:
+			return inside_points
+		#now get the points that are outside the circle
+		outside_points = points[distances>self.radius]
 		#now get the angles of the outside points
 		angles = np.arctan2(outside_points[:,1]-self.center[1],outside_points[:,0]-self.center[0])
 		#now get the new x,y values of the outside points
@@ -503,8 +539,8 @@ class sim_focii(Track_generator): #is this usefull or not? Turns out to be slowe
 		super(sim_focii,self).__init__(sim_parameters=sim_kwargs,track_parameters=track_parm)
 		self.blob_detector = None
 		self._blob_detection_object(detection_kwargs=detection_kwargs,fitting_parm=fitting_parm)
-		#if self.use_points is True: then points are simualted independently and then the detection algorithm is applied to each point.
-		# if self.use_points is False: then tracks are simulated, and then the detection algorithm is applied to each track.
+		#if self.use_points is True: then points are simualted independently and then the detection algorithm is applied
+		# if self.use_points is False: then tracks are simulated, and then the detection algorithm is applied
 		self.use_points = True
 
 	def _create_sim(self,radius):
@@ -527,7 +563,7 @@ class sim_focii(Track_generator): #is this usefull or not? Turns out to be slowe
 		if self.use_points is True:
 			sim_obj = self.simulate_point()
 		else:
-			sim_obj = self.generate_map_from_points(self.create_points(self.diffusion_coefficient))
+			sim_obj = self.generate_map_from_points(self.create_points(self.diffusion_coefficient),self.point_intensity)
 		return sim_obj
 
 	def _repeat_sim(self,repeats,radius):
@@ -554,7 +590,9 @@ class sim_focii(Track_generator): #is this usefull or not? Turns out to be slowe
 		'''
 		Docstring for _blob_detection_object:
 		-------------------------------------
-		Creates a blob detection object, with the given parameters.
+		Creates a blob detection object, with the given parameters. 
+		Initalizes the class variable self.blob_detector, which calls the blob detection algorithm in the blob_detection.py file.
+		Originally it sets the path/img to 0, but this is updated in the _map_detection function for each simulation space (img).
 
 		Parameters:
 		-----------
@@ -819,18 +857,54 @@ def generate_sphere_points(total_points,center,radius):
 	(n,2) size array
 		array of coordinates of points genereated (N,3) N = # of points, 2 = dimentions
 	'''
+	#check to see if the center is an array of size 3
+	if len(center) != 3:
+		#make it an array of size 3 with the last element being 0
+		center = np.array([center[0],center[1],0])
+
 	theta = 2.*np.pi*np.random.random(size=total_points)
 	phi = np.arccos(2.*np.random.random(size=total_points)-1.)
-	rad = radius*np.random.random(size=total_points)
+	rad = radius*np.cbrt(np.random.random(size=total_points))
 	x = rad*np.cos(theta)*np.sin(phi)+center[0]
 	y = rad*np.sin(theta)*np.sin(phi)+center[1]
 	z = rad*np.cos(phi)+center[2]
 	return np.stack((x,y,z),axis =-1)
 	
 def radius_spherical_cap(R,center,z_slice):
+	''' Find the radius of a spherical cap given the radius of the sphere and the z coordinate of the slice
+	Theory: https://en.wikipedia.org/wiki/Spherical_cap, https://mathworld.wolfram.com/SphericalCap.html
+
+	Parameters:
+	-----------
+	R : float,int
+		radius of the sphere
+	center : array-like
+		[x,y,z] coordinates of the center of the sphere
+	z_slice : float,int
+		z coordinate of the slice relative to the center of the sphere, z_slice = 0 is the center of the sphere
+
+	Returns:
+	--------
+	float
+		radius of the spherical cap at the z_slice
+	
+	Notes:
+	------
+	1. This is a special case of the spherical cap equation where the center of the sphere is at the origin
 	'''
-	'''
-	pass
+	#check if z_slice is within the sphere
+	if z_slice > R:
+		raise ValueError('z_slice is outside the sphere')
+	#check if z_slice is at the edge of the sphere
+	if z_slice == R:
+		return 0
+	#check if z_slice is at the center of the sphere
+	if z_slice == 0:
+		return R
+	#calculate the radius of the spherical cap
+	return np.sqrt(R**2 - (z_slice)**2)
+
+
 def get_gaussian(mu, sigma,domain = [list(range(10)),list(range(10))]):
 	'''
 	Parameters
@@ -909,7 +983,7 @@ if __name__ == "__main__":
 	# im = Image.fromarray(np.mean(np.array(full_img),axis = 0))
 	# im.save("mean.tif")
 	# im = Image.fromarray(np.std(np.array(full_img),axis = 0))
-	# im.save("std.tif")
+	# i m.save("std.tif")
 	# im = Image.fromarray(np.max(np.array(full_img),axis = 0))
 	# im.save("max.tif")
 
