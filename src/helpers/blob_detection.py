@@ -54,7 +54,7 @@ class blob_detection:
 		retuns an array
 	detection()
 		applies blob detection using np.blob_log
-		returns array of blob attributes
+		returns array of blob attributes or dictionary of blob attributes
 	
 	Notes
 	-----
@@ -173,16 +173,16 @@ class blob_detection:
 
 		Returns
 		-------
-		array-like
-			returns attributes of the blobs
-			[x,y,r]
-			x : int
-				x coordinate of the blob center
-			y : int
-				y coordinate of the blob center
-			r : float
-				radius of the blob 
-		
+		if verbose is True: return type is a dictionary
+			returns a dictionary of the parameters used for the blob detection and fitting and the fitted objects
+		else: return type is a numpy array of size 3 tuples
+			returns the scale space blobs found in the image
+
+		Notes:
+		------
+		1. For 2D images the blob radius estimate is the standard deviation of the gaussian fit to the image times sqrt(2) (see theory)
+		2. Scale fits are isotropic 
+		3. Fitted fits are anisotropic and are size 4 tuples with simga_x and sigma_y
 		'''
 		if isinstance(self.img, str):
 			file = self.open_file()
@@ -190,16 +190,19 @@ class blob_detection:
 			file = self.img
 		if type == 'skimage': #default method based on blob_log from skimage 
 			blobs = blob.blob_log(file,threshold = self.threshold,min_sigma = self.min_sigma,max_sigma = self.max_sigma,num_sigma = self.num_sigma, overlap = self.overlap,log_scale=self.log_scale)
-			blobs[:,2]*=np.sqrt(2) #converting the standard deviation of the gaussian fit to radius of the circle 
+			blobs[:,2]*=np.sqrt(2) #converting the standard deviation of the gaussian fit to radius of the circle
+			return np.array(blobs) #blobs returns array of size 3 tuples (x,y,radius) defining the circle defining the spot 
 		elif type == "bp": 
 			blobs = self.blob_logv2(file,threshold = self.threshold,min_sigma = self.min_sigma,max_sigma = self.max_sigma,num_sigma = self.num_sigma, overlap = self.overlap,log_scale=self.log_scale)
 			if self.verbose:
-				blobs[0][:,2]*=np.sqrt(2) #converting the standard deviation of the gaussian fit to radius of the circle 
-				blobs[1][:,2]*=np.sqrt(2)
-				return np.array(blobs[:-1]) #blobs returns array of size 3 tuples (x,y,radius) defining the circle defining the spot
+				
+				blobs["Fitted"][:,2:]*=np.sqrt(2) #converting the standard deviation of the gaussian fit to radius of the circle 
+				blobs["Scale"][:,2]*=np.sqrt(2)
+				return blobs #blobs returns array of size 3 tuples (x,y,radius) defining the circle defining the spot
 			else:
-				blobs[:,2]*=np.sqrt(2)
-		return np.array(blobs)
+				blobs["Scale"][:,2]*=np.sqrt(2)
+				return blobs["Scale"] #blobs returns array of size 3 tuples (x,y,radius) defining the circle defining the spot
+
 	
 	def _prune_blobs(self,blobs_array, overlap, *, sigma_dim=1,**kwargs):
 		"""Eliminated blobs with area overlap. UPDATED: compared to the skimage implimentation this prunes based on the 
@@ -423,7 +426,9 @@ class blob_detection:
 
 		# Catch no peaks
 		if local_maxima.size == 0:
-			return np.empty((0, 3))
+			return {"Fitted":np.empty((0, 4)),
+				"Scale":np.empty((0, 3)),
+				"Fit":np.empty((0, 3))}
 		#find the max of the laplacian for each peak found
 		#figure out a way to vectorize it using slicing: https://numpy.org/doc/stable/user/basics.indexing.html
 		max_lap = image_cube[local_maxima[:,0],local_maxima[:,1],local_maxima[:,2]]
@@ -462,10 +467,9 @@ class blob_detection:
 				sigma_indx=sigma_indx_pruned)
 
 
-		if self.verbose:
-			return self._update_blob_estimate(blobs_pruned=blobs_pruned,fit_object=fit_objects,radius_func=self.fitting_parameters.get("radius_func",None)),blobs_pruned,fit_objects
-		else:
-			return self._update_blob_estimate(blobs_pruned=blobs_pruned,fit_object=fit_objects,radius_func=self.fitting_parameters.get("radius_func",None))
+		return {"Fitted":self._update_blob_estimate(blobs_pruned=blobs_pruned,fit_object=fit_objects,radius_func=self.fitting_parameters.get("radius_func",None)),
+				"Scale":blobs_pruned,
+				"Fit":fit_objects}
 
 	def _update_blob_estimate(self,blobs_pruned,fit_object,radius_func=None):
 		"""Using fitted parameters update the esimates of the centroid and sigmas for blob fit
@@ -494,8 +498,10 @@ class blob_detection:
 			if radius_func!=None:
 				radius = radius_func([fit_object[i].params["sigma_x"].value,fit_object[i].params["sigma_y"].value])
 			else:
-				radius = obj[-1]
-			blobs.append([x,y,radius])
+				radius = [fit_object[i].params["sigma_x"].value,fit_object[i].params["sigma_y"].value]
+			if np.isscalar(radius):
+				radius = [radius,radius]
+			blobs.append([x,y,*radius])
 
 		return np.stack(blobs)
 
@@ -644,6 +650,25 @@ class blob_detection:
 		# initial.add("background",value=0.015)
 		return initial
 
+#take a list and return it as is
+def identity(x):
+	'''identity function, returns the input
+	
+	Parameters:
+	-----------
+	x : any
+		input to be returned
+	
+	Returns:
+	--------
+	x : any
+		input
+	
+	Uses:
+	-----
+	identity(x) = x
+	'''
+	return x
 #isotropic residual gaussain
 def iso_gaus(p,x,y,z):
     p["sigma_x"] = p["sigma_y"]

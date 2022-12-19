@@ -185,18 +185,28 @@ def point_inside_circle2D(circle,point):
 
 
 def reshape_col2d(arr,permutations):
+    '''
+    Docstring for reshape_col2d
+    This function reshapes a 2D array by permuting the columns in the order specified by permutations
+
+    Parameters:
+    -----------
+    arr : numpy array
+        The array to be reshaped
+    permutations : list of integers
+        The permutations to be applied to the columns of arr
+    
+    Returns:
+    --------
+    numpy array
+        The reshaped array
+    
+    '''
     # Check that permutations is a list of integers 
     if not isinstance(permutations,list):
         raise TypeError('permutations must be a list')
     if not all([isinstance(i,int) for i in permutations]):
         raise TypeError('permutations must be a list of integers')
-    # Check that permutations is a permutation of np.arange(len(permutations))
-    if len(permutations)>len(arr):
-        raise ValueError('permutations is too long')
-    if len(permutations)<len(arr):
-        raise ValueError('permutations is too short')
-    if not all([i in permutations for i in np.arange(len(permutations))]):
-        raise ValueError('permutations is not a permutation of np.arange(len(permutations))')
     # Check that permutations is a permutation of np.arange(len(permutations))
     idx = np.empty_like(permutations)
     idx[permutations] = np.arange(len(permutations))

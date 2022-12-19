@@ -120,6 +120,8 @@ class run_analysis:
 		self.blob_median_filter = False
 		self.detection_name = 'bp'
 		self.log_scale = False
+		
+		self.type_of_blob = "Scale" #takes values of "Fitted" or "Scale", "Fitted" is not implemented yet and the code will crash if you try to use it
 
 		self.blob_parameters = {"threshold": self.threshold_blob, \
 					"overlap": self.overlap_blob, \
@@ -131,6 +133,7 @@ class run_analysis:
 					"log_scale": self.log_scale}
 
 		self.fitting_parameters = {}
+		
 		##########################
 		#condensed analysis data
 		#Cells in the specific movie being analysed
@@ -199,6 +202,31 @@ class run_analysis:
 		plot : bool
 			if true plot the images with the circles ontop
 			else don't plot and don't print the possible drops
+		movie_ID : str
+			key identifier for the frame of reference, i.e the movie in this whole dataset
+		kwarg : dict
+			keyword arguments for the blob_detection function
+
+
+		KWARGS:
+		-------
+		threshold : float
+			threshold for the blob detection	
+		overlap : float
+			overlap for the blob detection
+		median : bool
+			if true then apply a median filter to the image
+		min_sigma : float
+			minimum sigma for the blob detection
+		max_sigma : float
+			maximum sigma for the blob detection
+		num_sigma : int
+			number of sigmas for the blob detection
+		detection : str
+			which detection method to use
+		log_scale : bool
+			if true then use a log scale for the blob detection
+
 
 		Returns
 		-------
@@ -218,26 +246,19 @@ class run_analysis:
 				min_sigma=kwargs.get("min_sigma",1),
 				max_sigma=kwargs.get("max_sigma",2),
 				num_sigma=kwargs.get("num_sigma",500),
-				logscale=kwargs.get("log_scale",False))
+				logscale=kwargs.get("log_scale",False),
+				verbose=True)
 
 			blob_class._update_fitting_parameters(kwargs=self.fitting_parameters)
-			
+			#if blob_detection.verbose:
+			#this returns a dictionary of the {Fitted: fitting results, Scale: scale space fit, Fit: Fit object}
+			blob = blob_class.detection(type = kwargs.get("detection",'bp'))
 
-			blobs = blob_class.detection(type = kwargs.get("detection",'bp'))
-
-			blobs_copy = np.copy(blobs)
-			blobs[:,0] = blobs_copy[:,1]
-			blobs[:,1] = blobs_copy[:,0]
-			if plot:
-				fig = plt.figure()
-				ax = fig.add_subplot()
-				ax.imshow(read_file(seg_files[ff]))
-				blobs = blob_class.detection()
-				for ppp in blobs:
-					cir = create_circle_obj(ppp)
-					ax.add_artist(cir)
-				print(blobs)
-				plt.show()
+			fitted = blob["Fitted"]
+			scale = blob["Scale"]
+			blob["Fitted"] = reshape_col2d(fitted,[1,0,2,3])
+			blob["Scale"] = reshape_col2d(scale,[1,0,2])
+			blobs = blob
 			
 			blob_data.append(blobs)
 		return blob_data
@@ -422,7 +443,7 @@ class run_analysis:
 			#store seg_files
 			segf.append(seg_files)
 			#blob analysis
-			#TODO make sure to use the bounder box image created from Analysis_functions.subarray2D()
+			#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
 			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
 														movie_ID=pp,
 														plot = False,
@@ -431,6 +452,7 @@ class run_analysis:
 			drops.append(self._load_segmented_image_data(drop_files))
 
 			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
+			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
 			drop_s = blob_total[pp]
 			self.Movie[str(pp)].Movie_nucleoid = nucleoid_imgs_sorted[pp]
 
@@ -467,12 +489,15 @@ class run_analysis:
 						self.Movie[str(pp)].Cells[str(i)].raw_tracks.append(tracks[pp][j])
 
 				for j in range(len(drop_s)):
-					for k in range(len(drop_s[j])): 
+					for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
 
-						point = Point(drop_s[j][k][0],drop_s[j][k][1])
+						point = Point(drop_s[j][self.type_of_blob][k][0],drop_s[j][self.type_of_blob][k][1])
 						if poly.contains(point) or poly.touches(point):
 							#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
-							self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][k]
+							self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
+							self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
+																									"Scale":drop_s[j]["Scale"][k],\
+																									"Fit":drop_s[j]["Fit"][k]}
 
 		self.segmented_drop_files = segf
 
@@ -652,6 +677,7 @@ class run_analysis:
 			len_drop_tracks = len(list_drop_track[ind])
 			if len_drop_tracks >= self.minimum_tracks_per_drop:
 				self.Movie[i].Cells[k].Drop_Collection[ii] = j
+				self.Movie[i].Cells[k].Drop_Verbose[ii] = self.Movie[i].Cells[k].All_Drop_Verbose[ii] #store verbose info for this viable drop
 				true_drop_per_frame[int(ii[0])].append(j)
 		return true_drop_per_frame
 	def _makeTrackCls(self,temp,which_type,drop_ID,sorted_tracks,kk,l):
@@ -807,7 +833,7 @@ class run_analysis:
 		'''
 		Controls the flow of this dataset analysis
 		'''
-		tracks, drops, blobs = self._read_track_data(self.wd,self.t_string)
+		tracks, _, _ = self._read_track_data(self.wd,self.t_string)
 		self.total_experiments = len(tracks)
 		self._analyse_cell_tracks()
 
@@ -987,8 +1013,12 @@ class Cell:
 		self.No_Drops_Trajectory_Collection = {}
 		#viable drops only
 		self.Drop_Collection = {}
+		#dict for viable drops with verbose information
+		self.Drop_Verbose = {}
 		#all drops before viability test
 		self.All_Drop_Collection = {}
+		#dic to store verbose information about the drops
+		self.All_Drop_Verbose = {}
 		#dict for all trajectories without mapping but still classified
 		self.All_Tracjectories = {}
 

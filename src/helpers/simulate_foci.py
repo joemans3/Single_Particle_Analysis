@@ -660,7 +660,7 @@ class sim_focii(Track_generator): #is this usefull or not? Turns out to be slowe
 
 		'''
 		
-		if method=="single":
+		if method=="single":#fix this TODO
 			try:
 				temp = [k[:,2:] for i,k in found_spots.items()]
 			except:
@@ -670,8 +670,8 @@ class sim_focii(Track_generator): #is this usefull or not? Turns out to be slowe
 			sig_mean = []
 			fit_mean = []
 			for i,j in found_spots.items():
-				sig_mean.append(j[1][:,2:])
-				fit_mean.append(j[0][:,2:])
+				sig_mean.append(j["Scale"][:,2:])
+				fit_mean.append(j["Fitted"][:,2:])
 			
 			return np.mean(Analysis_functions.flatten(sig_mean)),np.std(Analysis_functions.flatten(sig_mean)),np.mean(Analysis_functions.flatten(fit_mean)),np.std(Analysis_functions.flatten(fit_mean))
 
