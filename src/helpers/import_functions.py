@@ -99,6 +99,9 @@ def combine_path(root,path):
 	return os.path.join(root,path)
 def find_image(path, ends_with = '.tif',full_path = False):
 	'''
+	Docstring for find_image:
+	Find all files in a directory that end with a certain string
+
 	Parameters
 	----------
 	path : string
@@ -123,6 +126,30 @@ def find_image(path, ends_with = '.tif',full_path = False):
 					file_path = f
 					file_paths.append(file_path)
 	return file_paths
+
+def name_sorter(strings,keyword):
+	'''
+	Docstring for name_sorter:
+	Find all the strings in a list that contain a keyword
+
+	Parameters:
+	-----------
+	strings : list
+		list of strings to search through
+	keyword : string
+		keyword to search for in the list of strings
+	
+	Returns:
+	--------
+	list
+		list of strings that contain the keyword
+	'''
+	keyword_strings = []
+	for s in strings:
+		if keyword in s:
+			keyword_strings.append(s)
+	return keyword_strings
+
 
 #create a similar function for PIL.ImageOps.invert to convert 16-int unsigned images
 def invert_I16u(img):

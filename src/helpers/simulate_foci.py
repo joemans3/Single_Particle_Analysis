@@ -10,11 +10,14 @@ Classes:
 2. Track_generator: Class for generating tracks for the foci in space.
 3. sim_focii: Class for simulating multiple space maps with foci in space and detecting the foci in the space maps.
 
-Notes:
-------
-1. The class sim_foci is used to simulate foci in space.
-2. The class Track_generator is used to generate tracks for the foci in space.
-3. The class sim_focii is used to simulate multiple space maps with foci in space and detect the foci in the space maps.
+Functions:
+----------
+1. tophat_function_2d: Function for generating the tophat function for the space map.
+2. generate_points: Function for generating the points in the space map.
+3. generate_radial_points: Function for generating the points in the space map with radial symmetry.
+4. generate_spherical_points: Function for generating the points in the space map with spherical symmetry.
+5. radius_spherical_cap: Function for calculating the radius of the spherical cap.
+6. get_gaussian: Function for generating the gaussian function for the psf.
 
 Author: Baljyot Singh Parmar
 '''
@@ -50,6 +53,9 @@ class sim_foci():
 	point_intensity: intensity of the point, default is 1
 	noise: noise for the point, default is 0
 	uniform_blob: if the blob is uniform or not, default is False
+	exposure_time: exposure time for the space map, default is 20
+	projection_frames: number of projection frames for the space map, default is 1000
+	base_noise: base level of noise, default is 0
 
 	Methods:
 	--------
@@ -71,8 +77,10 @@ class sim_foci():
 		self.space_prob = kwargs.get("space",self._define_space())
 		self.pdf = kwargs.get("pdf",tophat_function_2d)
 		self.psf_sigma = kwargs.get("psf_sigma",10) #~200nm if using 1 bin = 10 nm
-		self.point_intensity = 1 # can change for multiple different intensity points
-		self.noise = 0 #
+		self.point_intensity = kwargs.get("point_intensity",1) # can change for multiple different intensity points
+		self.base_noise = 0 #base level of noise, Don't know how to simulate background noise yet so this is a placeholder for a future update
+		self.exposure_time = kwargs.get("exposure_time",20) #ms
+		self.projection_frames = kwargs.get("projection_frames",1000)
 
 		self.uniform_blob = kwargs.get("unifrom",False)
 	
@@ -182,6 +190,7 @@ class sim_foci():
 		if np.isscalar(point_intensity):
 			point_intensity *= np.ones(len(num_points))
 		points = self._makePoints(generator=kwargs.get("generator",None))
+
 		return self.generate_map_from_points(points,point_intensity)
 	
 	def generate_map_from_points(self,points,point_intensity=None):
@@ -206,12 +215,21 @@ class sim_foci():
 		1. The space map is generated using get_gaussian function.
 		'''
 		x = np.arange(self.min_x,self.max_x,1.)
+
 		space_map = np.zeros((len(x),len(x)))
-		for i,j in enumerate(points):
-			if point_intensity is None:
+
+		if np.isscalar(point_intensity):
+			point_intensity *= np.ones(len(points))
+
+		if point_intensity is None:
+			for i,j in enumerate(points):
 				space_map += get_gaussian(j,np.ones(2)*self.psf_sigma,domain=[x,x])
-			else:
-				space_map += get_gaussian(j,np.ones(2)*self.psf_sigma,domain=[x,x])*point_intensity[i]
+		else:
+			for i,j in enumerate(points):
+				gauss_probability = get_gaussian(j,np.ones(2)*self.psf_sigma,domain=[x,x])
+				#generate poisson process over this space using the gaussian probability as means
+				intensity = np.random.poisson(gauss_probability*point_intensity[i]*self.exposure_time + self.base_noise,size=(1,len(x),len(x)))
+				space_map += intensity[0]
 		return space_map,points
 
 class Track_generator(sim_foci):
@@ -675,11 +693,19 @@ class sim_focii(Track_generator): #is this usefull or not? Turns out to be slowe
 			
 			return np.mean(Analysis_functions.flatten(sig_mean)),np.std(Analysis_functions.flatten(sig_mean)),np.mean(Analysis_functions.flatten(fit_mean)),np.std(Analysis_functions.flatten(fit_mean))
 
-	def radius_analysis(self):
+	def radius_analysis(self,point_density=None):
 		'''
 		Docstring for radius_analysis:
 		------------------------------
 		Performs the radius analysis, and returns the mean and standard deviation of the found focii.
+
+		Parameters:
+		-----------
+		point_density: array-like or list or scalar, default None
+			This is the point density for the blob to simulate. This should be 1d array or list of size self.radii
+			(If scalar, function applies the same point_density for each blob of radius self.radii)
+			(One point desnity for each element in self.radii to simualte.)
+			(If None, then use the self.total_points variable for the number of points for each radius blob)
 
 		Returns:
 		--------
@@ -692,25 +718,48 @@ class sim_focii(Track_generator): #is this usefull or not? Turns out to be slowe
 			fit_means: mean of the found focii
 			fit_stds: standard deviation of the found focii
 
+		Raises:
+		-------
+
 		'''
+
+		#check the input of point_density is not None and is a 1d array or list of size self.radii
+		if point_density==None:
+			point_density_tracks = np.ones(len(self.radii))*self.total_points
+
+		if not isinstance(point_density,(np.ndarray,list)):
+			if np.isscalar(point_density):
+				point_density = np.ones(len(self.radii))*point_density
+				point_density_tracks = np.pi*(np.asarray(self.radii)**2)*point_density
+
+			elif point_density==None:
+				point_density_tracks = np.ones(len(self.radii))*self.total_points
+			
+			else:
+				raise ValueError("For variable: point_density, please enter a scalar or 1d array or 1d list of size: {0}".format(len(self.radii)))
+		
 		sig_means = []
 		fit_means = []
 		sig_stds = []
 		fit_stds = []
 		if self.blob_detector.verbose:
-			for i in self.radii:
-				found,repeat = self._mapdetection(radius=i,repeats=self.repeats)
+			for i,j in enumerate(self.radii):
+				self.total_points=int(point_density_tracks[i])
+				found,repeat = self._mapdetection(radius=j,repeats=self.repeats)
 				sig_mean,sig_std,fit_mean,fit_std = self._found_utils(found_spots=found,method="both")
 				sig_means.append(sig_mean)
 				sig_stds.append(sig_std)
 				fit_means.append(fit_mean)
 				fit_stds.append(fit_std)
+
 		else:
-			for i in self.radii:
-				found,repeat = self._mapdetection(radius=i,repeats=self.repeats)
+			for i,j in enumerate(self.radii):
+				self.total_points=int(point_density_tracks[i])
+				found,repeat = self._mapdetection(radius=j,repeats=self.repeats)
 				fit_mean,fit_std = self._found_utils(found_spots=found)
 				fit_means.append(fit_mean)
 				fit_stds.append(fit_std)
+
 		if self.blob_detector.verbose:
 			return {"sig_mean":sig_means,"sig_std":sig_stds,"fit_mean":fit_means,"fit_stds":fit_stds}
 		else:
@@ -743,8 +792,6 @@ class sim_focii(Track_generator): #is this usefull or not? Turns out to be slowe
 		'''
 		self.total_points = total_points
 		return self.radius_analysis()
-
-
 
 def tophat_function_2d(var,center,radius,bias_subspace,space_prob):
 	'''

@@ -15,6 +15,7 @@ from skimage.color import rgb2gray
 from sklearn import mixture
 
 
+
 def bin_ndarray(ndarray, new_shape, operation='sum'):
     '''
     Docstring for bin_ndarray
@@ -216,8 +217,22 @@ def reshape_col2d(arr,permutations):
 
 
 def rt_to_xy(r,theta):
-    """Converts polar coordinates to cartesian coordinates
-    """
+    '''
+    Docstring for rt_to_xy
+
+    Parameters:
+    -----------
+    r : float
+        The radial coordinate
+    theta : float
+        The angular coordinate
+    
+    Returns:
+    --------
+    tuple
+        The x and y coordinates
+    
+    '''
     # Check to see if r and theta are floats
     if type(r) != float or type(theta) != float:
         raise TypeError('r and theta must be floats')

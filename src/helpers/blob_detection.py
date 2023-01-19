@@ -467,7 +467,7 @@ class blob_detection:
 				sigma_indx=sigma_indx_pruned)
 
 
-		return {"Fitted":self._update_blob_estimate(blobs_pruned=blobs_pruned,fit_object=fit_objects,radius_func=self.fitting_parameters.get("radius_func",None)),
+		return {"Fitted":self._update_blob_estimate(blobs_pruned=blobs_pruned,fit_object=fit_objects,radius_func=self.fitting_parameters.get("radius_func",identity)),
 				"Scale":blobs_pruned,
 				"Fit":fit_objects}
 
@@ -548,7 +548,7 @@ class blob_detection:
 			else:
 				lap_img = img
 			if val[-1] >=  size: #fix this condition, right now defalts to using defined size
-				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr=[int(val[-1]*FWHM_FACTOR),int(val[-1]*FWHM_FACTOR)])
+				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr=[int(val[-1]*np.sqrt(2)+1),int(val[-1]*np.sqrt(2)+1)])
 
 			else:
 				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr=[size,size])
@@ -580,7 +580,7 @@ class blob_detection:
 				plt.show()
 				fig = plt.figure()
 				ax = fig.add_subplot()
-				ax.imshow(lap_img)
+				ax.imshow(lap_img,cmap = 'gray')
 				elip = Ellipse(xy=(fit.params["centroid_y"].value,fit.params["centroid_x"].value), width=fit.params["sigma_y"].value,height=fit.params["sigma_x"].value,fill = False)
 				ax.add_artist(elip)
 				plt.show()
@@ -613,11 +613,20 @@ class blob_detection:
 		initial_xy = np.array(initial_xy)
 		minx,miny = initial_xy - sub_arr
 		maxx,maxy = initial_xy + sub_arr
+		#make sure the bounds are within the size of mesh_2d
+		if minx < 0:
+			minx = 0
+		if miny < 0:
+			miny = 0
+		if maxx > mesh_2d.shape[0]:
+			maxx = mesh_2d.shape[0]
+		if maxy > mesh_2d.shape[1]:
+			maxy = mesh_2d.shape[1]
 		minx,miny = int(minx),int(miny)
 		maxx,maxy =int(maxx),int(maxy)
 		centers = [rescale_range(initial_xy[0],minx,maxx,0,2*sub_arr[1]+1),rescale_range(initial_xy[1],miny,maxy,0,2*sub_arr[0]+1)]
 		x,y = np.meshgrid(np.arange(minx,maxx,1),np.arange(miny,maxy,1))
-		mesh_view = mesh_2d[minx:maxx,miny:maxy]
+		mesh_view = mesh_2d[miny:maxy,minx:maxx]
 		
 		return [x,y,mesh_view,centers]
 
