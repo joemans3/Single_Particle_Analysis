@@ -62,7 +62,7 @@ class blob_detection:
 	https://cvgl.stanford.edu/teaching/cs231a_winter1415/lecture/lecture10_detector_descriptors_2015_notes.pdf
 	
 	'''
-	def __init__(self,path,median = False,threshold = 0.0005,min_sigma = 1.0,max_sigma = 1.5,num_sigma = 500,overlap = 1.,logscale = False,verbose=False):
+	def __init__(self,path,median = False,threshold = 0.0005,min_sigma = 1.0,max_sigma = 1.5,num_sigma = 500,overlap = 1.,logscale = False,verbose=False,exclude_border=False):
 		'''
 		Initilizes the class object with the parameters for the blob detection
 
@@ -86,7 +86,15 @@ class blob_detection:
 			if True, use a log scale for the sigma values
 		verbose : bool
 			if True, return out the parameters used for the blob detection and fitting
-
+		exclude_border : tuple of ints, int, or False, optional, Default is False.
+			If tuple of ints, the length of the tuple must match the input array's
+			dimensionality.  Each element of the tuple will exclude peaks from
+			within `exclude_border`-pixels of the border of the image along that
+			dimension.
+			If nonzero int, `exclude_border` excludes peaks from within
+			`exclude_border`-pixels of the border of the image.
+			If zero or False, peaks are identified regardless of their
+			distance from the border. See method "blob_logv2" for more info
 		Notes:
 		------
 		1. The blob detection is done using the skimage.blob_log() function or a custom function. The custom function is a modified version of the skimage.blob_log() function. Named blob_logv2()
@@ -548,10 +556,10 @@ class blob_detection:
 			else:
 				lap_img = img
 			if val[-1] >=  size: #fix this condition, right now defalts to using defined size
-				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr=[int(val[-1]*np.sqrt(2)+1),int(val[-1]*np.sqrt(2)+1)])
+				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:2],sub_arr=[int(val[-1]*np.sqrt(2)+1),int(val[-1]*np.sqrt(2)+1)])
 
 			else:
-				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:-1],sub_arr=[size,size])
+				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:2],sub_arr=[size,size])
 
 			#initialize the fitter
 			initials=self.initalize_2dgaus(height = np.max(view)-np.min(view),\
@@ -619,14 +627,14 @@ class blob_detection:
 		if miny < 0:
 			miny = 0
 		if maxx > mesh_2d.shape[0]:
-			maxx = mesh_2d.shape[0]
+			maxx = mesh_2d.shape[0]-1
 		if maxy > mesh_2d.shape[1]:
-			maxy = mesh_2d.shape[1]
+			maxy = mesh_2d.shape[1]-1
 		minx,miny = int(minx),int(miny)
 		maxx,maxy =int(maxx),int(maxy)
 		centers = [rescale_range(initial_xy[0],minx,maxx,0,2*sub_arr[1]+1),rescale_range(initial_xy[1],miny,maxy,0,2*sub_arr[0]+1)]
 		x,y = np.meshgrid(np.arange(minx,maxx,1),np.arange(miny,maxy,1))
-		mesh_view = mesh_2d[miny:maxy,minx:maxx]
+		mesh_view = mesh_2d[minx:maxx,miny:maxy]
 		
 		return [x,y,mesh_view,centers]
 
