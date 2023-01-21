@@ -52,8 +52,8 @@ class run_analysis:
 	Define a class for each dataset to analyse
 	Contains multiple frames of view for movies
 
-	Parameters
-	----------
+	Parameters;
+	-----------
 	wd : str
 		working directory of the stored data
 	t_string : str
@@ -61,29 +61,50 @@ class run_analysis:
 	sim : bool
 		if True, this is a simulated dataset
 
-	Attributes
-	----------
-	TODO
 
-	Methods
-	-------
-	read_track_data(wd,t_string)
-		reads all the data file associated with the dataset
-	convert_track_frame(track_set)
-		given raw track data filters it into the format needed
-	analyse_cell_tracks()
-		helper function to create mappings of Movies.Cells.Drops.Trajectories
-	analyse_cell_tracks_utility(i,k,sorted_tracks)
-		main function that does the above's dirty work
-	run_flow()
-		global flow of the class, run this after getting the parameters via read_parameters
-	read_parameters(*many)
-		read the variables needed for the analysis, all have default values if not provided
-	_correct_msd_vectors()
-		internal function to pad msd vs. tau data to be of same length w.o.t NaNs
+	Methods:
+	--------
+	get_fitting_parameters(): get the fitting parameters for the dataset
+	get_blob_parameters(): get the blob detection parameters for the dataset
+	read_parameters(): read the global parameters for the dataset
+	run_flow(): run the analysis for the dataset to build the mappings in self.Cells, and self.movie
+
+
+	_analyse_cell_tracks_utility(): utility function for analyse_cell_tracks
+	_makeTrackCls(): make the track class for a given trajectory
+	_make_TrueDrop(): make the true drop class for a given drop
+	_map_TrackstoDrops(): map the trajectories to the drops
+	_analyse_cell_tracks(): analyse the cell tracks and make the mappings
+	_convert_track_frame(): reorder the tracks by subframe rather than the original linking
+	_find_nucleoid(): find the nucleoid in a given cell
+	_read_track_data(): read the track data 
+	_load_segmented_image_data(): load the segmented image data 
+	_load_segmented_image_locations(): load the segmented image locations 
+	_read_supersegger(): read the supersegger data
+	_blob_detection_utility(): utility function for blob detection
+	_get_nucleoid_path(): get the path to the nucleoid data
+	_get_frame_cell_mask(): get the cell mask for a given frame
+	_get_movie_path(): get the path to the movie data
+	_reinitalizeVariables(): reinitalize the variables for a new dataset
 
 	'''
 	def __init__(self,wd,t_string,sim = False):
+		'''
+		Parameters:
+		-----------
+		wd : str
+			working directory of the stored data
+		t_string : str
+			unique string identifier for dataset
+		sim : bool
+			if True, this is a simulated dataset
+
+		self.Cells : list
+			list of cells in the dataset
+		self.movie : list
+			list of movies in the dataset
+		
+		'''
 		#global system parameters
 		self.pixel_to_nm = 0
 		self.pixel_to_um = 0
@@ -845,11 +866,32 @@ class run_analysis:
 		'''
 		Reads in the parameters needed for the analysis
 
-		Parameters
+		Parameters:
 		----------
-		TODO
+		frame_step : int
+			Number of subframes used in the analysis
+		frame_total : int
+			Total number of frames in the movies
+		t_len_l : int
+			Lower bound for the length of the tracks
+		t_len_u : int
+			Upper bound for the length of the tracks
+		MSD_avg_threshold : float
+			Lower bound threshold for the MSD average, to determine if the track is a valid track and not auto-fluorescence or dirt
+		upper_bp : float
+			Upper bound proportion threshold for determining if in_out track or out only.
+		lower_bp : float
+			Lower bound proportion threshold for determining if in_out track or out only.
+		max_track_decomp : float
+			Maximum track decomposition value
+		conversion_p_nm : float
+			Conversion factor from pixels to nanometers
+		minimum_tracks_per_drop : int
+			Minimum number of tracks per drop to be considered a valid drop
+		minimum_percent_per_drop_in : float
+			Minimum percentage of tracks per drop that are in tracks to be considered a valid drop
 
-		Notes
+		Notes:
 		-----
 		This function reads in variables and assigns them to the attributed of this class instance
 		'''
@@ -967,7 +1009,19 @@ class Movie_frame:
 
 	Parameters
 	----------
-	TODO
+	__init__:
+		Movie_ID: int
+			unique identifier for each movie
+		Movie_name: string
+			name of the movie, used to find the movie. This is the name of the movie file!
+		Movie_location: string or list of strings, optional (size is the number of frames \n 
+			(i.e 5 for 5 subframes from a 5000 frame movie with 1000 per subframe))
+			This is the sub segmented frames of the movie. This is just a list of strings that are the location of the frames images
+			nucleoid_location: string, optional
+			location of the image that shows the nucleoid, by default 0
+	Cells: dictionary
+		dictionary of Cell class objects belonging to this Movie, identified by a label (0,1,...,n)
+
 
 	'''
 	def __init__(self,Movie_ID,Movie_name,Movie_location=0,nucleoid_location = 0):
@@ -986,7 +1040,38 @@ class Cell:
 	
 	Parameters
 	----------
-	TODO
+	__init__:
+		Cell_ID: int
+			unique identifier for each cell
+		Cell_Movie_Name: string
+			name of the movie the cell is in, used to find the movie. This is the name of the movie file!
+		bounding_box: list of 4 ints
+			coordinates of the bounding box of the cell
+		r_offset: list of 2 ints
+			coordinate of the top left corner of the bounding box
+		cell_area: int
+			area of the cell
+		cell_center: list of 2 ints
+			coordinates of the center of the cell
+		cell_long_axis: int
+			length of the long axis of the cell
+		cell_short_axis: int
+			length of the short axis of the cell
+		cell_axis_lengths: list of 2 ints
+			lengths of the long and short axis of the cell
+		cell_mask: 2D array of bools
+			mask of the cell
+		Cell_Nucleoid_Mask: 2D array of bools
+			mask of the nucleoid in the cell
+	
+	Methods:
+	-----------
+	__init__:
+		Initialize the Cell class object
+	_convert_viableDrop_list(self):
+		converts the viableDrop_list to a dictionary of viable drops
+	
+
 	'''
 	def __init__(self, Cell_ID, Cell_Movie_Name,bounding_box=0,r_offset=0,cell_area=0,cell_center=0,cell_long_axis=0,cell_short_axis=0,cell_axis_lengths=0,cell_mask=0,Cell_Nucleoid_Mask=0):
 
@@ -1038,7 +1123,29 @@ class Trajectory_Drop_Mapping:
 	
 	Parameters
 	----------
-	TODO
+	__init__ :
+		Drop_ID : str
+			unique identifier for each viable drop (i.e "0,1" for the first drop in the first sub-frame)
+			Note that the first number is the sub-frame number and the second number is the drop index in that sub-frame
+			See notes for more information
+	
+	IN_Trajectory_Collection : dict
+		dictionary of all the IN trajectories that belong to the viable drop
+	OUT_Trajectory_Collection : dict
+		dictionary of all the OUT trajectories that belong to the viable drop
+	IO_Trajectory_Collection : dict
+		dictionary of all the IN and OUT trajectories that belong to the viable drop
+
+	Notes:
+	------
+	1. Each dictionary is of the form (i,j) -> (frame,trajectory index) where i is the frame number and j is the trajectory index
+	where the above represent the keys, the values are instances of the Trajectory class
+	2. The frame number is based on the sub segmented frames (i.e 0,1,2,3,4 if subframes = 5)
+	3. The trajectory index is the index of the trajectory in the raw_tracks list of the Cell class object
+	4. The viable drop index is the index of the detected drop in the Drop_Collection dictionary of the Cell class object
+	5. 4) shows that the viable drop index is the same as the drop index in the raw_tracks list of the Cell class object, \n
+	(i.e the drop index is determined by the blob detection. After the viability criterion is applied the non-viable drops are removed, but the order of the drop IDs is perserved)\n
+	(For a collection of drops with IDs (0,1),(0,2),(0,3), if (0,2) is not viable then the viable drops are: (0,1),(0,3) and they keep this order and ID name)
 	'''
 	def __init__(self,Drop_ID):
 
@@ -1053,7 +1160,30 @@ class Trajectory:
 
 	Parameters
 	----------
-	TODO
+	__init__ :
+		Track_ID : int
+			unique identifier for each trajectory
+		Frame_number : int
+			frame number of the trajectory (based on the sub segmented frames) (i.e 0,1,2,3,4 if subframes = 5)
+		X : list or np.array
+			x coordinates of the trajectory
+		Y : list or np.array
+			y coordinates of the trajectory
+		Classification : str 
+			"IN" or "OUT" or "IO", for In Drop, Out Drop, In and Out Drop
+		Drop_Identifier : str
+			ID of the drop that the trajectory belongs to
+		Frames : int
+			number of frames in the trajectory
+		MSD_total_um : float, default = None
+			total MSD of the trajectory
+		
+		Kwargs:
+		-------
+		distance_from_drop : float
+			distance from the drop center to the trajectory
+		
+		
 	'''
 	def __init__(self, Track_ID, Frame_number, X, Y, Classification, Drop_Identifier, Frames, MSD_total_um = None,**kwargs):
 
@@ -1075,7 +1205,7 @@ class Trajectory:
 
 class boundary_analysis:
 	'''
-	TODO
+	TODO - make this better
 	class for storing analysis intermediates and boundary analysis
 	'''
 	def __init__(self,**kwargs) -> None:

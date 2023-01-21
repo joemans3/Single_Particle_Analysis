@@ -152,23 +152,28 @@ def name_sorter(strings,keyword):
 
 
 #create a similar function for PIL.ImageOps.invert to convert 16-int unsigned images
-def invert_I16u(img):
+def invert_I16u(img,array = False):
 	'''
 	Parameters
 	----------
 	img : PIL.Image object
 		image object to invert
+	array : bool
+		if true return a numpy array of the inverted image, else return a PIL.Image object
 	
 	Returns
 	-------
-	PIL.Image object
+	PIL.Image object or numpy based on the boolean value of array
 		inverted image
 	'''
 	convert_array = np.array(img)
 	max_I16u = 65535
 	inverted = max_I16u - convert_array
 	convert_PIL = Image.fromarray(inverted)
-	return convert_PIL
+	if array:
+		return np.array(convert_PIL)
+	else:
+		return convert_PIL
 def invert_img(path):
     '''
     Parameters

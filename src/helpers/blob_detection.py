@@ -295,7 +295,7 @@ class blob_detection:
 		Blobs are found using the Laplacian of Gaussian (LoG) method [1]_.
 		For each blob found, the method returns its coordinates and the standard
 		deviation of the Gaussian kernel that detected the blob.
-		TODO update docstring
+
 		Parameters
 		----------
 		image : 2D or 3D ndarray
@@ -320,7 +320,9 @@ class blob_detection:
 			intensities.
 		overlap : float, optional
 			A value between 0 and 1. If the area of two blobs overlaps by a
-			fraction greater than `threshold`, the smaller blob is eliminated.
+			fraction greater than `threshold`, the blob with the smaller maximum 
+			laplacian value is eliminated. If set to 1, then all overlapping blobs
+			are kept. 
 		log_scale : bool, optional
 			If set intermediate values of standard deviations are interpolated
 			using a logarithmic scale to the base `10`. If not, linear
@@ -633,7 +635,7 @@ class blob_detection:
 		minx,miny = int(minx),int(miny)
 		maxx,maxy =int(maxx),int(maxy)
 		centers = [rescale_range(initial_xy[0],minx,maxx,0,2*sub_arr[1]+1),rescale_range(initial_xy[1],miny,maxy,0,2*sub_arr[0]+1)]
-		x,y = np.meshgrid(np.arange(minx,maxx,1),np.arange(miny,maxy,1))
+		x,y = np.meshgrid(np.arange(minx,maxx,1),np.arange(miny,maxy,1),indexing = 'ij')
 		mesh_view = mesh_2d[minx:maxx,miny:maxy]
 		
 		return [x,y,mesh_view,centers]
