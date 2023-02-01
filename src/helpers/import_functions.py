@@ -118,7 +118,7 @@ def find_image(path, ends_with = '.tif',full_path = False):
 	file_paths = []
 	for f in os.listdir(path):
 		if not os.path.isfile(f):
-			if f.endswith('.tif'):
+			if f.endswith(ends_with):
 				if full_path:
 					file_path = os.path.join(path,f)
 					file_paths.append(file_path)
@@ -150,6 +150,29 @@ def name_sorter(strings,keyword):
 			keyword_strings.append(s)
 	return keyword_strings
 
+def find_files(path, extension, keyword = None):
+    '''
+    Docstring for find_files
+    Finds files in a directory with a specific extension and keyword in the name
+
+    Parameters:
+    -----------
+    path : str
+        path to the directory where the files are located
+    extension : str
+        extension of the files to be found
+    keyword : str    
+        keyword to be searched in the file name
+    Returns:
+    --------
+    files : list
+        list of files that match the criteria
+    '''
+    #find all images in the directory using import functions
+    files = find_image(path=path,ends_with=extension,full_path=True)
+    #sort the files to get only ones conatining the word "RFP" for the flourescent protein
+    files = name_sorter(strings=files,keyword=keyword)
+    return files
 
 #create a similar function for PIL.ImageOps.invert to convert 16-int unsigned images
 def invert_I16u(img,array = False):

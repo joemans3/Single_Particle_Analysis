@@ -105,6 +105,7 @@ class run_analysis:
 			list of movies in the dataset
 		
 		'''
+		self.sim = sim
 		#global system parameters
 		self.pixel_to_nm = 0
 		self.pixel_to_um = 0
@@ -158,7 +159,6 @@ class run_analysis:
 		##########################
 		#condensed analysis data
 		#Cells in the specific movie being analysed
-		self.Cells = {}
 		self.Movie = {}
 	def _reinitalizeVariables(self):
 		self.segmented_drop_files = []
@@ -340,12 +340,12 @@ class run_analysis:
 			else:
 				seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
 		return drop_files,seg_files
-	def _load_segmented_image_data(self,drop_files):
+	def _load_segmented_image_data(self,drop_files,use_cols=(0,1,2),skiprows=0):
 		point_data = []
 
 		for i in drop_files:
 
-			points = np.loadtxt("{0}".format(i),delimiter=",",usecols=(0,1,2))
+			points = np.loadtxt("{0}".format(i),delimiter=",",usecols=(0,1,2),skiprows=0)
 
 			point_data.append(points)
 		return point_data
@@ -567,12 +567,14 @@ class run_analysis:
 		frame_step = kwargs.get("frame_step", self.frame_step)
 		track_len_upper = kwargs.get("t_len_u",self.t_len_u)
 		track_len_lower = kwargs.get("t_len_l",self.t_len_l)
+
+		data_order = kwargs.get("order",(0,1,2,3,4))
 		
-		track_ID = track_set[:,0]
-		frame_ID = track_set[:,1]
-		x_ID = track_set[:,2]
-		y_ID = track_set[:,3]
-		intensity_ID = track_set[:,4]
+		track_ID = track_set[:,data_order[0]]
+		frame_ID = track_set[:,data_order[1]]
+		x_ID = track_set[:,data_order[2]]
+		y_ID = track_set[:,data_order[3]]
+		intensity_ID = track_set[:,data_order[4]]
 
 		tp=[]
 		tp_x=[]
@@ -653,7 +655,10 @@ class run_analysis:
 			for k,l in j.Cells.items():
 				#sort the tracks based on the frame segmentation and cutoff criteria
 				if len(l.raw_tracks)!=0:
-					sorted_track = self._convert_track_frame(np.array(l.raw_tracks))
+					if self.sim:
+						sorted_track = self._convert_track_frame(np.array(l.raw_tracks),order=(0,3,1,2,4))
+					else:
+						sorted_track = self._convert_track_frame(np.array(l.raw_tracks))
 					self._analyse_cell_tracks_utility(i,k,sorted_track)
 		return
 	def _map_TrackstoDrops(self,i,k,sorted_tracks):
@@ -859,6 +864,60 @@ class run_analysis:
 		self._analyse_cell_tracks()
 
 		return
+	def run_flow_sim(self,cd,t_string): #very hacky to get this to work for simulation data. Assumes the whole movie is one cell. 
+		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + ".tif_spots.csv"))
+
+		blob_total = []
+		tracks = []
+		drops = []
+		segf = []
+		#initialize data structure
+		for pp in range(len(all_files)):
+			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
+			tracks.append(test)
+
+			seg_files = sorted(glob.glob("{0}/segmented/**.tif".format(cd)))
+
+			#store seg_files
+			segf.append(seg_files)
+			#blob analysis
+			#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
+			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
+														movie_ID=pp,
+														plot = False,
+														kwargs=self.blob_parameters))
+
+			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
+			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
+			drop_s = blob_total[pp]
+
+			self.Movie[str(pp)].Cells[str(0)] = Cell(Cell_ID = 0, \
+													Cell_Movie_Name = 0, \
+													bounding_box = 0, \
+													r_offset = 0, \
+													cell_area = 0, \
+													cell_center = 0, \
+													cell_long_axis = 0, \
+													cell_short_axis = 0, \
+													cell_axis_lengths = 0, \
+													cell_mask = 0, \
+													Cell_Nucleoid_Mask = 0)
+
+
+			self.Movie[str(pp)].Cells[str(0)].raw_tracks=tracks[pp]
+			
+			for j in range(len(drop_s)):
+				for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
+
+					#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
+					self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
+					self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
+																							"Scale":drop_s[j]["Scale"][k],\
+																							"Fit":drop_s[j]["Fit"][k]}
+
+		self.segmented_drop_files = segf
+		self._analyse_cell_tracks()
+		return [tracks,drops,blob_total]
 
 	def read_parameters(self,frame_step = 1000,frame_total = 5000,t_len_l = 10,t_len_u = 1000,
 						MSD_avg_threshold  = 0.0001,upper_bp = 0.99 ,lower_bp = 0.50,max_track_decomp = 1.0,
@@ -1001,7 +1060,29 @@ class run_analysis:
 			for j in range(len(self.io_msd_track[i])):
 				self.io_msd_track[i][j] = np.pad(self.io_msd_track[i][j],(0,int(self.max_io[i]-len(self.io_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan))
 		return 
+	def _bulk_msd_plot(self,Movies=None,plot=False):
+		''' Docstring for _bulk_msd_plot
+		
+		'''
+		if Movies is None:
+			Movies = self.Movie
+		no_drop = []
+		in_drop = []
+		ot_drop = []
+		io_drop = []
+		for i,j in Movies.items():
+			for k,l in j.Cells.items():
+				for n,m in l.All_Tracjectories.items():
+					if m.Classification == None:
+						no_drop.append([m.MSD_total_um,len(m.X)])
+					if m.Classification == "IN":
+						in_drop.append([m.MSD_total_um,len(m.X)])
+					if m.Classification == "OUT":
+						ot_drop.append([m.MSD_total_um,len(m.X)])
+					if m.Classification == "IO":
+						io_drop.append([m.MSD_total_um,len(m.X)])
 
+		return {"no_drop": no_drop, "in_drop": in_drop, "ot_drop": ot_drop, "io_drop": io_drop}
 
 class Movie_frame:
 	'''
@@ -1117,6 +1198,7 @@ class Cell:
 		for i,j in self.Drop_Collection.items():
 			list_sorted[int(i[0])].append(j)
 		return list_sorted
+
 class Trajectory_Drop_Mapping:
 	'''
 	create a mapping for each viable drop to store all the Trajectory instances that belong to it in terms of Classification

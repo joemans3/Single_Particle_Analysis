@@ -84,7 +84,8 @@ def get_fbm_sample(l=1,h=0.5,d=1,n=1):
 
         else:
             samples.append(fbm_sample)
-    return [sample_t, samples]
+            sample_t.append(t_values)
+    return [sample_t[0], samples]
 
 	
 def compute_msd_np(xy, t, t_step):

@@ -28,14 +28,14 @@ import csv
 import os
 # Get currently selected image
 #imp = WindowManager.getCurrentImage()
-dir_tiff = '/Users/baljyot/Desktop/sd/Desktop/Baljyot_EXP_RPOC/Scripts/0.001-0.01-0.1_100-100-100_r-r_10-10-10_1000_SD_0.5_test'
+dir_tiff = '/Users/baljyot/Documents/2022-2023/PhD Thesis/Random_data'
 
 
 #for (root, dirs, files) in os.walk(dir_tiff):
 #    files = [ fi for fi in files if fi.endswith(".tif") ]
 #    num_files = len(files)
 
-files = ["0.001-0.01-0.1_100-100-100_r-r_10-10-10_1000_SD_0.5_test_1_seg.tif"]
+files = ["Hurst_0.5_Diff_1e-2_seg.tiff"]
 root = dir_tiff
 save_analysis_dir = dir_tiff + '/' + 'Analysis'
 
@@ -66,7 +66,7 @@ for z in range(len(files)):
 	settings.detectorFactory = DogDetectorFactory()
 	settings.detectorSettings = {
     	DetectorKeys.KEY_DO_SUBPIXEL_LOCALIZATION : True,
-    	DetectorKeys.KEY_RADIUS : 4.0,
+    	DetectorKeys.KEY_RADIUS : 2.0,
     	DetectorKeys.KEY_TARGET_CHANNEL : 1,
     	DetectorKeys.KEY_THRESHOLD : 1.0,	
     	DetectorKeys.KEY_DO_MEDIAN_FILTERING : False,
@@ -75,7 +75,7 @@ for z in range(len(files)):
 
 	settings.trackerFactory = SparseLAPTrackerFactory()
 	settings.trackerSettings = LAPUtils.getDefaultLAPSettingsMap()
-	settings.trackerSettings['LINKING_MAX_DISTANCE'] = 100.
+	settings.trackerSettings['LINKING_MAX_DISTANCE'] = 10.
 	settings.trackerSettings['GAP_CLOSING_MAX_DISTANCE']= 80.
 	settings.trackerSettings['MAX_FRAME_GAP']= 0
 
@@ -120,7 +120,7 @@ for z in range(len(files)):
 	fm = model.getFeatureModel()
 
 	a = model.getSpots().iterator(True)
-	cd = "/Users/baljyot/Desktop/Baljyot_EXP_RPOC/Scripts"
+	cd = "/Users/baljyot/Documents/2022-2023/PhD Thesis/Random_data"
 
 	print(model.getTrackModel().trackIDs(True))
 	for id in model.getTrackModel().trackIDs(True):

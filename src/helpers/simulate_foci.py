@@ -78,7 +78,8 @@ class sim_foci():
 		self.pdf = kwargs.get("pdf",tophat_function_2d)
 		self.psf_sigma = kwargs.get("psf_sigma",10) #~200nm if using 1 bin = 10 nm
 		self.point_intensity = kwargs.get("point_intensity",1) # can change for multiple different intensity points
-		self.base_noise = 0 #base level of noise, Don't know how to simulate background noise yet so this is a placeholder for a future update
+		self.base_noise = kwargs.get("base_noise",0) #base level of noise, Don't know how to simulate background noise yet so this is a placeholder for a future update
+		#the following two are not used in the current version of the code TODO update to use these
 		self.exposure_time = kwargs.get("exposure_time",20) #ms
 		self.projection_frames = kwargs.get("projection_frames",1000)
 
@@ -193,7 +194,7 @@ class sim_foci():
 
 		return self.generate_map_from_points(points,point_intensity)
 	
-	def generate_map_from_points(self,points,point_intensity=None):
+	def generate_map_from_points(self,points,point_intensity=None,map=None,movie=False):
 		''' 
 		Docstring for generate_map_from_points:
 		---------------------------
@@ -203,6 +204,13 @@ class sim_foci():
 		-----------
 		points: array-like 
 			points numpy array of shape (total_points,2)
+		point_intensity: array-like, default is None
+			intensity of the points, if None, then self.point_intensity is used.
+		map: array-like, default is None
+			space map, if None, then a new space map is generated.
+		movie: bool, default is False
+			if True, then don't add the gaussian+noise for each point. Rather add the gaussians and then to the whole add the noise.
+			
 
 		Returns:
 		--------
@@ -213,23 +221,38 @@ class sim_foci():
 		Notes:
 		------
 		1. The space map is generated using get_gaussian function.
+		2. For movie: In the segmented experimental images you are adding the noise of each frame to the whole subframe,
+			so for this (movie=False) add each gaussian point to the image with the noise per point.
+			(movie=True) add the gaussians together and then add the noise to the final image. 
 		'''
-		x = np.arange(self.min_x,self.max_x,1.)
-
-		space_map = np.zeros((len(x),len(x)))
+		
+		if map is None:
+			x = np.arange(self.min_x,self.max_x,1.)
+			y = np.arange(self.min_x,self.max_x,1.)
+			space_map = np.zeros((len(x),len(y)))
+		else:
+			space_map = map
+			x = np.arange(0,np.shape(map)[0],1.)
+			y = np.arange(0,np.shape(map)[1],1.)
 
 		if np.isscalar(point_intensity):
 			point_intensity *= np.ones(len(points))
-
+			
 		if point_intensity is None:
 			for i,j in enumerate(points):
-				space_map += get_gaussian(j,np.ones(2)*self.psf_sigma,domain=[x,x])
+				space_map += get_gaussian(j,np.ones(2)*self.psf_sigma,domain=[x,y])
 		else:
 			for i,j in enumerate(points):
-				gauss_probability = get_gaussian(j,np.ones(2)*self.psf_sigma,domain=[x,x])
+				gauss_probability = get_gaussian(j,np.ones(2)*self.psf_sigma,domain=[x,y])
+
 				#generate poisson process over this space using the gaussian probability as means
-				intensity = np.random.poisson(gauss_probability*point_intensity[i]*self.exposure_time + self.base_noise,size=(1,len(x),len(x)))
-				space_map += intensity[0]
+				if movie==False:
+					space_map += np.random.poisson(gauss_probability*point_intensity[i]*self.exposure_time + self.base_noise,size=(1,len(x),len(y)))
+				else:
+					space_map += gauss_probability*point_intensity[i]*self.exposure_time
+			if movie==True:
+				intensity = np.random.poisson(space_map + self.base_noise,size=(1,len(x),len(y)))
+				space_map = intensity[0]
 		return space_map,points
 
 class Track_generator(sim_foci):
@@ -259,7 +282,7 @@ class Track_generator(sim_foci):
 		self.track_distribution=track_parameters.get("track_distribution","exponential")
 		self.diffusion_coefficient=track_parameters.get("diffusion_coefficient",1)
 		#total tracks is calcualted from the total points defined in sim_parameters and the mean track length
-		self.total_tracks = int(sim_parameters.get("total_points")/self.track_length_mean)
+		self.total_tracks = int(sim_parameters.get("total_points",100)/self.track_length_mean)
 		# Initialize the base class
 		super(Track_generator,self).__init__(**sim_parameters)
 		pass
@@ -281,12 +304,18 @@ class Track_generator(sim_foci):
 		'''
 		self.total_tracks = int(self.total_points/self.track_length_mean)
 		return self.total_tracks
-	def _get_lengths(self):
+	def _get_lengths(self,track_distribution=None,track_length_mean=None,total_tracks=None):
 		''' 
 		Docstring for _get_lengths:
 		---------------------------
 		Returns the track lengths from the distribution track_distribution.
 		The lengths are returned as the closest integer
+
+		Parameters:
+		-----------
+		track_distribution: distribution of track lengths. Options are "exponential" and "uniform", default is "exponential"
+		track_length_mean: mean track length, default is self.track_length_mean
+		total_tracks: total number of tracks to be generated, default is self.total_tracks
 
 		Returns:
 		--------
@@ -301,16 +330,23 @@ class Track_generator(sim_foci):
 		-----------
 		ValueError: if the distribution is not recognized.
 		'''
+
+		if track_distribution is None:
+			track_distribution=self.track_distribution
+		if track_length_mean is None:
+			track_length_mean=self.track_length_mean
+		if total_tracks is None:
+			total_tracks=self.total_tracks
 		if self.track_distribution=="exponential":
 			#make sure each of the lengths is an integer and is greater than or equal to 1
-			return np.round(np.random.exponential(scale=self.track_length_mean,size=self.total_tracks))
+			return np.ceil(np.random.exponential(scale=self.track_length_mean,size=total_tracks))
 		elif self.track_distribution=="uniform":
 			#make sure each of the lengths is an integer
-			return np.round(np.random.uniform(low=1,high=2*(self.track_length_mean)-1,size=self.total_tracks))
+			return np.ceil(np.random.uniform(low=1,high=2*(self.track_length_mean)-1,size=total_tracks))
 		else:
 			raise ValueError("Distribution not recognized")
 
-	def _get_Track(self):
+	def _get_Track(self,track_type=None,lengths=None):
 		'''
 		Docstring for _get_Track:
 		-------------------------
@@ -331,12 +367,15 @@ class Track_generator(sim_foci):
 		-----------
 		ValueError: if the track_type is not recognized.
 		'''
-		track_lengths = self._get_lengths()
+		if track_type is None:
+			track_type = self.track_type
+		if lengths is None:
+			track_lengths = self._get_lengths()
 		tracks = []
 		for i in track_lengths:
-			if self.track_type=="fbm":
+			if track_type=="fbm":
 				tracks.append(self._make_fbm_track(i))
-			elif self.track_type=="ctrw":
+			elif track_type=="ctrw":
 				tracks.append(self._get_ctrw(i))
 			else:
 				raise ValueError("Track type not recognized")
@@ -393,7 +432,7 @@ class Track_generator(sim_foci):
 		'''
 		return self._makePoints(self.total_tracks)
 
-	def create_points(self,diffusion_coefficients):
+	def create_points(self,diffusion_coefficients,initials=None,bounded=True,verbose=False):
 		'''
 		Docstring for create_points:
 		-----------------------
@@ -404,6 +443,13 @@ class Track_generator(sim_foci):
 		-----------
 		diffusion_coefficients: scalar or list of length total_tracks
 			list of diffusion coefficients for each track, if scalar, then all tracks have the same diffusion coefficient
+		initials: list of length total_tracks
+			list of initials for each track, if None, then random initials are generated using _get_initials function
+		bounded: boolean
+			if True, then the points are bounded by the foci space
+		verbose: boolean, default False
+			if True, then returns the tracks and the points
+		
 
 		Returns:
 		--------
@@ -416,7 +462,12 @@ class Track_generator(sim_foci):
 			diffusion_coefficients = np.ones(self.total_tracks)*diffusion_coefficients
 		tracks = self._get_Track()
 		#use the initials to shift the tracks to the right place, also shift each track by the diffusion coefficient
-		initials = self._get_initials()
+		if initials is None:
+			initials = self._get_initials()
+		else:
+			initials = np.array(initials)
+			if initials.shape[0] != self.total_tracks:
+				raise ValueError("The number of initials does not match the number of tracks")
 		for i in range(len(tracks)):
 			tracks[i] *= np.sqrt(2*diffusion_coefficients[i])
 			tracks[i] += initials[i]
@@ -424,9 +475,13 @@ class Track_generator(sim_foci):
 			#TODO this destroys the diffusion coefficient of the track and should be fixed
 			#Currently, the points outside the circle are not removed, but are just shifted to the boundary of the circle
 			#this creates a larger density of points near the boundary of the circle and makes the blob detection algorithm less accurate
-			tracks[i] = self._bound_points(tracks[i])
+			if bounded:
+				tracks[i] = self._bound_points(tracks[i])
 		points = self._tracks_to_points(tracks)
-		return points
+		if verbose:
+			return points,tracks
+		else:
+			return points
 
 	def _bound_points(self,points,remove=False):
 		'''
@@ -467,7 +522,7 @@ class Track_generator(sim_foci):
 		#now combine the inside and outside points
 		return np.concatenate((inside_points,new_points),axis=0)
 
-	def _make_fbm_track(self,length):
+	def _make_fbm_track(self,length,end_time=1,hurst=None,dim=2,return_time=False):
 		''' 
 		Docstring for _make_fbm_track:
 		------------------------------
@@ -476,6 +531,12 @@ class Track_generator(sim_foci):
 		Parameters:
 		-----------
 		length: length of the track
+		end_time: end time of the track, default 1
+		hurst: hurst parameter, default self.track_hurst
+		dim: dimension of the track, default 2
+		return_time: boolean, default False
+			if True, then return the time array as well
+
 
 		Returns:
 		--------
@@ -483,8 +544,15 @@ class Track_generator(sim_foci):
 		'''
 		#make the length an int if it is not
 		length = int(length)
-		x,y = fbm.get_fbm_sample(l=1,n=length,h=self.track_hurst,d=2)[1]
-		return np.stack((x,y),axis =-1)
+		if hurst is None:
+			hurst = self.track_hurst
+
+		t,xy = fbm.get_fbm_sample(l=end_time,n=length,h=hurst,d=dim)
+		x,y = xy
+		if return_time:
+			return np.stack((x,y),axis =-1),t
+		else:
+			return np.stack((x,y),axis =-1)
 	def _get_ctrw(self):
 		pass
 

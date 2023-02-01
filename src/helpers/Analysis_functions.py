@@ -16,6 +16,11 @@ from sklearn import mixture
 
 
 
+#function to assign a random starting point in a range
+def _random_starting_point(start,end):
+    return np.random.randint(start,end)
+
+
 def bin_ndarray(ndarray, new_shape, operation='sum'):
     '''
     Docstring for bin_ndarray

@@ -165,6 +165,8 @@ class blob_detection:
 			2D array of the image data
 		'''
 		file_gray = import_functions.read_file(self.img)
+		if file_gray.ndim == 3:
+			file_gray = file_gray[:,:,0]
 		if self.median:
 			file_gray = filters.median_filter(file_gray,size = self.median_filter_size)
 		return file_gray
@@ -436,6 +438,7 @@ class blob_detection:
 
 		# Catch no peaks
 		if local_maxima.size == 0:
+			print("hi")
 			return {"Fitted":np.empty((0, 4)),
 				"Scale":np.empty((0, 3)),
 				"Fit":np.empty((0, 3))}
