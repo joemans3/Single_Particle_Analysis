@@ -395,6 +395,85 @@ class run_analysis:
 
 			drops.append(point_data)
 		return blob_total,tracks,drops,segf
+	def _read_track_data_nocells(self,wd,t_string,**kwargs):
+		'''Docstring
+		Alternative to _read_track_data for cases when there is no cell segmentation via the supersegger method
+
+		Parameters:
+		-----------
+		wd : str
+			directory location of the dataset
+		t_string : str
+			unique identifier string for the dataset. Eg. NUSA, nusA, rpoC, RPOC etc.
+		
+		Returns:
+		--------
+		array-like : [tracks,drops,blob_total]
+			tracks : array-like
+				all raw tracks from the dataset of trajectories from TrackMate
+			drops : array-like
+				drop statistics from TrackMate on time projected images
+			blob_total
+				drop statistics from blob_detection on time projected images
+		'''
+		cd = wd
+		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + "_**.tif_spots.csv"))
+		max_tag = np.max([len(i) for i in all_files]) 
+		min_tag = np.min([len(i) for i in all_files])
+
+		blob_total = []
+		tracks = []
+		drops = []
+		segf = []
+
+		for pp in range(len(all_files)):
+			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
+			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
+			tracks.append(test)
+			drop_files, seg_files = self._load_segmented_image_locations(pp = all_files[pp], \
+											cd = cd, \
+											t_string = t_string, \
+											max_tag = max_tag, \
+											min_tag = min_tag)
+			#store seg_files
+			segf.append(seg_files)
+			#blob analysis
+			#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
+			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
+														movie_ID=pp,
+														plot = False,
+														kwargs=self.blob_parameters))
+			#blob segmented data
+			drops.append(self._load_segmented_image_data(drop_files))
+			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
+			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
+			self.Movie[str(pp)].Movie_nucleoid = None
+			drop_s = blob_total[pp]
+			#each movie is a cell in this scenario since there is no cell segmentation
+			self.Movie[str(pp)].Cells[0] = Cell(Cell_ID = 0, \
+										Cell_Movie_Name = all_files[pp], \
+										bounding_box = None, \
+										r_offset = None, \
+										cell_area = None, \
+										cell_center = None, \
+										cell_long_axis = None, \
+										cell_short_axis = None, \
+										cell_axis_lengths = None, \
+										cell_mask = None, \
+										Cell_Nucleoid_Mask = None)
+			self.Movie[str(pp)].Cells[str(0)].raw_tracks=tracks[pp]
+			
+			for j in range(len(drop_s)):
+				for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
+
+					#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
+					self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
+					self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
+																							"Scale":drop_s[j]["Scale"][k],\
+																							"Fit":drop_s[j]["Fit"][k]}
+		self.segmented_drop_files = segf
+		return [tracks,drops,blob_total]
+			
 	def _read_track_data(self,wd,t_string,**kwargs):
 		'''
 		TODO: full explination
@@ -425,6 +504,11 @@ class run_analysis:
 		cd = wd
 		#use gfp images for nuceloid segmentation
 		nucleoid_path = kwargs.get("nucleoid_path",cd + '/gfp')
+		#check if cd+/gfp exists
+		if not os.path.exists(nucleoid_path):
+			Warning("No gfp folder found in {0}. Assuming no cell segmentation exists and running analysis without use of segmentation.".format(cd))
+			return self._read_track_data_nocells(wd,t_string,**kwargs)
+		
 		nucleoid_imgs = find_image(nucleoid_path,full_path=True)
 		nucleoid_imgs_sorted = sorted_alphanumeric(nucleoid_imgs)
 
@@ -523,7 +607,7 @@ class run_analysis:
 		self.segmented_drop_files = segf
 
 		return [tracks,drops,blob_total]
-	
+
 	def _find_nucleoid(self,movie_ID,cell_ID,img=0):
 		
 		
@@ -1083,7 +1167,45 @@ class run_analysis:
 						io_drop.append([m.MSD_total_um,len(m.X)])
 
 		return {"no_drop": no_drop, "in_drop": in_drop, "ot_drop": ot_drop, "io_drop": io_drop}
+	def _convert_to_track_dict_bulk(self,Movie=None):
+		''' Docstring for _convert_to_track_dict_bulk
+		Purpose: convert the Movie object into a dictionary of tracks for the bulk analysis of MSD
 
+		Parameters:
+		-----------
+		Movie: Movie object, default None
+			Movie object to convert to a dictionary of tracks
+
+		Returns:
+		--------
+		track_dict: dictionary
+			dictionary of tracks with keys "IN","OUT","IO" and values being a dictionary of tracks with keys being the track number and values being the track [(x,y,T),...,(x,y,T)]
+		'''
+		if Movie is None:
+			Movie = self.Movie
+		#check if Movie is a dictionary and not empty
+		if type(Movie) is not dict:
+			raise TypeError("Movie must be a dictionary")
+		if len(Movie) == 0:
+			raise ValueError("Movie dictionary is empty")
+		
+		track_dict_out = {}
+		track_dict_in = {}
+		track_dict_io = {}
+		#make a collection for all the tracks
+		track_dict_all = {}
+		for i,j in Movie.items():
+			for k,l in j.Cells.items():
+				for n,m in l.All_Tracjectories.items():
+					track_dict_all[n] = np.array([m.X,m.Y,m.Frames]).T
+					if m.Classification == "IN":
+						track_dict_in[n] = np.array([m.X,m.Y,m.Frames]).T
+					if m.Classification == "IO":
+						track_dict_io[n] = np.array([m.X,m.Y,m.Frames]).T
+					else:
+						track_dict_out[n] = np.array([m.X,m.Y,m.Frames]).T
+		return {"IN": track_dict_in, "OUT": track_dict_out, "IO": track_dict_io, "ALL": track_dict_all}
+					
 class Movie_frame:
 	'''
 	Frame of reference for one movie
@@ -1278,9 +1400,6 @@ class Trajectory:
 		self.Drop_Identifier = Drop_Identifier
 		self.MSD_total_um = MSD_total_um
 		self.distance_from_drop = kwargs.get("distance_from_drop",0)
-
-
-
 
 
 #define a custom class for boundary analysis

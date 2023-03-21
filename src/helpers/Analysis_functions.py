@@ -13,6 +13,97 @@ from joblib import PrintTime
 from scipy.optimize import curve_fit
 from skimage.color import rgb2gray
 from sklearn import mixture
+import copy
+from scipy.spatial import ConvexHull
+
+#curve fitting utility functions
+def non_linear_curvefit(func,xdata,ydata,p0=None,method='lm',bounds=None):
+    '''
+    Docstring for non_linear_curvefit
+    This function fits a curve to the data using scipy.optimize.curve_fit
+    
+    Parameters:
+    -----------
+    func : function
+        The function to be fitted to the data
+    xdata : numpy array
+        The x data
+    ydata : numpy array
+        The y data
+    p0 : numpy array, optional (default=None)
+        The initial guess for the parameters
+    method : str, optional (default='lm')
+        The method to be used for the curve fitting, can be 'lm' or 'trf' or 'dogbox'
+    bounds : tuple, optional (default=None)
+        The lower and upper bounds for the parameters
+    
+    Returns:
+    --------
+    tuple
+        The fitted parameters and the covariance matrix
+    '''
+    #check if the method is valid
+    if method not in ['lm','trf','dogbox']:
+        raise ValueError("Method not supported.")
+    #check if func is a function
+    if not callable(func):
+        raise ValueError("func is not a function.")
+    #check if xdata and ydata are same shape
+    if not np.shape(xdata) == np.shape(ydata):
+        raise ValueError("xdata and ydata are not the same shape.")
+    #check if p0 has the same length as the number of parameters in func
+    if not len(p0) == func.__code__.co_argcount-1:
+        raise ValueError("p0 has the wrong length.")
+    #check if bounds is of shape (len(p0),2)
+    if not np.shape(bounds) == (2,len(p0)) and bounds is not None:
+        raise ValueError("bounds has the wrong shape.")
+    #if bounds are provided, use method 'trf'
+    if bounds is not None:
+        method = 'trf'
+    #if the number of data points is less than the number of parameters, use method 'trf'
+    if len(xdata) < len(p0):
+        method = 'trf'
+    
+    #perform the curve fitting
+    popt, pcov = curve_fit(func, xdata, ydata, p0=p0, method=method, bounds=bounds)
+    return popt, pcov
+    
+def linear_fitting(xdata,ydata,deg=1):
+    '''
+    Docstring for linear_fitting
+    This function perfroms a linear fit to the data using polyfit
+
+    Parameters:
+    -----------
+    xdata : numpy array
+        The x data
+    ydata : numpy array
+        The y data
+    deg : int, optional (default=1)
+        The degree of the polynomial to be fitted
+    
+    Returns:
+    --------
+    numpy array with 2 elements
+        1. The polynomial coefficients
+        2. The covariance matrix
+    '''
+    #check if xdata and ydata are same shape
+    if not np.shape(xdata) == np.shape(ydata):
+        raise ValueError("xdata and ydata are not the same shape.")
+    #check if deg is an integer
+    if not isinstance(deg,int):
+        raise ValueError("deg is not an integer.")
+    #check if deg is greater than 0
+    if not deg > 0:
+        raise ValueError("deg is not greater than 0.")
+    
+    #perform the linear fitting
+    popt,pcov = np.polyfit(xdata,ydata,deg,cov=True,full=False)
+    return np.array([popt,pcov])
+
+
+
 
 
 
@@ -219,6 +310,30 @@ def reshape_col2d(arr,permutations):
     arr[:]=arr[:, idx]
     return arr
 
+def range_distance(a,b):
+    '''
+    Docstring for range_distance
+    
+    Parameters:
+    -----------
+    a : float
+        The first number
+    b : float
+        The second number
+    
+    Returns:
+    --------
+    float
+        The distance between the two numbers
+    '''
+    #find the max of the two
+    max = a if a>b else b
+    #find the min of the two
+    min = a if a<b else b
+    #find the distance between the two
+    distance = np.abs(max-min)
+    #return the distance
+    return distance
 
 
 def rt_to_xy(r,theta):
@@ -447,11 +562,630 @@ def angle_multi(v1):
 
 
 
+#######MSD calculations
+
+def MSD_tau_utility(x,y,tau=1,permutation=True):
+    '''Documentation for MSD_tau_utility
+
+    Parameters:
+    -----------
+    x : array
+        x positions of the data
+    y : array
+        y positions of the data
+    tau : int
+        time lag for the MSD calculation
+    permutation : bool
+        if permutation == True then the MSD is calculated for all possible permutations of the data
+        if permutation == False then the MSD is calculated for the data in the order it is given
+    
+    Returns:
+    --------
+    displacements : array, shape (n,2)
+        array of displacements 
+    
+    
+    '''
+
+    #if permutation == True then the MSD is calculated for all possible permutations of the data
+    #if permutation == False then the MSD is calculated for the data in the order it is given
+    if permutation == True:
+        displacements = _msd_tau_utility_all(x,y,tau)
+    else:
+        #dont use this condition, its wrong
+        displacements = _msd_tau_utility_single(x,y,tau)
+
+    return displacements
+    
+def _msd_tau_utility_all(x,y,tau):
+    ''' Documentation for _msd_tau_utility_all
+
+    Parameters:
+    -----------
+    x : array
+        x positions of the data
+    y : array
+        y positions of the data
+    tau : int
+        time lag for the MSD calculation
+
+    Returns:
+    --------
+    displacements : array, shape (n,2)
+        array of displacements for all possible permutations of the data
+    
+    Notes:
+    ------
+    For the theory behind this see https://web.mit.edu/savin/Public/.Tutorial_v1.2/Concepts.html#A1
+    '''
+    #find the total displacements possible, from https://web.mit.edu/savin/Public/.Tutorial_v1.2/Concepts.html#A1
+    total_displacements = len(x) - tau
+    #create an array to store the displacements
+    displacements = np.zeros((total_displacements,2))
+    #loop through the displacements
+    for i in range(total_displacements):
+        #calculate the displacements
+        #make sure that i+tau is less than the length of the data
+        if i+tau < len(x):
+            displacements[i] = np.array([x[i+tau]-x[i],y[i+tau]-y[i]])
+    #return the displacements as (x,y) pairs
+    return displacements
+
+def _msd_tau_utility_single(x,y,tau):
+    #dont use this, its just to show this doesn't work as well as the permutation method
+    x_dis = np.diff(x[::tau])
+    y_dis = np.diff(y[::tau])
+    #return the displacements as (x,y) pairs
+    return np.array([x_dis,y_dis]).T
+
+def MSD_tau(x,y,permutation=True):
+    '''Documentation for MSD_tau
+
+    Parameters:
+    -----------
+    x : array
+        x positions of the data
+    y : array
+        y positions of the data
+    permutation : bool
+        if permutation == True then the MSD is calculated for all possible permutations of the data
+        if permutation == False then the MSD is calculated for the data in the order it is given
+    
+    Returns:
+    --------
+    displacements : dict
+        dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,2)
+    
+    '''
+
+    #find the maximum time lag possible
+    max_tau = len(x)-1
+    #create a dictionary to store the displacements for each time lag
+    displacements = {}
+    #loop through the time lags
+    for tau in range(1,max_tau+1):
+        #calculate the displacements for each time lag
+        displacements[tau] = MSD_tau_utility(x,y,tau,permutation)
+    #return the displacements
+    return displacements
+
+def MSD_Tracks(tracks,permutation=True,return_type="msd_curves",verbose=False):
+    '''Documentation for MSD_Tracks
+
+    Parameters:
+    -----------
+    tracks : dict
+        dictionary of tracks, key = track ID, value = [[x,y],...] of coordinates
+    permutation : bool (default = True, don't change this)
+        if permutation == True then the MSD is calculated for all possible permutations of the data
+        if permutation == False then the MSD is calculated for the data in the order it is given
+    return_type : str (default = "msd_curves")
+        if return_type == "msd_curves" then the function returns the MSD curves for each track (ensemble MSD curve)
+        if return_type == "displacements" then the function returns the displacements for each track
+        if return_type == "both" then the function returns both the MSD curves and the displacements for each track
+    verbose : bool (default = False)
+        if verbose == True then returns the raw ensemble MSD displacement for each tau aswell as the MSD curves noted above
+        TODO: this is annoying and should be separated into a different function but is not yet
+    
+    Returns:
+    --------
+    return_dict : dict
+        dictionary of MSD curves for each track, key = track ID, value = dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,2)
+    
+    '''
+    #create a dictionary to store the MSD curves for each track
+    ensemble_msd = {}
+    #create a dictionary to store the displacements for each track
+    tracks_displacements = {}
+    #loop through the tracks
+    for key,value in tracks.items():
+        #calculate the displacements for each track
+        disp = MSD_tau(value[:,0],value[:,1],permutation)
+        tracks_displacements[key] = disp
+        #unify the ensemble MSD curve dictionary with disp
+        ensemble_msd = dic_union_two(ensemble_msd,disp)
+    if verbose == True:
+        ensemble_msd_copy = copy.deepcopy(ensemble_msd)
+    #update the ensemble MSD curve dictionary
+    ensemble_msd = msd_avgerage_utility(ensemble_msd)
+    return_dict = {"msd_curves":ensemble_msd,"displacements":tracks_displacements}
+    if verbose == True:
+        if return_type == "both":
+            return return_dict,ensemble_msd_copy
+        else:
+            return return_dict[return_type],ensemble_msd_copy
+    else:
+        if return_type == "both":
+            return return_dict
+        else:
+            return return_dict[return_type]
+
+def msd_avgerage_utility(displacements):
+    '''Documentation for _msd_avgerage_utility
+
+    Parameters:
+    -----------
+    displacements : dict
+        dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,D), D is the dimension of the data
+    
+    Returns:
+    --------
+    msd : dict
+        dictionary of the MSD for each time lag, key = time lag, value = array of MSD values, shape (n,)
+    
+    '''
+    #find the number of dimensions
+    D = np.array(displacements[1]).shape[1]
+    #create a dictionary to store the MSD for each time lag
+    msd = {}
+    #loop through the time lags
+    for key,value in displacements.items():
+        #calculate the MSD for each time lag
+        #the MSD is the average of the squared displacements
+        #the squared displacements are the sum of the squared components of the displacements
+        #divide by the number of dimensions to get the average of the squared displacements
+        msd[key] = np.mean(np.sum(np.array(value)**2,axis=1))/(2*D)
+    #return the MSD
+    return msd
+
+def dic_union_two(dic_1,dic_2):
+    '''Documentation for dic_union_two
+    Find the unique union of two dictionaries, assumes the values are lists
+
+    Parameters:
+    -----------
+    dic_1 : dict
+        dictionary 1
+    dic_2 : dict
+        dictionary 2
+    
+    Returns:
+    --------
+    dic_union : dict
+        dictionary of the unique union of the two dictionaries
+    
+    Notes:
+    ------
+    The values of the dictionaries must be lists for the list concatenation to work properly
+    This function turns the values of the dictionaries into lists, if arrays are needed then the values must be converted back to arrays
+
+    '''
+    #create a dictionary to store the union
+    dic_union = {}
+    #loop through the keys in the first dictionary
+    for key,value in dic_1.items():
+        #check if the key is in the second dictionary
+        if key in dic_2:
+            #if the key is in both dictionaries then add the values together
+            dic_union[key] = list(value) + list(dic_2[key])
+        else:
+            #if the key is only in the first dictionary then add the value to the union
+            dic_union[key] = value
+    #loop through the keys in the second dictionary
+    for key,value in dic_2.items():
+        #check if the key is in the first dictionary
+        if key in dic_1:
+            #if the key is only in the second dictionary then add the value to the union
+            dic_union[key] = list(value) + list(dic_1[key])
+        else:
+            #if the key is only in the second dictionary then add the value to the union
+            dic_union[key] = list(value)
+    #return the union
+    return dic_union
+
+######Track percent identity functions######
+
+def percent_error(true,estimate,abs=True):
+    ''' Documentation for percent_error
+
+    Parameters:
+    -----------
+    true : float
+        true value
+    estimate : float
+        estimated value
+    abs : bool (default = True)
+        if abs == True then the absolute value of the percent error is returned
+
+    Returns:
+    --------
+    percent_error : float
+        percent error between the true and estimated values
+    
+    Notes:
+    ------
+    1. Assumes that the true and estimated values are floats
+    2. Assumes that the true value is not zero
+    3. Assumes that the true value is not negative
+    4. Assumes that the true value is not NaN
+    5. Assumes that the estimated value is not NaN
 
 
+    '''
+    #check if the true and estimated values are floats or ints
+    if not isinstance(true,(float,int)):
+        raise TypeError("The true value must be a float or int")
+    if not isinstance(estimate,(float,int)):
+        raise TypeError("The estimated value must be a float or int")  
+    #check if the true value is zero
+    if true == 0:
+        raise ValueError("The true value cannot be zero")
+    #check if the true value is negative
+    if true < 0:    
+        raise ValueError("The true value cannot be negative")
+    
+    #calculate the percent error
+    if abs == True:
+        percent_error = np.abs((true-estimate)/true)
+    else:
+        percent_error = (true-estimate)/true
+    #return the percent error
+    return percent_error*100
+
+def _point_identity(point_true,track_estimate,distance_threshold):
+    ''' Documentation for _point_identity
+
+    Parameters:
+    -----------
+    point_true : array
+        true point, shape (,2)
+    track_estimate : array
+        estimated track, shape (n,2)
+    distance_threshold : float
+        distance threshold for the point to be considered a match
+    
+    Returns:
+    --------
+    1 : int
+        if the point is within the distance threshold
+    0 : int
+        if the point is not within the distance threshold
+
+    Notes:
+    ------
+    1. Assumes that the tracks and points are formatted as [[x,y,T],[x,y,T],...,[x,y,T]] numpy arrays and [x,y,T] for a single point
+    '''
+    #find the point in the track_estimate that is closest to the point_true in terms of euclidean distance
+    #only search for the tracks that has the same T
+    min_temp =np.sqrt(np.sum((track_estimate[track_estimate[:,2] == point_true[2]] - point_true)**2,axis=1))
+    if min_temp.size == 0:
+        return 0
+    else:
+        min_dist = np.min(min_temp)
+    #check if the minimum distance is less than the distance threshold
+    if min_dist < distance_threshold:
+        #if the minimum distance is less than the distance threshold then return 1
+        return 1
+    else:
+        #if the minimum distance is greater than the distance threshold then return 0
+        return 0
+
+def identity_tracks(track_true,track_estimate,**kwargs):
+    ''' Documentation for identity_tracks
+
+    Parameters:
+    -----------
+    track_true : array
+        true track, shape (n,2)
+    track_estimate : array
+        estimated track, shape (m,2), m can be different than n
+    threshold : float
+        distance threshold for the point to be considered a match
+    
+    Returns:
+    --------
+    mean_point_identity : float
+        mean percent identity between the points in the true track and the estimated track
+    length_error : float
+        percent error between the lengths of the tracks
+    
+    Notes:
+    ------
+    1. Assumes that the tracks and points are formatted as [[x,y,T],[x,y,T],...,[x,y,T]] numpy arrays and [x,y,T] for a single point
+    2. Assumes that the true track is not empty
+    3. Assumes that the estimated track is not empty
+    '''
+    #for each point in the true track find the percent identity between the true point and the estimated track points
+    mean_point_identity = np.mean(np.array([_point_identity(point_true,track_estimate,kwargs.get("threshold",1)) for point_true in track_true]))
+    #find the percent error between the lengths of the tracks
+    length_error = percent_error(len(track_true),len(track_estimate),abs=False)
+
+    return mean_point_identity,length_error
+
+def identity_track_matrix(tracks_true,tracks_estimate,verbose=True,**kwargs):
+    ''' Documentation for identity_track_matrix
+    This creates all unique combinations of tracks and then finds the identity between each pair
+
+    Parameters:
+    -----------
+    tracks_true : dict
+        dict of true tracks, shape (n,2). Key is the track number, value is the track
+    tracks_estimate : dict
+        dict of estimated tracks, shape (m,2). Key is the track number, value is the track
+    verbose : bool
+        if True then return all the identity matrices, if False then only return the per track results
+    
+    Returns:
+    --------
+    max_identity : array
+        array of the maximum identity between each true track and the estimated tracks
+    lengh_error : array
+        array of the percent error between the lengths of each true track and the estimated tracks
+    identity_matrix : array
+        matrix of the identity between each pair of tracks
+    length_error_matrix : array
+        matrix of the percent error between the lengths of each pair of tracks
+    
+    Notes:
+    ------
+
+    '''
+    
+    #create a matrix to store the identity between each pair of tracks
+    identity_matrix = np.zeros((len(tracks_true),len(tracks_estimate)))
+    #create a matrix to store the percent error between the lengths of each pair of tracks
+    length_error_matrix = np.zeros((len(tracks_true),len(tracks_estimate)))
+
+    #make a matrix to store the lengths of the true tracks and the estimated tracks
+    length_true = np.array([len(track) for _,track in tracks_true.items()])
+    length_estimate = np.array([len(track) for _,track in tracks_estimate.items()])
+
+    #loop through the true tracks
+    for i,(_,track_true) in enumerate(tracks_true.items()):
+        #loop through the estimated tracks
+        for j,(_,track_estimate) in enumerate(tracks_estimate.items()):
+            #find the identity between the true track and the estimated track
+            identiy_error,length_error = identity_tracks(track_true,track_estimate,**kwargs)
+            #store the identity error in the identity matrix
+            identity_matrix[i,j] = identiy_error
+            #store the length error in the length error matrix
+            length_error_matrix[i,j] = length_error
 
 
+    #for each true track find the estimated track that has the maximum identity, find all multiple occurances the indices where the max identity is
+    max_val_per_row = np.max(identity_matrix,axis=1)
 
+    #all the below is probably overkill because the max identity very rarely has multiple occurances
+    #however to be safe I am going to keep it in, this is very inefficient for scaling of the track numbers; any better way to do this?
+    #if this ends up being too slow i am adding the old way to do it in a comment
+    #max_index = np.argmax(identity_matrix,axis=1)
+    #max_identity = identity_matrix[np.arange(len(tracks_true)),max_index]
+    #min_length_error = length_error_matrix[np.arange(len(tracks_true)),max_index]
+
+    #find all the indices where the max identity is
+    max_identity_row = np.array([np.where(identity_matrix[i] == max_val_per_row[i])[0] for i in range(len(tracks_true))])
+    #for each row find the index what minimizes the length error
+    min_length_error = np.array([np.min(length_error_matrix[i,max_identity_row[i]]) for i in range(len(tracks_true))])
+    #find the index of the minimum length error
+    min_length_error_index = np.array([np.where(length_error_matrix[i,max_identity_row[i]] == min_length_error[i])[0][0] for i in range(len(tracks_true))])
+    #find the index of the maximum identity
+    max_identity = np.array([max_identity_row[i][min_length_error_index[i]] for i in range(len(tracks_true))])
+
+    #find the maximum identity value
+    max_identity_value = np.array([identity_matrix[i,max_identity[i]] for i in range(len(tracks_true))])
+    #find the length error
+    length_error = np.array([length_error_matrix[i,max_identity[i]] for i in range(len(tracks_true))])
+
+
+    #if verbose is False jsut return the identiy_matrix[max_identity] and length_error as a dict
+    if verbose == False:    
+        return {'max_identity':max_identity_value,
+                'length_error':length_error,
+                "true_track_lengths":length_true,
+                "estimate_track_lengths":length_estimate[max_identity]}
+
+    #if verbose is True then return the max_identity and length_error as a dict and the identity matrix and length error matrix
+    else:
+        return {'max_identity':max_identity_value,
+                'length_error':length_error,
+                'identity_matrix':identity_matrix,
+                'length_error_matrix':length_error_matrix,
+                "true_track_lengths":length_true,
+                "estimate_track_lengths":length_estimate[max_identity]}
+
+def point_error_detection(true_points,extracted_points,threshold=0.5):
+    '''Docstring for point_error_detection
+    Calculate the error between the true points and the extracted points per frame
+
+    Parameters:
+    -----------
+    true_points : dict
+        dictionary of true points where the keys are the frame numbers and the values are the true points in that frame
+    extracted_points : dict
+        dictionary of extracted points where the keys are the frame numbers and the values are the extracted points in that frame
+    threshold : float
+        threshold for the distance between the true points and the extracted points
+    
+    Returns:
+    --------
+    percent_detected : float
+        percent of the true points that are detected
+
+    '''
+    #make a counter to store the number of points that are detected
+    detected_points = 0
+    #find the total amount of points across all frames
+    total_points = np.sum([len(points) for _,points in true_points.items()])
+    #loop through the true points
+    for frame_number,true_points in true_points.items():
+        #if the frame number is in the extracted points
+        if frame_number in extracted_points.keys():
+            #loop through the true points
+            for point in true_points:
+                #find the distances between the true point and all the extracted points,
+                #if the min distance is less than the threshold then add one to the detected points
+                min_temp =np.sqrt(np.sum((extracted_points[frame_number] - point)**2,axis=1))
+                if min_temp.size == 0:
+                    continue
+                if np.min(min_temp) < threshold:
+                    detected_points += 1
+    #return the percent of points detected
+    return 100*detected_points/total_points
+
+def points_per_frame_convert(tracks):
+    ''' Docstring for points_per_frame_convert
+    Take a track dictionary and convert it to a points per frame dictionary where the keys are the frame numbers and the values are the points in that frame
+    
+    Parameters:
+    -----------
+    tracks : dict
+        dictionary of tracks where the keys are the track numbers and the values are the tracks
+
+    Returns:
+    --------
+    points_per_frame : dict
+        dictionary of points per frame where the keys are the frame numbers and the values are the points in that frame
+    '''
+    #create a dictionary to store the points per frame
+    points_per_frame = {}
+    #loop through the tracks
+    for _,track in tracks.items():
+        #loop through the points in the track
+        for point in track:
+            #if the frame number is not in the points per frame dictionary add it
+            if point[2] not in points_per_frame:
+                points_per_frame[point[2]] = []
+            #add the point to the points per frame dictionary 
+            points_per_frame[point[2]].append(point[:-1])
+    #make sure the points per frame dictionary is a numpy array of structure: [[x,y],[x,y],...] for each frame
+    for frame_number,points in points_per_frame.items():
+        points_per_frame[frame_number] = np.array(points)
+    #return the points per frame dictionary
+    return points_per_frame
+
+def convert_point_pairs(tracks):
+    '''Docstring for convert_point_pairs
+    Convert a track dictionary to a point pair dictionary where the keys is a combination of the two frames of the points and the values are the point pairs
+    point pairs are defined as consecutive points in a track.
+    eg: track = [[x1,y1,frame1],[x2,y2,frame2],[x3,y3,frame3]]
+        point_pairs = {"frame1,frame2":[[x1,y1,frame1],[x2,y2,frame2]],"frame1,frame2":[[x2,y2,frame2],[x3,y3,frame3]]}
+    
+    Parameters:
+    -----------
+    tracks : dict, keys are track numbers and values are tracks as defined above
+        dictionary of tracks where the keys are the track numbers and the values are the tracks
+    
+    Returns:
+    --------
+    point_pairs : dict, keys is a combination of the two frames of the points are point pairs as defined above
+        dictionary of point pairs where the keys is a combination of the two frames of the points and the values are the point pairs
+    
+    '''
+    #create a dictionary to store the point pairs
+    point_pairs = {}
+    #loop through the tracks
+    for _,track in tracks.items():
+        #loop through the points in the track
+        for i in range(len(track)-1):
+            #if the point pair is not in the point pairs dictionary add it
+            if str(track[i][2])+","+str(track[i+1][2]) not in point_pairs:
+                point_pairs[str(track[i][2])+","+str(track[i+1][2])] = []
+            #add the point pair to the point pairs dictionary
+            point_pairs[str(track[i][2])+","+str(track[i+1][2])].append([track[i],track[i+1]])
+    
+    #make sure each value is a numpy array of structure: [[[x1,y1,frame1],[x2,y2,frame2]],[[x1,y1,frame1],[x2,y2,frame2]]]
+    for key,point_pair in point_pairs.items():
+        point_pairs[key] = np.array(point_pair)
+    #return the point pairs dictionary
+    return point_pairs
+
+def point_pair_error_detection(true_point_pairs,extracted_point_pairs,threshold=0.5):
+    '''Docstring for point_pair_error_detection
+    Calculate the error between the true point pairs and the extracted point pairs per frame
+    point_pairs = {"frame1,frame2":[[x1,y1,frame1],[x2,y2,frame2]],"frame1,frame2":[[x2,y2,frame2],[x3,y3,frame3]]}
+    
+    Parameters:
+    -----------
+    true_point_pairs : dict, keys is a combination of the two frames of the points are point pairs as defined above
+        dictionary of true point pairs where the keys is a combination of the two frames of the points and the values are the point pairs
+    extracted_point_pairs : dict, keys is a combination of the two frames of the points are point pairs as defined above
+        dictionary of extracted point pairs where the keys is a combination of the two frames of the points and the values are the point pairs
+    threshold : float
+        threshold for the distance between the true point pairs and the extracted point pairs
+    
+    Returns:
+    --------
+    percent_detected : float
+        percent of the true point pairs that are detected
+    mismatch_error : float
+        percent of true detected point pairs over the total amount of extracted pairs
+    '''
+    #make a counter to store the number of point pairs that are detected
+    detected_point_pairs = 0
+    #find the total amount of point pairs across all frames
+    total_point_pairs = np.sum([len(point_pairs) for _,point_pairs in true_point_pairs.items()])
+    #find the total amount of point pairs found in the extracted point pairs
+    total_extracted_point_pairs = np.sum([len(point_pairs) for _,point_pairs in extracted_point_pairs.items()])
+
+    #loop through the true point pairs
+    for frame_number,true_point_pairs in true_point_pairs.items():
+        #if the frame number is in the extracted point pairs
+        if frame_number in extracted_point_pairs.keys():
+            #loop through the true point pairs
+            for point_pair in true_point_pairs:
+                #find the distances between the true point pair and all the extracted point pairs,
+                #if the min distance is less than the threshold then add one to the detected point pairs
+                min_temp = np.sqrt(np.sum((extracted_point_pairs[frame_number] - point_pair)**2,axis=2))
+                #if there are no extracted point pairs then continue (should not happen)
+                if min_temp.size == 0:
+                    continue
+                #find the minimum distance between the true point pair and the extracted point pairs
+                #min_temp should look like a (n,2) array where n is the number of extracted point pairs 
+                # and the 2 is the distances between the true point pair and the extracted point pairs
+                #then you need to sum the distances across the 2 axis to get a (n,) array of the distances for 2 points
+                #so the threshold is multiplied by 2 because there are 2 points in the true point pair for comparison
+                if np.min(np.sum(min_temp,axis=1)) < threshold*2:
+                    detected_point_pairs += 1
+    #return the percent of point pairs detected
+    return 100*detected_point_pairs/total_point_pairs, 100*np.abs(total_extracted_point_pairs-detected_point_pairs)/total_extracted_point_pairs
+
+
+#density calculations 
+def convex_hull_area(points):
+    '''Docstring for convex_hull_area
+    Calculate the convex hull area of a set of points
+    
+    Parameters:
+    -----------
+    points : numpy array of shape (n,2)
+        points to calculate the convex hull area
+    
+    Returns:
+    --------
+    hull_points : numpy array of shape (n,2)
+        convex hull area of the input points
+    '''
+    #check if the points are atlest 3 points
+    if len(points) < 3:
+        #return None
+        return None
+    #calculate the convex hull of the points
+    try:
+        hull = ConvexHull(points)
+    except:
+        return None
+    #return the volume of the convex hull
+    return hull.volume
 
 
 
@@ -460,7 +1194,6 @@ def MSD_tavg1(x,y,f,f_inc = False):
         return np.mean((np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0])/np.diff(f)))**2)/4.
     else:
         return np.mean(np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0]))**2)/4.
-
 
 def MSD_tavg(x,y,f,f_inc = False):
     
@@ -478,13 +1211,8 @@ def MSD_tavg_single(x,f,f_inc = False):
     else:
         return np.mean((np.diff(x))**2)/4.
     
-    
-    
-
 def gaussian_fit(x,p0,p1,p2):
     return ((np.sqrt(2.*np.pi*p0))**-1)*np.exp(-((x-p1)**2)/(2*p0)) + p2
-
-
 
 ##################################################################################################################################
 #implimenting MLE method for detecting diffusion coeff/ velocity change in single tracks as outlined in: Detection of Velocity and Diffusion Coefficient Change Points in Single-Particle Trajectories, Yin et al. 2018
@@ -504,8 +1232,6 @@ def ll_0(x,n,frame_rate):
 def log_likelihood_k(x,n,k,frame_rate):
     
     return ll_0(x,n,frame_rate) - ll_0(x[:k],k,frame_rate) - ll_0(x[k+1:n],n-k,frame_rate)
-    
-    
     
 def MLE_decomp(x,y,frame_rate):
     N = len(x)
@@ -551,12 +1277,38 @@ def cm_normal(x,y):
     mean_y = np.mean(y)
     return np.array([mean_x,mean_y])
 
+def radius_of_gyration(*args)->float:
+    '''Determine the radius of gyration of a particle given its x,y coordinates.
+    If only one argument is given, it is assumed to be a 2D array of x,y coordinates.
+    If two arguments are given, they are assumed to be x,y coordinates.
 
+    Parameters:
+    -----------
+    *args : array-like
+        if one argument is given, it is assumed to be a 2D array of x,y coordinates. (N,2)
+        if two arguments are given, they are assumed to be x,y coordinates. (N,),(N,)
 
-def radius_of_gyration(x,y):
-    x = np.array(x)
-    y = np.array(y)
+    Returns:
+    --------
+    r_g: float
+        radius of gyration of particles
+    
+    Raises:
+    -------
+    ValueError
+        if the number of arguments is not 1 or 2
+    
+    '''
+    if len(args) == 1:
+        x = args[0][:,0]
+        y = args[0][:,1]
+    elif len(args) == 2:
+        x = np.array(args[0])
+        y = np.array(args[1])
+    else:
+        raise ValueError('Input should be (N,2) array of x,y coordinates or two arrays of x,y coordinates (N,), (N,)')
 
+    #find center of mass
     cm_x,cm_y = cm_normal(x,y)
     r_m = np.sqrt(cm_x**2 + cm_y**2)
     #convert to radial units
@@ -570,12 +1322,6 @@ def end_distance(x,y):
     y = np.array(y)
 
     return np.sqrt((x[-1] - x[0])**2 + (y[-1] - y[0])**2)
-
-
-
-
-
-
 
 def track_decomp(x,y,f,max_track_decomp):
     #takes tracks and finds MSD for various timestep conditions.
@@ -600,16 +1346,11 @@ def track_decomp(x,y,f,max_track_decomp):
     
     return np.array(msd)
 
-
-
-
 def fit_MSD(t,p_0,p_1):
     return p_0 * (t**(p_1)) 
 
-
 def fit_MSD_Linear(t,p_0,p_1):
     return t*p_1 + p_0
-
 
 #fill list of lists with nan to get symmetic array
 def boolean_indexing(v, fillval=np.nan):
@@ -618,7 +1359,6 @@ def boolean_indexing(v, fillval=np.nan):
     out = np.full(mask.shape,fillval)
     out[mask] = np.concatenate(v)
     return out
-
 
 def ens_MSD(x,y,tau):
 
@@ -636,7 +1376,6 @@ def ens_MSD(x,y,tau):
         msd = np.nanmean((dist(x1,y1,x2,y2)**2)/4.)
 
     return msd
-
 
 def MSD_a_value_all_ens(xy_data, lengths = False, threshold = 3, plot_avg = True, plot_all = True, plot_dist = False, plot_dist_log = True, plot_box = False, verbose = False, sim = False):
     
@@ -841,7 +1580,6 @@ def MSD_a_value_all(msd, xy_data, lengths = False, threshold = 3, plot_avg = Tru
     print(np.mean(dist_a),np.std(dist_a))
     return [dists,msd_e,popt1]
 
-
 def MSD_a_value_sim_all(msd,xy_data, lengths = False, threshold = 10, plot_avg = True, plot_all = True, plot_dist = True, plot_dist_log = True, plot_box = False, verbose = False):
 
     x = xy_data[0]
@@ -928,7 +1666,6 @@ def MSD_a_value_sim_all(msd,xy_data, lengths = False, threshold = 10, plot_avg =
     print(np.mean(dist_a),np.std(dist_a))
     return dists
 
-
 def track_decomp_single(x,f,max_track_decomp):
     #takes tracks and finds MSD for various timestep conditions.
     
@@ -951,16 +1688,9 @@ def track_decomp_single(x,f,max_track_decomp):
     
     return np.array(msd)
 
-
-
 def rgb_to_grey(rgb_img):
     '''Convert rgb image to greyscale'''
     return rgb2gray(rgb_img)
-
-
-
-
-
 
 def cumsum(x,y):
     dx = np.diff(np.array(x))
@@ -970,17 +1700,10 @@ def cumsum(x,y):
     
     return dr
 
-
-
-
-
-
 def dot(a,b):
     return a[0]*b[0] + a[1]*b[1]
 
 from numpy import arange, histogram, mean, pi, sqrt, zeros
-
-
 def centered_pairCorrelation_2D(x, y, center, rMax, dr, **kwargs):
     edges = arange(0., rMax + 1.1 * dr, dr)
     num_increments = len(edges) - 1
@@ -1003,7 +1726,6 @@ def centered_pairCorrelation_2D(x, y, center, rMax, dr, **kwargs):
         g_average[i] = mean(g[:, i]) / (pi * (rOuter**2 - rInner**2))
     return (g_average, radii, center)
 
-
 #define a function to calculate the angle between 3 points in 2D
 
 def angle2D(X,Y):
@@ -1024,8 +1746,6 @@ def angle2D(X,Y):
         return 0
 
     return rad_to_d(angle)
-
-
 
 #define a utility function which takes trajectory data and outputs the angles between all the vectors defined in the trajectory
 

@@ -213,7 +213,6 @@ class blob_detection:
 				blobs["Scale"][:,2]*=np.sqrt(2)
 				return blobs["Scale"] #blobs returns array of size 3 tuples (x,y,radius) defining the circle defining the spot
 
-	
 	def _prune_blobs(self,blobs_array, overlap, *, sigma_dim=1,**kwargs):
 		"""Eliminated blobs with area overlap. UPDATED: compared to the skimage implimentation this prunes based on the 
 		maximum value of the laplacian of the blobs rather than if the blob is bigger or not.
@@ -438,7 +437,6 @@ class blob_detection:
 
 		# Catch no peaks
 		if local_maxima.size == 0:
-			print("hi")
 			return {"Fitted":np.empty((0, 4)),
 				"Scale":np.empty((0, 3)),
 				"Fit":np.empty((0, 3))}
@@ -517,7 +515,6 @@ class blob_detection:
 			blobs.append([x,y,*radius])
 
 		return np.stack(blobs)
-
 
 	def _create_mask(self,img,coords,size,sigma_indx):
 		'''mask of the image at the center point of the pixel coordinate. Also applies the fits

@@ -5,7 +5,9 @@ import os
 
 
 class Prepare_Tracks:
-	'''_summary_
+	'''Documentation for Prepare_Tracks
+	Convert the track data from the csv files to a mat file for use in the SMAUG code. (correct format)
+	URL: https://github.com/BiteenMatlab/SMAUG
 	'''
 	def __init__(self,wd,t_string,lower_length,upper_length):
 		'''_summary_

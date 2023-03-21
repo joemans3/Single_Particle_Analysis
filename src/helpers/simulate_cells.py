@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
@@ -84,6 +85,7 @@ class Simulate_cells(sf.Track_generator):
         if update:
             self.units = units
         return units
+    
     def _update_units(self,unit,orig_type,update_type):
         ''' Docstring for _update_units: update the unit from one type to another
         
@@ -112,6 +114,7 @@ class Simulate_cells(sf.Track_generator):
             if update_type == 'pix^2/ms':
                 return unit*((1e6)/self.units['pixel_size']**2)/(1000./self.units['frame_time'])
         return 
+    
     def _define_space(self,dims=(100,100),movie_frames=500):
         ''' Docstring for _define_space: make the empty space for simulation
         
@@ -145,7 +148,7 @@ class Simulate_cells(sf.Track_generator):
         num_tracks : int
             number of tracks to be simulated
         track_type : str, Default = 'fbm'
-            type of track to be simulated
+            type of track to be simulated, can be 'fbm' or 'constant'
         simulation_cube : array-like
             empty space for simulation
         hursts : list
@@ -196,6 +199,7 @@ class Simulate_cells(sf.Track_generator):
         points_per_frame = dict(zip([str(i) for i in range(movie_frames)],[[] for i in range(movie_frames)]))
         for i in range(num_tracks):
             if track_type=="fbm":
+
                 xy,t = self._make_fbm_track(length=track_lengths[i],end_time=track_lengths[i],hurst=hursts[i],return_time=True)
                 
                 #check if the track length is larger than the number of frames
@@ -216,9 +220,51 @@ class Simulate_cells(sf.Track_generator):
                 #add the number of points per frame to the dictionary
                 for j in range(len(frames)):
                     points_per_frame[str(frames[j])].append(xy[j])
-        
+            if track_type=="constant":
+                #make a constant track
+                xy = np.array([initials[i] for ll in range(int(track_lengths[i]))])
+                #make the time array
+                t = np.arange(track_lengths[i],dtype=int)
+                #check if the track length is larger than the number of frames
+                if len(xy) > movie_frames:
+                    xy = xy[:movie_frames]
+                    t = t[:movie_frames]
+                #find a random starting point for the track frame using 0 as starting and movie_frames-track_length as ending
+                start_frame = random.randint(0,movie_frames-len(xy))
+                #shift the frames to start at the start_frame
+                frames = start_frame + t
+                #add this to the dictionary of tracks
+                tracks[i] = {'xy':xy,'frames':frames,'diffusion_coefficient':0,'initial':initials[i],'hurst':0}
+                #add the number of points per frame to the dictionary
+                for j in range(len(frames)):
+                    points_per_frame[str(frames[j])].append(xy[j])
                     
         return tracks,points_per_frame
+    
+    def _format_points_per_frame(self,points_per_frame):
+        '''
+        Docstring for _format_points_per_frame: format the points per frame dictionary so that for each key the set of tracks in it are 
+        converted to a numpy array of N x 2 where N is the total amount of points in that frame. You don't need this function. 
+        
+        Parameters:
+        -----------
+        points_per_frame : dict
+            keys = str(i) for i in range(movie_frames), values = list of tracks, which are collections of [x,y] coordinates
+        
+        Returns:
+        --------
+        points_per_frame : dict
+            keys = str(i) for i in range(movie_frames), values = numpy array of N x 2 where N is the total amount of points in that frame
+        
+        '''
+        for i in points_per_frame.keys():
+            #each value is a list of K lists that are composed of M x 2 arrays where M can be different for each list
+            #we want to convert this to a numpy array of N x 2 where N is the total amount of points in that frame
+            point_holder = []
+            for j in points_per_frame[i]:
+                point_holder.append(j)
+            points_per_frame[i] = np.array(point_holder)
+        return points_per_frame
 
     def _update_map(self,map,points_per_frame):
         ''' Docstring for _update_map: update the map with the points per frame
@@ -241,7 +287,7 @@ class Simulate_cells(sf.Track_generator):
         return map
     
     def get_cell(self,dims=None,movie_frames=None,num_tracks=None,diffusion_coefficients=None,initials=None,
-                hursts=None,track_type='fbm',mean_track_length=None,
+                hursts=None,track_type=None,mean_track_length=None,
                 track_length_distribution=None,exposure_time=None):
         ''' Docstring for get_cell: get the cell for simulation
 
@@ -272,8 +318,8 @@ class Simulate_cells(sf.Track_generator):
         --------
         cell : dict
             dictionary containing the tracks and points per frame for the cell
-            Keys = 'tracks','points_per_frame'
-            Values = tracks,points_per_frame
+            Keys = 'map','tracks','points_per_frame'
+            Values = simulation_cube,tracks,points_per_frame
 
         '''
         if dims is None:
@@ -294,6 +340,8 @@ class Simulate_cells(sf.Track_generator):
             track_length_distribution = self.global_params["track_distribution"]
         if exposure_time is None:
             exposure_time = self.global_params['exposure_time']
+        if track_type is None:
+            track_type = self.cell_params['track_type']
         
         #create the simulation cube
         simulation_cube = self._define_space(dims=dims,movie_frames=movie_frames)
@@ -306,7 +354,163 @@ class Simulate_cells(sf.Track_generator):
         map = self._update_map(map=simulation_cube,points_per_frame=points_per_frame)
         return {"map":map,"tracks":tracks,"points_per_frame":points_per_frame}
 
+    def sample_cells(self,dims=None,movie_frames=None,num_tracks=None,diffusion_coefficients=None,initials=None,
+                hursts=None,track_type='fbm',mean_track_length=None,
+                track_length_distribution=None,exposure_time=None,subsample_sizes=None,**kwargs):
+        ''' Docstring for sample_cells: create a true set of tracks given the variables and then create subsamples of the tracks to be used for the cell simulation
 
+        Parameters:
+        -----------
+        dims : tuple, Default = None
+            dimensions of the simulation cube
+        movie_frames : int, Default = None
+            number of frames to be simulated
+        num_tracks : int, Default = None
+            number of tracks to be simulated
+        diffusion_coefficients : list, Default = None
+            list of diffusion coefficients for each track
+        initials : list, Default = None 
+            list of initial positions for each track
+        hursts : list, Default = None
+            list of hurst exponents for each track
+        track_type : str, Default = 'fbm'
+            type of track to be simulated, currently only 'fbm' is supported
+        mean_track_length : int, Default = None
+            mean track length for the tracks
+        track_length_distribution : str, Default = None
+            distribution of track lengths, currently only 'poisson' is supported
+        exposure_time : int, Default = None
+            exposure time for the SMT experiment in ms
+        subsample_sizes : list or array-like dim = 1, Default = None
+            list of subsample sizes to be used for the simulation
+
+        KWARGS: (not implemented yet)
+        -------
+        subsample_weights : list must be same length as num_tracks
+            list of weights for each track in the subsample based on weight_var
+        weight_var : str (can be 'diffusion_coefficient','hurst')
+            variable to be used for weighting the tracks
+        
+        Returns:
+        --------
+        output_subsample : list of dicts
+            list of dictionaries containing the tracks and points per frame for each subsample
+            Keys = 'map','tracks','points_per_frame'
+            Values = simulation_cube,tracks,points_per_frame
+        output_true : dict
+            dictionary containing the tracks and points per frame for the true set of tracks (all of them)
+            Keys = 'map','tracks','points_per_frame'
+            Values = simulation_cube,tracks,points_per_frame
+
+        '''
+        if dims is None:
+            dims = self.cell_params['dims']
+        if movie_frames is None:
+            movie_frames = self.cell_params['movie_frames']
+        if num_tracks is None:
+            num_tracks = self.cell_params['num_tracks']
+        if diffusion_coefficients is None:
+            diffusion_coefficients = self.cell_params['diffusion_coefficients']
+        if initials is None:
+            initials = self.cell_params['initials']
+        if hursts is None:
+            hursts = self.cell_params['hursts']
+        if mean_track_length is None:
+            mean_track_length = self.global_params['track_length_mean']
+        if track_length_distribution is None:
+            track_length_distribution = self.global_params["track_distribution"]
+        if exposure_time is None:
+            exposure_time = self.global_params['exposure_time']
+
+
+        #if the subsample sizes are not defined, return the output of self.get_cell without subsampling
+        if subsample_sizes is None:
+            return [self.get_cell(dims=dims,movie_frames=movie_frames,num_tracks=num_tracks,diffusion_coefficients=diffusion_coefficients,
+                                initials=initials,hursts=hursts,track_type=track_type,mean_track_length=mean_track_length,
+                                track_length_distribution=track_length_distribution,exposure_time=exposure_time)]
+        #make sure each subsample size is less than the number of tracks
+        for i in subsample_sizes:
+            if i > num_tracks:
+                raise ValueError("Subsample size must be less than the number of tracks")
+
+        #create the simulation cube
+        simulation_cube = self._define_space(dims=dims,movie_frames=movie_frames)
+        #create the tracks
+        tracks,points_per_frame = self._create_cell_tracks(num_tracks=num_tracks,diffusion_coefficients=diffusion_coefficients,
+                                                        initials=initials,simulation_cube=simulation_cube,hursts=hursts,
+                                                        track_type=track_type,mean_track_length=mean_track_length,
+                                                        track_length_distribution=track_length_distribution,exposure_time=exposure_time)
+        full_map = self._update_map(map=simulation_cube,points_per_frame=points_per_frame)
+        #if kwargs is empty make a list of wieghts that are all 1
+        if len(kwargs) == 0:
+            weights = np.ones(num_tracks)/num_tracks
+
+        #for each subsample size, create a subsample of the tracks and make a new map
+        output = []
+        for i in subsample_sizes:
+            #create the simulation cube for this new sample 
+            simulation_cube_sample = self._define_space(dims=dims,movie_frames=movie_frames)
+            #create the subsample
+            #from the full sample tracks, choose i random tracks without replacement
+            subsample_tracks = {k:tracks[k] for k in np.random.choice(list(tracks.keys()),i,replace=False, p=weights)}
+            #make a new points per frame dictionary
+            subsample_points_per_frame = self._convert_track_dict_points_per_frame(subsample_tracks,movie_frames)
+            #update the map
+            subsample_map = self._update_map(map=simulation_cube_sample,points_per_frame=subsample_points_per_frame)
+            #append the output
+            output.append({"map":subsample_map,"tracks":subsample_tracks,"points_per_frame":subsample_points_per_frame})
+        output_subsample = output
+        output_overall = {"map":full_map,"tracks":tracks,"points_per_frame":points_per_frame}
+        return output_subsample,output_overall
+    
+    def _convert_track_dict_points_per_frame(self,tracks,movie_frames):
+        '''Docstring for _convert_track_dict_points_per_frame: convert the track dictionary to a dictionary of points per frame
+
+        Parameters:
+        -----------
+        tracks : dict
+            dictionary of tracks, keys = track number, values = dictionary with keys = 'xy','frames','diffusion_coefficient','initial','hurst'
+        movie_frames : int
+            number of frames in the movie
+        
+        Returns:
+        --------
+        points_per_frame : dict
+            dictionary of points per frame, keys = frame number, values = list of (x,y) tuples
+        
+        '''
+        points_per_frame = dict(zip([str(i) for i in range(movie_frames)],[[] for i in range(movie_frames)]))
+        for i,j in tracks.items():
+            for k in range(len(j["frames"])):
+                points_per_frame[str(j["frames"][k])].append(j["xy"][k])
+
+        return points_per_frame
+
+    def _convert_track_dict_msd(self,tracks):
+        '''Docstring for _convert_track_dict_msd: convert the track dictionary to a dictionary of tracks with the format
+        required for the msd function
+
+        Parameters:
+        -----------
+        tracks : dict
+            dictionary of tracks, keys = track number, values = dictionary with keys = 'xy','frames','diffusion_coefficient','initial','hurst'
+        
+        Returns:
+        --------
+        track_msd : dict
+            dictionary of tracks with the format required for the msd function, keys = track number, values = list of (x,y,T) tuples
+            
+        
+        '''
+        track_msd = {}
+        for i,j in tracks.items():
+            #make a (x,y,T) tuple for each point
+            track_msd[i] = []
+            for k in range(len(j["xy"])):
+                track_msd[i].append((j["xy"][k][0],j["xy"][k][1],j["frames"][k]))
+            #add this to the dictionary
+            track_msd[i] = np.array(track_msd[i])
+        return track_msd
 
 def save_tiff(image,path,img_name=None):
     ''' Docstring for save_tiff: save the image as a tiff file
@@ -396,6 +600,32 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
     data : dict, Default = None
         dictionary of data to be saved, Keys = "map","tracks","points_per_frame" Values = array-like. 
         See the return of the function simulate_cell_tracks for more details
+    parameters : dict, Default = None (dict with the keys "cell_parameters","global_parameters")
+        cell_parameters : dict, Default = None
+            dictionary of cell parameters, Keys = "num_tracks",
+                                                  "diffusion_coefficients",
+                                                  "initials",
+                                                  "simulation_cube",
+                                                  "hursts",
+                                                  "track_type",
+                                                  "mean_track_length",
+                                                  "track_length_distribution",
+                                                  "exposure_time"
+        global_parameters : dict, Default = None
+            dictionary of global parameters, Keys = "num_cells",
+                                                    "num_subsegments",
+                                                    "subsegment_type",
+                                                    "subsegment_num_frames",
+                                                    "subsegment_num_points",
+                                                    "subsegment_num_tracks",
+                                                    "subsegment_num_diffusion_coefficients",
+                                                    "subsegment_num_initials",
+                                                    "subsegment_num_hursts",
+                                                    "subsegment_num_track_type",
+                                                    "subsegment_num_mean_track_length",
+                                                    "subsegment_num_track_length_distribution",
+                                                    "subsegment_num_exposure_time"
+                                                    (names might be different, but should be self explanatory once you load the dictionary)
     
     Returns:
     --------
@@ -405,6 +635,40 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
     #make the directory if it does not exist
     if not os.path.exists(cd):
         os.makedirs(cd)
+
+    #saves the data if it is passed as a keyword argument (map,tracks,points_per_frame)
+    with open(cd+'Track_dump.pkl', 'wb+') as f:
+        pickle.dump(kwargs.get("data",{}), f)
+    #saves the parameters used to generate the simulation
+    with open(cd+'params_dump.pkl', 'wb+') as f:
+        pickle.dump(kwargs.get("parameters",{}), f)
+
+    #in this directory, dump the parameters into a json file
+    if "parameters" in kwargs.keys():
+        with open('{0}/parameters.json'.format(cd), 'w') as fp:
+            #check if parameter values are dictionaries
+            for i,j in kwargs["parameters"].items():
+                if type(j) == dict:
+                    for k,l in j.items():
+                        if type(l) == np.ndarray and k !="initials":
+                            #if true then find the unique values in the array with the number of times they occur and save it as a dictionary "unique_values":count
+                            unique, counts = np.unique(l, return_counts=True)
+                            #convert the arrays to lists
+                            unique = unique.tolist()
+                            counts = counts.tolist()
+                            kwargs["parameters"][i][k] = dict(zip(unique, counts))
+                        elif k=="initials":
+                            #from the collection of [[x,y]...] find the unique values of [x,y] combinations and save it as a dictionary "unique_values":count
+                            unique, counts = np.unique(l, axis=0,return_counts=True)
+                            #convert the arrays to lists
+                            unique = map(str,unique.tolist())
+                            counts = counts.tolist()
+                            kwargs["parameters"][i][k] = dict(zip(unique, counts))
+                        
+                            
+            json.dump(kwargs["parameters"], fp,indent=4)
+
+
     #make a diretory inside cd called Analysis if it does not exist
     if not os.path.exists('{0}/Analysis'.format(cd)):
         os.makedirs('{0}/Analysis'.format(cd))
@@ -425,11 +689,4 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
     
         img = Image.fromarray(hold_img[i])
         img.save(hold_name[i])
-    #saves the data if it is passed as a keyword argument (map,tracks,points_per_frame)
-    with open(cd+'Track_dump.pkl', 'wb+') as f:
-        pickle.dump(kwargs.get("data",{}), f)
-    #saves the parameters used to generate the simulation
-    with open(cd+'params_dump.pkl', 'wb+') as f:
-        pickle.dump(kwargs.get("params",{}), f)
-
     return hold_img

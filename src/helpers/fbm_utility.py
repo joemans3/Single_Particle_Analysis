@@ -83,8 +83,8 @@ def get_fbm_sample(l=1,h=0.5,d=1,n=1):
             sample_t.append(t_values[1:])
 
         else:
-            samples.append(fbm_sample)
-            sample_t.append(t_values)
+            samples.append(fbm_sample[:-1])
+            sample_t.append(t_values[:-1])
     return [sample_t[0], samples]
 
 	

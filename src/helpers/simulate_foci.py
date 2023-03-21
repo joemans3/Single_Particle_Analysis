@@ -247,12 +247,12 @@ class sim_foci():
 
 				#generate poisson process over this space using the gaussian probability as means
 				if movie==False:
-					space_map += np.random.poisson(gauss_probability*point_intensity[i]*self.exposure_time + self.base_noise,size=(1,len(x),len(y)))
+					space_map += np.random.poisson(gauss_probability*point_intensity[i]*self.exposure_time + self.base_noise,size=(len(x),len(y)))
 				else:
 					space_map += gauss_probability*point_intensity[i]*self.exposure_time
 			if movie==True:
-				intensity = np.random.poisson(space_map + self.base_noise,size=(1,len(x),len(y)))
-				space_map = intensity[0]
+				intensity = np.random.poisson(space_map + self.base_noise,size=(len(x),len(y)))
+				space_map = intensity
 		return space_map,points
 
 class Track_generator(sim_foci):
@@ -325,6 +325,7 @@ class Track_generator(sim_foci):
 		------
 		1. If the distribution is exponential, then the track lengths are generated using exponential distribution.
 		2. If the distribution is uniform, then the track lengths are generated using uniform distribution between 0 and 2*track_length_mean.
+		3. If the distribution is constant, then all the track lengths are set to the mean track length. (self.track_length_mean)
 
 		Exceptions:
 		-----------
@@ -343,6 +344,8 @@ class Track_generator(sim_foci):
 		elif self.track_distribution=="uniform":
 			#make sure each of the lengths is an integer
 			return np.ceil(np.random.uniform(low=1,high=2*(self.track_length_mean)-1,size=total_tracks))
+		elif self.track_distribution=="constant":
+			return np.ones(total_tracks)*self.track_length_mean
 		else:
 			raise ValueError("Distribution not recognized")
 
@@ -371,6 +374,8 @@ class Track_generator(sim_foci):
 			track_type = self.track_type
 		if lengths is None:
 			track_lengths = self._get_lengths()
+		else:
+			track_lengths = lengths
 		tracks = []
 		for i in track_lengths:
 			if track_type=="fbm":
@@ -555,6 +560,31 @@ class Track_generator(sim_foci):
 			return np.stack((x,y),axis =-1)
 	def _get_ctrw(self):
 		pass
+	def _constant_track(self,length,end_time=1):
+		'''Docstring for _constant_track
+		Returns a track that is constant in time
+		
+		Parameters:
+		-----------
+		length: int
+			length of the track
+		end_time: int, default 1
+			end time of the track, default 1
+
+		Returns:
+		--------
+		track as a numpy array of shape (length,2) and time array as a numpy array of shape (length,)
+		
+		'''
+		#make the length an int if it is not
+		length = int(length)
+		#make the track
+		track = np.zeros((length,2))
+		#make the time array
+		t = np.linspace(0,end_time,length)
+		return track,t
+
+
 
 class sim_focii(Track_generator): #is this usefull or not? Turns out to be slower ~x2 than the brute force way.
 	''' 
