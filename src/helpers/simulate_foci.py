@@ -584,8 +584,6 @@ class Track_generator(sim_foci):
 		t = np.linspace(0,end_time,length)
 		return track,t
 
-
-
 class sim_focii(Track_generator): #is this usefull or not? Turns out to be slower ~x2 than the brute force way.
 	''' 
 	Class for simulating focii in space, and detecting them.

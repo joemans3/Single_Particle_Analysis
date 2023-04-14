@@ -103,9 +103,74 @@ def linear_fitting(xdata,ydata,deg=1):
     return np.array([popt,pcov])
 
 
+#find the diffusion coefficient given a time and distance
+def find_diffusion_coefficient(time,distance,dim):
+    '''
+    Docstring for find_diffusion_coefficient
+    This function finds the diffusion coefficient given a time and distance, this is just a simple calculation:
+    D = (1/(2*dim))*(distance)^2/time
 
+    Parameters:
+    -----------
+    time : array-like or int or float
+        The time
+    distance : array-like or int or float
+        The distance
+    dim : int
+        The dimensionality of the system
+    
+    Returns:
+    --------
+    float or numpy array
+        The diffusion coefficient, units are based on the units of the input parameters (time and distance, ie: um^2/s)
+    '''
+    #if the time and distances are lists convert to numpy arrays
+    if isinstance(time,list):
+        time = np.array(time)
+    if isinstance(distance,list):
+        distance = np.array(distance)
 
+    #check if time and distance are arrays or numbers
+    if not isinstance(time,(int,float,np.ndarray)) or not isinstance(distance,(int,float,np.ndarray)):
+        raise ValueError("time and distance must be arrays or numbers.")
+    #if they are arrays, check if they are the same shape
+    if isinstance(time,np.ndarray) and isinstance(distance,np.ndarray):
+        if not np.shape(time) == np.shape(distance):
+            raise ValueError("time and distance are not the same shape.")
+    #if the dim is a number but time and distance are arrays, convert dim to an array of the same shape as time and distance
+    if isinstance(dim,(int,float)) and isinstance(time,np.ndarray) and isinstance(distance,np.ndarray):
+        dim = np.ones(np.shape(time))*dim
+    
+    #calculate the diffusion coefficient
+    D = (distance**2)/(time*2*dim) 
+    return D
 
+def find_static_localization_error_MSD(sigma,dim):
+    '''Docstring for find_static_localization_error_MSD
+    Given the isotropic gaussian scale (sigma), this function finds the static localization error (sigma_loc) using the equation:
+    sigma_loc = 2n*(sigma)^2
+
+    Parameters:
+    -----------
+    sigma : array-like or int or float
+        The isotropic gaussian scale
+    dim : int
+        The dimensionality of the system
+    
+    Returns:
+    --------
+    float or numpy array
+        The static localization error
+    '''
+    #if sigma is a list convert to numpy array
+    if isinstance(sigma,list):
+        sigma = np.array(sigma)
+    #check if sigma is an array or number
+    if not isinstance(sigma,(int,float,np.ndarray)):
+        raise ValueError("sigma must be an array or number.")
+    #calculate the static localization error
+    sigma_loc = 2*dim*(sigma**2)
+    return sigma_loc
 
 #function to assign a random starting point in a range
 def _random_starting_point(start,end):
@@ -669,7 +734,7 @@ def MSD_tau(x,y,permutation=True):
     #return the displacements
     return displacements
 
-def MSD_Tracks(tracks,permutation=True,return_type="msd_curves",verbose=False):
+def MSD_Tracks(tracks,permutation=True,return_type="msd_curves",verbose=False,conversion_factor=None):
     '''Documentation for MSD_Tracks
 
     Parameters:
@@ -686,6 +751,8 @@ def MSD_Tracks(tracks,permutation=True,return_type="msd_curves",verbose=False):
     verbose : bool (default = False)
         if verbose == True then returns the raw ensemble MSD displacement for each tau aswell as the MSD curves noted above
         TODO: this is annoying and should be separated into a different function but is not yet
+    conversion_factor : float (default = None)
+        if conversion_factor != None then the coordinates are converted to the desired units before the MSD is calculated
     
     Returns:
     --------
@@ -699,6 +766,10 @@ def MSD_Tracks(tracks,permutation=True,return_type="msd_curves",verbose=False):
     tracks_displacements = {}
     #loop through the tracks
     for key,value in tracks.items():
+
+        #convert the coordinates based on the conversion factor
+        if conversion_factor != None:
+            value *= conversion_factor
         #calculate the displacements for each track
         disp = MSD_tau(value[:,0],value[:,1],permutation)
         tracks_displacements[key] = disp
@@ -734,8 +805,6 @@ def msd_avgerage_utility(displacements):
         dictionary of the MSD for each time lag, key = time lag, value = array of MSD values, shape (n,)
     
     '''
-    #find the number of dimensions
-    D = np.array(displacements[1]).shape[1]
     #create a dictionary to store the MSD for each time lag
     msd = {}
     #loop through the time lags
@@ -744,7 +813,7 @@ def msd_avgerage_utility(displacements):
         #the MSD is the average of the squared displacements
         #the squared displacements are the sum of the squared components of the displacements
         #divide by the number of dimensions to get the average of the squared displacements
-        msd[key] = np.mean(np.sum(np.array(value)**2,axis=1))/(2*D)
+        msd[key] = np.mean(np.sum(np.array(value)**2,axis=1))
     #return the MSD
     return msd
 
@@ -793,7 +862,28 @@ def dic_union_two(dic_1,dic_2):
     #return the union
     return dic_union
 
+
 ######Track percent identity functions######
+
+def point_per_frame_difference(true_points_per_frame,extracted_points_per_frame):
+    ''' Documentation for point_per_frame_difference
+    Finds the closest point in the extracted points per frame to the true points per frame and returns the difference between the two points
+    for each such point in each frame
+    
+    Parameters:
+    -----------
+    true_points_per_frame : dict
+        dictionary of the true points per frame, key = frame number, value = array of points, shape (n,2)
+    extracted_points_per_frame : dict
+        dictionary of the extracted points per frame, key = frame number, value = array of points, shape (n,2)
+
+    Returns:
+    --------
+    '''
+    #extracted points per frame may be less than true points per frame so we need to find the closest point in extracted points per frame to each point in true points per frame
+    
+
+    return 
 
 def percent_error(true,estimate,abs=True):
     ''' Documentation for percent_error
@@ -1187,8 +1277,6 @@ def convex_hull_area(points):
     #return the volume of the convex hull
     return hull.volume
 
-
-
 def MSD_tavg1(x,y,f,f_inc = False):
     if f_inc == True:
         return np.mean((np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0])/np.diff(f)))**2)/4.
@@ -1345,6 +1433,9 @@ def track_decomp(x,y,f,max_track_decomp):
     
     
     return np.array(msd)
+
+def fit_MSD_loc_err(t,p_0,p_1,p_2):
+    return p_0 * (t**(p_1)) + p_2
 
 def fit_MSD(t,p_0,p_1):
     return p_0 * (t**(p_1)) 

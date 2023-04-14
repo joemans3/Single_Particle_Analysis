@@ -801,7 +801,8 @@ class run_analysis:
 													sorted_tracks[2][kk][l], \
 													sorted_tracks[4][kk][l]), \
 													which = 'msd'), \
-					distance_from_drop = temp[drop_ID])
+					distance_from_drop = temp[drop_ID],
+					Intensity = sorted_tracks[3][kk][l])
 		return track
 	def _analyse_cell_tracks_utility(self,i,k,sorted_tracks):
 		'''
@@ -827,7 +828,15 @@ class run_analysis:
 			if len(true_drop_per_frame[ii]) == 0:
 				for l in range(len(sorted_tracks[0][ii])): #running over the tracks in frame k
 					#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
-					track = Trajectory(Track_ID = str(ii)+','+str(l), Frame_number = ii, X = sorted_tracks[1][ii][l], Y = sorted_tracks[2][ii][l], Classification = None, Drop_Identifier = None, Frames = sorted_tracks[4][ii][l], MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][ii][l],sorted_tracks[2][ii][l],sorted_tracks[4][ii][l]),which = 'msd'))
+					track = Trajectory(Track_ID = str(ii)+','+str(l), 
+										Frame_number = ii, 
+										X = sorted_tracks[1][ii][l], 
+										Y = sorted_tracks[2][ii][l], 
+										Classification = None, 
+										Drop_Identifier = None, 
+										Frames = sorted_tracks[4][ii][l], 
+										MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][ii][l],sorted_tracks[2][ii][l],sorted_tracks[4][ii][l]),which = 'msd'), 
+										Intensity = sorted_tracks[3][ii][l])
 					self.Movie[i].Cells[k].All_Tracjectories[str(ii)+','+str(l)] = track
 					self.Movie[i].Cells[k].No_Drops_Trajectory_Collection[str(ii)+','+str(l)] = track
 
@@ -1379,6 +1388,8 @@ class Trajectory:
 			ID of the drop that the trajectory belongs to
 		Frames : int
 			number of frames in the trajectory
+		Intensity : list or np.array
+			intensity of the trajectory (same length as X and Y and Frames)
 		MSD_total_um : float, default = None
 			total MSD of the trajectory
 		
@@ -1396,6 +1407,7 @@ class Trajectory:
 		self.Frames = Frames
 		self.X = X 
 		self.Y = Y 
+		self.Intensity = kwargs.get("Intensity",None)
 		self.Classification = Classification
 		self.Drop_Identifier = Drop_Identifier
 		self.MSD_total_um = MSD_total_um

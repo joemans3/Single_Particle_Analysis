@@ -58,8 +58,11 @@ class Simulate_cells(sf.Track_generator):
         '''
         self.cell_params = cell_params #dictionary of cell parameters
         self.global_params = global_params #dictionary of global parameters
-        self.units = self._define_units(pixel_size=global_params['pixel_size'],frame_time=global_params['frame_time'])
-        cell_params['diffusion_coefficients']=self._update_units(unit=cell_params['diffusion_coefficients'],orig_type='um^2/s',update_type='pix^2/ms')
+        self.units = self._define_units(pixel_size=global_params['pixel_size'],
+                                        frame_time=global_params['frame_time'])
+        cell_params['diffusion_coefficients']=self._update_units(unit=cell_params['diffusion_coefficients'],
+                                                                orig_type='um^2/s',
+                                                                update_type='pix^2/ms') #this converts to pix^2/(20)ms
         super().__init__(global_params,global_params)
 
         pass
@@ -112,7 +115,7 @@ class Simulate_cells(sf.Track_generator):
                 return unit*1000.
         elif orig_type == 'um^2/s':
             if update_type == 'pix^2/ms':
-                return unit*((1e6)/self.units['pixel_size']**2)/(1000./self.units['frame_time'])
+                return unit*((1e6)/self.units['pixel_size']**2)/(1000./self.units['frame_time']) #this converts to pix^2/(20)ms
         return 
     
     def _define_space(self,dims=(100,100),movie_frames=500):

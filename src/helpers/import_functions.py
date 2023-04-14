@@ -116,15 +116,12 @@ def find_image(path, ends_with = '.tif',full_path = False):
 		list of file paths with the root provided in Parameters with contrainsts of ends_with
 	'''
 	file_paths = []
-	for f in os.listdir(path):
-		if not os.path.isfile(f):
-			if f.endswith(ends_with):
-				if full_path:
-					file_path = os.path.join(path,f)
-					file_paths.append(file_path)
-				else: 
-					file_path = f
-					file_paths.append(file_path)
+	for i in os.listdir(path):
+		if i.endswith(ends_with):
+			if full_path:
+				file_paths.append(combine_path(path,i))
+			else:
+				file_paths.append(i)
 	return file_paths
 
 def name_sorter(strings,keyword):

@@ -113,6 +113,8 @@ class blob_detection:
 		
 		self.fitting_parameters = {}
 		self.verbose = verbose
+
+		
 	def _update_fitting_parameters(self,kwargs={}):
 		'''
 		Updates the fitting_parameters to be used in each iteration of this class object
@@ -557,8 +559,8 @@ class blob_detection:
 				lap_img = img[:,:,sigma_indx[inx]]
 			else:
 				lap_img = img
-			if val[-1] >=  size: #fix this condition, right now defalts to using defined size
-				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:2],sub_arr=[int(val[-1]*np.sqrt(2)+1),int(val[-1]*np.sqrt(2)+1)])
+			if val[-1] >=  30*size: #fix this condition, right now defalts to using defined size
+				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:2],sub_arr=[int(val[-1]*FWHM_FACTOR),int(val[-1]*FWHM_FACTOR)])
 
 			else:
 				x,y,view,_ = self._gaussian_mesh_helper(lap_img,val[:2],sub_arr=[size,size])
@@ -575,6 +577,9 @@ class blob_detection:
 
 			#check fit
 			if self.fitting_parameters.get("plot_fit",False):
+				#if this condition is called more than 3 time it will overflow memory so be careful. 
+				#a condition is made to check if this is called more than 5 times and if so it will not plot
+
 				z1 = gaussian2D(x,y,\
 								height=fit.params["height"],\
 								sig_x=fit.params["sigma_x"],\
