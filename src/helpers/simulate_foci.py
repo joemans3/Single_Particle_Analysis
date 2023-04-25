@@ -192,7 +192,7 @@ class sim_foci():
 			point_intensity *= np.ones(len(num_points))
 		points = self._makePoints(generator=kwargs.get("generator",None))
 
-		return self.generate_map_from_points(points,point_intensity)
+		return self.generate_map_from_points(points,point_intensity,movie=kwargs.get("movie",False))
 	
 	def generate_map_from_points(self,points,point_intensity=None,map=None,movie=False):
 		''' 
