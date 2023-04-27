@@ -33,6 +33,7 @@ if __name__=="__main__":
 import src.helpers.blob_detection as blob_detection
 import src.helpers.Analysis_functions as Analysis_functions
 import src.helpers.fbm_utility as fbm
+import src.helpers.condensate_movement as condensate_movement
 
 class sim_foci():
 	''' 
@@ -84,7 +85,44 @@ class sim_foci():
 		self.projection_frames = kwargs.get("projection_frames",1000)
 
 		self.uniform_blob = kwargs.get("unifrom",False)
-	
+
+		@property
+		def condensates(self)->dict:
+			return self._condensates
+		@condensates.setter
+		def condensates(self,condensates: dict):
+			self._condensates = condensates
+
+	def create_condensate_dict(self,inital_centers: np.ndarray,
+			    			initial_scale: np.ndarray,
+							diffusion_coefficient: np.ndarray,
+							hurst_exponent: np.ndarray,
+							**kwargs):
+		'''
+		Docstring for create_condensate_dict:
+
+		Parameters:
+		-----------
+		inital_centers: numpy array of shape (num_condensates,2) with the initial centers of the condensates
+		initial_scale: numpy array of shape (num_condensates,2) with the initial scales of the condensates
+		diffusion_coefficient: numpy array of shape (num_condensates,2) with the diffusion coefficients of the condensates
+		hurst_exponent: numpy array of shape (num_condensates,2) with the hurst exponents of the condensates
+		**kwargs: additional arguments to be passed to the condensate_movement.Condensate class
+		'''
+		#check the length of diffusion_coefficient to find the number of condensates
+		num_condensates = len(diffusion_coefficient)
+		condensates = {}
+		for i in range(num_condensates):
+			condensates[str(i)] = condensate_movement.Condensate(
+				initial_center = inital_centers[i],
+				initial_scale = initial_scale[i],
+				diffusion_coefficient = diffusion_coefficient[i],
+				hurst_exponent = hurst_exponent[i],
+				condensate_id = str(i),
+				**kwargs
+			)
+		self.condensates = condensates
+
 	def _define_space(self,**kwargs):
 		''' 
 		Docstring for _define_space:

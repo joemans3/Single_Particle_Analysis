@@ -1,6 +1,26 @@
+'''
+Contains class for storing condensate data.
+
+Usage:
+------
+    Initialize the class as follows:
+        condensate = Condensate(**{
+            "inital_position":np.array([0, 0]),
+            "initial_time":0,
+            "diffusion_coefficient":0,
+            "hurst_exponent":0,
+            "units_time":'ms',
+            "units_position":'um',
+            "condensate_id":0,
+            "initial_scale":0,
+        })
+    Call the class object as follows to get the position and scale of the condensate at a given time:
+        condensate(times, time_unit) -> dict{"Position":np.ndarray, "Scale":float} 
+'''
+
 import numpy as np
 import src.helpers.fbm_utility as fbm
-
+import matplotlib.pyplot as plt
 from src.helpers.decorators import cache
 
 class Condensate:
@@ -163,7 +183,7 @@ class Condensate:
         self.add_positions(time_array, coords[1:], scales)
     
     def calculate_scale(self, time: np.ndarray, position: np.ndarray)->np.ndarray:
-        ''' Calculates the scale of the condensate at a given time.
+        '''Calculates the scale of the condensate at a given time.
         
         Parameters:
         -----------
@@ -177,3 +197,37 @@ class Condensate:
         #make array of length time with the last scale
         scale = np.full(time.shape, last_scale)
         return scale
+    
+    def plot_condensate(self,ax: plt.Axes, **kwargs)->plt.Axes:
+        '''
+        Plots the condensate
+
+        Parameters:
+        -----------
+        ax: plt.Axes
+            Axes to plot the condensate on.
+        **kwargs:
+            Keyword arguments to pass to the plot function.
+        '''
+        #check if the _condensate_positions exists
+        if not hasattr(self, '_condensate_positions'):
+            #if it doesn't then we need to generate the condensate positions
+            self.times = np.array([self.initial_time])
+            self.condensate_positions = np.array([self.initial_position])
+            self.scale = np.array([self.initial_scale])
+
+        #plot the condensate positions
+        ax.plot(self.condensate_positions[:,0], self.condensate_positions[:,1], **kwargs)
+
+        #plot a circle at all the positions with the scale as the radius
+        for i in range(len(self.condensate_positions)):
+            ax.add_patch(plt.Circle(self.condensate_positions[i], self.scale[i], color='r', fill=False))
+        
+        #plot the initial position in a different colour
+        ax.scatter(self.initial_position[0], self.initial_position[1], color='g')
+        #plot the final position in a different colour
+        ax.scatter(self.condensate_positions[-1][0], self.condensate_positions[-1][1], color='b')
+        if 'save_path' in kwargs:
+            plt.savefig(kwargs['save_path'])
+        plt.show()
+        return ax
