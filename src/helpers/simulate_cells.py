@@ -187,8 +187,20 @@ class Simulate_cells(sf.Track_generator):
         if track_length_distribution is None:
             track_length_distribution = self.global_params["track_distribution"]
 
-        #make sure that the number of tracks is equal to the number of diffusion coefficients and initials with raise an error if not
-        assert len(hursts) == len(diffusion_coefficients) == len(initials) == num_tracks, 'The number of tracks is not equal to the number of diffusion coefficients or initials or hurst exponents'
+        if isinstance(initials,dict):
+            #do the _initial_checker()
+            self._initial_checker(initials=initials)
+            #the diffusion_coefficients will be in um^2/s so we need to convert to pix^2/(frame_time)
+            diff_coef_condensate = self._update_units(unit=initials['diffusion_coefficient'],
+                                                        orig_type='um^2/s',
+                                                        update_type='pix^2/ms')
+            #initialize the Condensates.
+            
+        
+        else:
+            #make sure that the number of tracks is equal to the number of diffusion coefficients and initials with raise an error if not
+            assert len(hursts) == len(diffusion_coefficients) == len(initials) == num_tracks, 'The number of tracks is not equal to the number of diffusion coefficients or initials or hurst exponents'
+
         #get the exposure time for the SMT experiment in ms
         if exposure_time is None:
             exposure_time = self.global_params['exposure_time'] #ms
@@ -346,6 +358,12 @@ class Simulate_cells(sf.Track_generator):
         if track_type is None:
             track_type = self.cell_params['track_type']
         
+        #check if initials is a dictionary
+        if isinstance(initials,dict):
+            #unoptimized for now TODO: optimize this and make it more general
+            
+            pass
+
         #create the simulation cube
         simulation_cube = self._define_space(dims=dims,movie_frames=movie_frames)
         #create the tracks
@@ -356,7 +374,28 @@ class Simulate_cells(sf.Track_generator):
         #update the map
         map = self._update_map(map=simulation_cube,points_per_frame=points_per_frame)
         return {"map":map,"tracks":tracks,"points_per_frame":points_per_frame}
+    
+    def _initial_checker(self,initials):
+            ''' Docstring for _initial_checker: check the initials dictionary
+            This only applies which initials is a dictionary; this occurs when we are defining condensate movement with the Condensate class
 
+            Parameters:
+            -----------
+            initials : dict
+                dictionary containing the initial centers, initial scale, diffusion coefficient and hurst exponent
+            '''
+            #make sure when the initials are a dictionary that it contains the keys: 1) "inital_centers", 2) "initial_scale"
+            # 3) "diffusion_coefficient" and 4) "hurst_exponent" at the very least
+            #keys to check for
+            keys = ["initial_centers","initial_scale","diffusion_coefficient","hurst_exponent"]
+            #check if the keys are in the dictionary
+            if all(k in initials for k in keys):
+                pass
+            else:
+                raise ValueError("The initials dictionary must contain the following keys at the very least: {}".format(keys))
+
+            pass
+        
     def sample_cells(self,dims=None,movie_frames=None,num_tracks=None,diffusion_coefficients=None,initials=None,
                 hursts=None,track_type='fbm',mean_track_length=None,
                 track_length_distribution=None,exposure_time=None,subsample_sizes=None,**kwargs):

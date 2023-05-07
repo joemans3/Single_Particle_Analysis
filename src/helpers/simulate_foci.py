@@ -927,7 +927,7 @@ class sim_focii(Track_generator): #is this usefull or not? Turns out to be slowe
 		self.total_points = total_points
 		return self.radius_analysis()
 
-def tophat_function_2d(var,center,radius,bias_subspace,space_prob):
+def tophat_function_2d(var,center,radius,bias_subspace,space_prob,**kwargs):
 	'''
 	Defines a circular top hat probability distribution with a single biased region defining the hat.
 	The rest of the space is uniformly distrubuted in 2D
@@ -1186,8 +1186,6 @@ if __name__ == "__main__":
 	plt.xlabel("Probability to be in subsection")
 	plt.axvline(x=density_dif*(np.pi*radius**2)/max_x**2)
 	plt.show()
-
-
 
 
 
