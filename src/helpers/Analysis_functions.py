@@ -1227,15 +1227,18 @@ def point_pair_error_detection(true_point_pairs,extracted_point_pairs,threshold=
     #find the total amount of point pairs found in the extracted point pairs
     total_extracted_point_pairs = np.sum([len(point_pairs) for _,point_pairs in extracted_point_pairs.items()])
 
+    #make a deep copy of the extracted point pairs
+    extracted_point_pairs_copy = copy.deepcopy(extracted_point_pairs)
+
     #loop through the true point pairs
-    for frame_number,true_point_pairs in true_point_pairs.items():
+    for frame_number,true_point_pair in true_point_pairs.items():
         #if the frame number is in the extracted point pairs
-        if frame_number in extracted_point_pairs.keys():
+        if frame_number in extracted_point_pairs_copy.keys():
             #loop through the true point pairs
-            for point_pair in true_point_pairs:
+            for point_pair in true_point_pair:
                 #find the distances between the true point pair and all the extracted point pairs,
                 #if the min distance is less than the threshold then add one to the detected point pairs
-                min_temp = np.sqrt(np.sum((extracted_point_pairs[frame_number] - point_pair)**2,axis=2))
+                min_temp = np.sqrt(np.sum((extracted_point_pairs_copy[frame_number] - point_pair)**2,axis=2))
                 #if there are no extracted point pairs then continue (should not happen)
                 if min_temp.size == 0:
                     continue
@@ -1246,6 +1249,8 @@ def point_pair_error_detection(true_point_pairs,extracted_point_pairs,threshold=
                 #so the threshold is multiplied by 2 because there are 2 points in the true point pair for comparison
                 if np.min(np.sum(min_temp,axis=1)) < threshold*2:
                     detected_point_pairs += 1
+                    #remove the point pair from the extracted point pairs
+                    extracted_point_pairs_copy[frame_number] = np.delete(extracted_point_pairs_copy[frame_number],np.argmin(np.sum(min_temp,axis=1)),axis=0)
     #return the percent of point pairs detected
     return 100*detected_point_pairs/total_point_pairs, 100*np.abs(total_extracted_point_pairs-detected_point_pairs)/total_extracted_point_pairs
 

@@ -506,7 +506,7 @@ class run_analysis:
 		nucleoid_path = kwargs.get("nucleoid_path",cd + '/gfp')
 		#check if cd+/gfp exists
 		if not os.path.exists(nucleoid_path):
-			Warning("No gfp folder found in {0}. Assuming no cell segmentation exists and running analysis without use of segmentation.".format(cd))
+			Warning("No gfp folder found in {0}. Assuming no cell segmentation exists and running analysis without use of segmentation. \n Note this mean the whole frame is a considered one cell".format(cd))
 			return self._read_track_data_nocells(wd,t_string,**kwargs)
 		
 		nucleoid_imgs = find_image(nucleoid_path,full_path=True)
@@ -534,6 +534,7 @@ class run_analysis:
 
 		#initialize data structure
 		for pp in range(len(movies)):
+			#loading the track data  (formated as [track_ID,frame_ID,x,y,intensity])
 			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
 
 			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
@@ -631,6 +632,19 @@ class run_analysis:
 		----------
 		track_set : array-like
 			the set of tracks for one specific frame of reference from TrackMate (unfiltered)
+			This is a 2D array with the following columns: [track_ID,frame_ID,x,y,intensity]
+		**kwargs : dict
+			frame_total : int
+				the total number of frames in the movie
+			frame_step : int
+				the step size for the frame
+			track_len_upper : int
+				the upper limit of the track length
+			track_len_lower : int
+				the lower limit of the track length
+			order : tuple
+				the order of the data in track_set
+
 		
 		Returns
 		-------
@@ -1304,6 +1318,8 @@ class Cell:
 		self.cell_short_axis = cell_short_axis
 		self.cell_axis_lengths = cell_axis_lengths
 
+		#properties below are not initialized in the __init__ method but are defined later
+
 		#keys in Trajectory_Collection are String(i,j) (frame,viable_drop index) while the values are instances of Trajectory_Drop_Mapping
 		self.Trajectory_Collection = {}
 		#If no drops are identified in this frame then put all "OUT" trajectories in this collection with (i,k) -> (frame,trajectory index)
@@ -1330,6 +1346,31 @@ class Cell:
 			list_sorted[int(i[0])].append(j)
 		return list_sorted
 
+	#points_per_frame allows us to see how many points are in each frame of this cell
+	#this is of the form {frame_number: number_of_points,...}
+	@property
+	def points_per_frame(self)->dict:
+		return self._points_per_frame
+	@points_per_frame.setter
+	def points_per_frame(self,points_per_frame: dict)->None:
+		#make sure points_per_frame is a dictionary with keys as frame numbers and values as the number of points in that frame
+		if not isinstance(points_per_frame,dict):
+			raise TypeError("points_per_frame must be a dictionary")
+		self._points_per_frame = points_per_frame
+
+	#in conjunction with points_per_frame, this allows us to see how much area the points in each frame cover
+	#this is of the form {frame_number: area_of_points,...}
+	@property
+	def area_of_points_per_frame(self)->dict:
+		return self._area_of_points_per_frame
+	@area_of_points_per_frame.setter
+	def area_of_points_per_frame(self,area_of_points_per_frame: dict)->None:
+		#make sure area_of_points_per_frame is a dictionary with keys as frame numbers and values as the area of points in that frame
+		if not isinstance(area_of_points_per_frame,dict):
+			raise TypeError("area_of_points_per_frame must be a dictionary")
+		self._area_of_points_per_frame = area_of_points_per_frame
+
+	
 class Trajectory_Drop_Mapping:
 	'''
 	create a mapping for each viable drop to store all the Trajectory instances that belong to it in terms of Classification
@@ -1412,7 +1453,6 @@ class Trajectory:
 		self.Drop_Identifier = Drop_Identifier
 		self.MSD_total_um = MSD_total_um
 		self.distance_from_drop = kwargs.get("distance_from_drop",0)
-
 
 #define a custom class for boundary analysis
 
