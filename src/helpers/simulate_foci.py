@@ -583,7 +583,7 @@ class Track_generator(sim_foci):
 
 		Returns:
 		--------
-		track as a numpy array of shape (length,2)
+		track as a numpy array of shape (length,dim), if return_time is True, then returns track and time as a tuple
 		'''
 		#make the length an int if it is not
 		length = int(length)
@@ -591,11 +591,19 @@ class Track_generator(sim_foci):
 			hurst = self.track_hurst
 
 		t,xy = fbm.get_fbm_sample(l=end_time,n=length,h=hurst,d=dim)
-		x,y = xy
-		if return_time:
-			return np.stack((x,y),axis =-1),t
-		else:
-			return np.stack((x,y),axis =-1)
+		if dim==2:
+			x,y = xy
+
+			if return_time:
+				return np.stack((x,y),axis =-1),t
+			else:
+				return np.stack((x,y),axis =-1)
+		elif dim==3:
+			x,y,z = xy
+			if return_time:
+				return np.stack((x,y,z),axis =-1),t
+			else:
+				return np.stack((x,y,z),axis =-1)
 	def _get_ctrw(self):
 		pass
 	def _constant_track(self,length,end_time=1):
