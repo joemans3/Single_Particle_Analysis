@@ -187,7 +187,7 @@ class Simulate_cells(sf.Track_generator):
         if track_length_distribution is None:
             track_length_distribution = self.global_params["track_distribution"]
 
-        if isinstance(initials,dict):
+        if isinstance(initials,dict): #TODO need to finish this implementation
             #do the _initial_checker()
             self._initial_checker(initials=initials)
             #the diffusion_coefficients will be in um^2/s so we need to convert to pix^2/(frame_time)
