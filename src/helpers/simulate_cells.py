@@ -10,6 +10,8 @@ import src.helpers.simulate_foci as sf
 import skimage as skimage
 from PIL import Image
 import pickle
+import src.helpers.decorators as decorators
+
 class Simulate_cells(sf.Track_generator):
     ''' MRO is used to inherit from the Track_generator class in simulate_foci.py'''
     def __init__(self,cell_params={},global_params={}) -> None:
@@ -49,6 +51,9 @@ class Simulate_cells(sf.Track_generator):
             frame time for the SMT experiment in ms
         pixel_size : int, Default = None
             pixel size for the SMT experiment in nm
+        axial_function : str, Default = 'ones'
+            axial function for the SMT experiment. Options are 'ones' and 'exponential'
+            This controls the axial (z) effect on the PSF (Ones is no axial effect, exponential is axial effect with a decay)
         
         Full list see the docstring for Track_generator and sim_foci class in simulate_foci.py 
 
@@ -56,6 +61,9 @@ class Simulate_cells(sf.Track_generator):
         
         
         '''
+        #if axial_function is not in global_params, set it to "ones"
+        if 'axial_function' not in global_params:
+            global_params['axial_function'] = 'ones'
         self.cell_params = cell_params #dictionary of cell parameters
         self.global_params = global_params #dictionary of global parameters
         self.units = self._define_units(pixel_size=global_params['pixel_size'],
@@ -187,6 +195,7 @@ class Simulate_cells(sf.Track_generator):
         if track_length_distribution is None:
             track_length_distribution = self.global_params["track_distribution"]
 
+
         if isinstance(initials,dict): #TODO need to finish this implementation
             #do the _initial_checker()
             self._initial_checker(initials=initials)
@@ -196,11 +205,15 @@ class Simulate_cells(sf.Track_generator):
                                                         update_type='pix^2/ms')
             #initialize the Condensates.
             
-        
         else:
             #make sure that the number of tracks is equal to the number of diffusion coefficients and initials with raise an error if not
             assert len(hursts) == len(diffusion_coefficients) == len(initials) == num_tracks, 'The number of tracks is not equal to the number of diffusion coefficients or initials or hurst exponents'
-
+        
+        #check to see if there is 2 or 3 values in the second dimension of initials
+        if initials.shape[1] == 2:
+            #add a third dimension of zeros so that the final shape is (num_tracks,3) with (:,3) being 0s
+            initials = np.hstack((initials,np.zeros((num_tracks,1)))) 
+            
         #get the exposure time for the SMT experiment in ms
         if exposure_time is None:
             exposure_time = self.global_params['exposure_time'] #ms
@@ -215,47 +228,48 @@ class Simulate_cells(sf.Track_generator):
         for i in range(num_tracks):
             if track_type=="fbm":
 
-                xy,t = self._make_fbm_track(length=track_lengths[i],end_time=track_lengths[i],hurst=hursts[i],return_time=True)
-                
+                xyz,t = self._make_fbm_track(length=track_lengths[i],end_time=track_lengths[i],hurst=hursts[i],return_time=True,dim=3)
                 #check if the track length is larger than the number of frames
-                if len(xy) > movie_frames:
-                    xy = xy[:movie_frames]
+                if len(xyz) > movie_frames:
+                    xyz = xyz[:movie_frames]
                     t = t[:movie_frames]
+                
                 #convery the time to ints
                 t = np.array(t,dtype=int)
                 #find a random starting point for the track frame using 0 as starting and movie_frames-track_length as ending
-                start_frame = random.randint(0,movie_frames-len(xy))
+                start_frame = random.randint(0,movie_frames-len(xyz))
                 #shift the frames to start at the start_frame
                 frames = start_frame + t
                 
                 #shift the track with the initial position and diffusion coefficient
-                xy = (xy * np.sqrt(2*diffusion_coefficients[i])) + initials[i]
+                xyz = (xyz * np.sqrt(2*diffusion_coefficients[i])) + initials[i]
                 #add this to the dictionary of tracks
-                tracks[i] = {'xy':xy,'frames':frames,'diffusion_coefficient':diffusion_coefficients[i],'initial':initials[i],'hurst':hursts[i]}
+                tracks[i] = {'xy':xyz,'frames':frames,'diffusion_coefficient':diffusion_coefficients[i],'initial':initials[i],'hurst':hursts[i]}
                 #add the number of points per frame to the dictionary
                 for j in range(len(frames)):
-                    points_per_frame[str(frames[j])].append(xy[j])
+                    points_per_frame[str(frames[j])].append(xyz[j])
             if track_type=="constant":
                 #make a constant track
-                xy = np.array([initials[i] for ll in range(int(track_lengths[i]))])
+                xyz = np.array([initials[i] for ll in range(int(track_lengths[i]))])
                 #make the time array
                 t = np.arange(track_lengths[i],dtype=int)
                 #check if the track length is larger than the number of frames
-                if len(xy) > movie_frames:
-                    xy = xy[:movie_frames]
+                if len(xyz) > movie_frames:
+                    xyz = xyz[:movie_frames]
                     t = t[:movie_frames]
                 #find a random starting point for the track frame using 0 as starting and movie_frames-track_length as ending
-                start_frame = random.randint(0,movie_frames-len(xy))
+                start_frame = random.randint(0,movie_frames-len(xyz))
                 #shift the frames to start at the start_frame
                 frames = start_frame + t
                 #add this to the dictionary of tracks
-                tracks[i] = {'xy':xy,'frames':frames,'diffusion_coefficient':0,'initial':initials[i],'hurst':0}
+                tracks[i] = {'xy':xyz,'frames':frames,'diffusion_coefficient':0,'initial':initials[i],'hurst':0}
                 #add the number of points per frame to the dictionary
                 for j in range(len(frames)):
-                    points_per_frame[str(frames[j])].append(xy[j])
+                    points_per_frame[str(frames[j])].append(xyz[j])
                     
         return tracks,points_per_frame
     
+    @decorators.deprecated("This function is not useful, but is still here for a while in case I need it later")
     def _format_points_per_frame(self,points_per_frame):
         '''
         Docstring for _format_points_per_frame: format the points per frame dictionary so that for each key the set of tracks in it are 
@@ -281,7 +295,7 @@ class Simulate_cells(sf.Track_generator):
             points_per_frame[i] = np.array(point_holder)
         return points_per_frame
 
-    def _update_map(self,map,points_per_frame):
+    def _update_map(self,map,points_per_frame,axial_func="ones"):
         ''' Docstring for _update_map: update the map with the points per frame
 
         Parameters:
@@ -289,7 +303,10 @@ class Simulate_cells(sf.Track_generator):
         map : array-like
             empty space for simulation, shape = (movie_frames,dims[0],dims[1])
         points_per_frame : dict
-            keys = str(i) for i in range(movie_frames), values = list of points in each frame as a list of (x,y) tuples
+            keys = str(i) for i in range(movie_frames), values = list of points in each frame as a list of (x,y,z) tuples
+        axial_func : str 
+            function to use to update the axial intensity of the points, default is "ones" which means that the axial intensity factor is 1
+            
 
         Returns:
         --------
@@ -297,8 +314,16 @@ class Simulate_cells(sf.Track_generator):
             map with points per frame added to it using the generate_map_from_points function from base class
     
         '''
+
         for i in range(map.shape[0]):
-            map[i],_ = self.generate_map_from_points(points_per_frame[str(i)],point_intensity=self.point_intensity*np.ones(len(points_per_frame[str(i)])),map=map[i],movie=True)
+            # we want to update the point_intensity based on the axial position of the point (z)
+            if len(points_per_frame[str(i)]) == 0:
+                abs_axial_position = self.point_intensity
+                points_per_frame_xy = np.array(points_per_frame[str(i)])
+            else:
+                abs_axial_position = self.point_intensity*sf.axial_intensity_factor(np.abs(np.array(points_per_frame[str(i)])[:,2]),func = axial_func)
+                points_per_frame_xy = np.array(points_per_frame[str(i)])[:,:2]
+            map[i],_ = self.generate_map_from_points(points_per_frame_xy,point_intensity=abs_axial_position,map=map[i],movie=True)
         return map
     
     def get_cell(self,dims=None,movie_frames=None,num_tracks=None,diffusion_coefficients=None,initials=None,
@@ -358,11 +383,6 @@ class Simulate_cells(sf.Track_generator):
         if track_type is None:
             track_type = self.cell_params['track_type']
         
-        #check if initials is a dictionary
-        if isinstance(initials,dict):
-            #unoptimized for now TODO: optimize this and make it more general
-            
-            pass
 
         #create the simulation cube
         simulation_cube = self._define_space(dims=dims,movie_frames=movie_frames)
@@ -372,7 +392,7 @@ class Simulate_cells(sf.Track_generator):
                                                         track_type=track_type,mean_track_length=mean_track_length,
                                                         track_length_distribution=track_length_distribution,exposure_time=exposure_time)
         #update the map
-        map = self._update_map(map=simulation_cube,points_per_frame=points_per_frame)
+        map = self._update_map(map=simulation_cube,points_per_frame=points_per_frame,axial_func=self.global_params['axial_function'])
         return {"map":map,"tracks":tracks,"points_per_frame":points_per_frame}
     
     def _initial_checker(self,initials):
@@ -482,7 +502,7 @@ class Simulate_cells(sf.Track_generator):
                                                         initials=initials,simulation_cube=simulation_cube,hursts=hursts,
                                                         track_type=track_type,mean_track_length=mean_track_length,
                                                         track_length_distribution=track_length_distribution,exposure_time=exposure_time)
-        full_map = self._update_map(map=simulation_cube,points_per_frame=points_per_frame)
+        full_map = self._update_map(map=simulation_cube,points_per_frame=points_per_frame,axial_func=self.global_params['axial_function'])
         #if kwargs is empty make a list of wieghts that are all 1
         if len(kwargs) == 0:
             weights = np.ones(num_tracks)/num_tracks
@@ -498,7 +518,7 @@ class Simulate_cells(sf.Track_generator):
             #make a new points per frame dictionary
             subsample_points_per_frame = self._convert_track_dict_points_per_frame(subsample_tracks,movie_frames)
             #update the map
-            subsample_map = self._update_map(map=simulation_cube_sample,points_per_frame=subsample_points_per_frame)
+            subsample_map = self._update_map(map=simulation_cube_sample,points_per_frame=subsample_points_per_frame,axial_func=self.global_params['axial_function'])
             #append the output
             output.append({"map":subsample_map,"tracks":subsample_tracks,"points_per_frame":subsample_points_per_frame})
         output_subsample = output
@@ -518,7 +538,7 @@ class Simulate_cells(sf.Track_generator):
         Returns:
         --------
         points_per_frame : dict
-            dictionary of points per frame, keys = frame number, values = list of (x,y) tuples
+            dictionary of points per frame, keys = frame number, values = list of (x,y,z) tuples
         
         '''
         points_per_frame = dict(zip([str(i) for i in range(movie_frames)],[[] for i in range(movie_frames)]))

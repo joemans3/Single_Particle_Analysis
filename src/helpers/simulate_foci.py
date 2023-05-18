@@ -1121,31 +1121,32 @@ def get_gaussian(mu, sigma,domain = [list(range(10)),list(range(10))]):
 	gauss = mvn.prob(coords)
 	return tf.reshape(gauss, (len(x),len(y)))
 
-def axial_intensity_factor(abs_axial_pos: float,**kwargs)->float:
+def axial_intensity_factor(abs_axial_pos: float|np.ndarray,**kwargs) -> float|np.ndarray:
 	'''Docstring
 	Calculate the factor for the axial intensity of the PSF given the absolute axial position from the 0 position of 
 	the focal plane. This is the factor that is multiplied by the intensity of the PSF
 
 	For now this is a negative exponential decay i.e:
-		I = I_0*e^(-|z-z_0|) 
-	This function returns the factor e^(-|z-z_0|) only. 
+		I = I_0*e^(-2*|z-z_0|) 
+	This function returns the factor e^(-2*|z-z_0|) only. 
 
 	Parameters:
 	-----------
-	abs_axial_pos : float
+	abs_axial_pos : float|np.ndarray
 		absolute axial position from the 0 position of the focal plane
 	kwargs : dict
 
 	Returns:
 	--------
-	float
+	float|np.ndarray
 		factor for the axial intensity of the PSF
 	'''
-	#for now this uses a negative exponential decay
-	#check if the position is a positive number
-	if abs_axial_pos < 0:
-		raise ValueError('abs_axial_pos must be a positive number')
-	return np.exp(-abs_axial_pos)
+	func_type = kwargs.get("func","ones")
+	if func_type == "ones":
+		return np.ones(len(abs_axial_pos))
+	elif func_type == "exponential":
+		#for now this uses a negative exponential decay
+		return np.exp(-abs_axial_pos)
 
 if __name__ == "__main__":
 	#define whole space

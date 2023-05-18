@@ -1153,10 +1153,10 @@ def points_per_frame_convert(tracks):
         #loop through the points in the track
         for point in track:
             #if the frame number is not in the points per frame dictionary add it
-            if point[2] not in points_per_frame:
-                points_per_frame[point[2]] = []
+            if point[-1] not in points_per_frame:
+                points_per_frame[point[-1]] = []
             #add the point to the points per frame dictionary 
-            points_per_frame[point[2]].append(point[:-1])
+            points_per_frame[point[-1]].append(point[:-1])
     #make sure the points per frame dictionary is a numpy array of structure: [[x,y],[x,y],...] for each frame
     for frame_number,points in points_per_frame.items():
         points_per_frame[frame_number] = np.array(points)
@@ -1188,10 +1188,10 @@ def convert_point_pairs(tracks):
         #loop through the points in the track
         for i in range(len(track)-1):
             #if the point pair is not in the point pairs dictionary add it
-            if str(track[i][2])+","+str(track[i+1][2]) not in point_pairs:
-                point_pairs[str(track[i][2])+","+str(track[i+1][2])] = []
+            if str(track[i][-1])+","+str(track[i+1][-1]) not in point_pairs:
+                point_pairs[str(track[i][-1])+","+str(track[i+1][-1])] = []
             #add the point pair to the point pairs dictionary
-            point_pairs[str(track[i][2])+","+str(track[i+1][2])].append([track[i],track[i+1]])
+            point_pairs[str(track[i][-1])+","+str(track[i+1][-1])].append([track[i],track[i+1]])
     
     #make sure each value is a numpy array of structure: [[[x1,y1,frame1],[x2,y2,frame2]],[[x1,y1,frame1],[x2,y2,frame2]]]
     for key,point_pair in point_pairs.items():
