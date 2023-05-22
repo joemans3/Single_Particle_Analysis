@@ -1369,6 +1369,16 @@ class Cell:
 		if not isinstance(area_of_points_per_frame,dict):
 			raise TypeError("area_of_points_per_frame must be a dictionary")
 		self._area_of_points_per_frame = area_of_points_per_frame
+	
+	@property
+	def density_per_frame(self)->dict:
+		return self._density_per_frame
+	@density_per_frame.setter
+	def density_per_frame(self,density_per_frame: dict)->None:
+		#make sure density_per_frame is a dictionary with keys as frame numbers and values as the density of points in that frame
+		if not isinstance(density_per_frame,dict):
+			raise TypeError("density_per_frame must be a dictionary")
+		self._density_per_frame = density_per_frame
 
 	
 class Trajectory_Drop_Mapping:

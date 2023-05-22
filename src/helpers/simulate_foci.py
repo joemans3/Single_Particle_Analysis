@@ -93,7 +93,7 @@ class sim_foci():
 		def condensates(self,condensates: dict):
 			self._condensates = condensates
 
-	def create_condensate_dict(self,inital_centers: np.ndarray,
+	def create_condensate_dict(self,initial_centers: np.ndarray,
 			    			initial_scale: np.ndarray,
 							diffusion_coefficient: np.ndarray,
 							hurst_exponent: np.ndarray,
@@ -112,14 +112,15 @@ class sim_foci():
 		#check the length of diffusion_coefficient to find the number of condensates
 		num_condensates = len(diffusion_coefficient)
 		condensates = {}
+		units_time = kwargs.get("units_time",["ms"]*num_condensates)
 		for i in range(num_condensates):
 			condensates[str(i)] = condensate_movement.Condensate(
-				initial_center = inital_centers[i],
+				inital_position = initial_centers[i],
 				initial_scale = initial_scale[i],
 				diffusion_coefficient = diffusion_coefficient[i],
 				hurst_exponent = hurst_exponent[i],
 				condensate_id = str(i),
-				**kwargs
+				units_time = units_time[i]
 			)
 		self.condensates = condensates
 
@@ -1006,6 +1007,19 @@ def generate_points(pdf,total_points,min_x,max_x,center,radius,bias_subspace_x,s
 			xy_coords.append(var)
 	return np.array(xy_coords)
 	
+def generate_points_from_cls(pdf,total_points,min_x,max_x,density_dif):
+	xy_coords = []
+	while len(xy_coords) < total_points:
+		#generate candidate variable
+		var = np.random.uniform([min_x,min_x],[max_x,max_x])
+		#generate varibale to condition var1
+		var2 = np.random.uniform(0,1)
+		#apply condition
+		pdf_val = pdf(var)
+		if (var2 < ((1./density_dif)*(max_x-min_x)**2) * pdf_val):
+			xy_coords.append(var)
+	return np.array(xy_coords)
+
 def generate_radial_points(total_points,center,radius):
 	'''Genereate uniformly distributed points in a circle of radius.
 

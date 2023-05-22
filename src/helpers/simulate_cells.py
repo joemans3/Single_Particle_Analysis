@@ -11,6 +11,7 @@ import skimage as skimage
 from PIL import Image
 import pickle
 import src.helpers.decorators as decorators
+import src.helpers.probability_functions as pf
 
 class Simulate_cells(sf.Track_generator):
     ''' MRO is used to inherit from the Track_generator class in simulate_foci.py'''
@@ -37,6 +38,9 @@ class Simulate_cells(sf.Track_generator):
             dimensions of the space to be simulated
         movie_frames : int, Default = 500
             number of frames to be simulated
+        cell_space : np.ndarray, Default = None
+            Space designated for the cell. If None, a space is generated with dimensions dims.
+            Make the assumption that it is a square space. So needs [min_x,max_x]. The second dimension is the same.
 
         
         List of global parameters:
@@ -195,15 +199,57 @@ class Simulate_cells(sf.Track_generator):
         if track_length_distribution is None:
             track_length_distribution = self.global_params["track_distribution"]
 
+        #get the exposure time for the SMT experiment in ms
+        if exposure_time is None:
+            exposure_time = self.global_params['exposure_time'] #ms
+        #get the number of frames to be simulated from simulation_cube
+        movie_frames = simulation_cube.shape[0]
+        #get the lengths of the tracks given a distribution
+        track_lengths = self._get_lengths(track_distribution=track_length_distribution,track_length_mean=mean_track_length,total_tracks=num_tracks)
+        #if track_lengths is larger than the number of frames then set that to the number of frames -1
+        track_lengths = np.array([i if i < movie_frames else movie_frames-1 for i in track_lengths])
+        #for each track_lengths find the starting frame
+        starting_frames = np.array([random.randint(0,movie_frames-i) for i in track_lengths])
 
-        if isinstance(initials,dict): #TODO need to finish this implementation
+
+        if isinstance(initials,dict): 
             #do the _initial_checker()
             self._initial_checker(initials=initials)
             #the diffusion_coefficients will be in um^2/s so we need to convert to pix^2/(frame_time)
             diff_coef_condensate = self._update_units(unit=initials['diffusion_coefficient'],
                                                         orig_type='um^2/s',
                                                         update_type='pix^2/ms')
-            #initialize the Condensates.
+            initials['diffusion_coefficient'] = diff_coef_condensate
+            #initialize the Condensates. TODO
+
+            self.create_condensate_dict(**initials,units_time=np.array(["20ms"]*len(initials['diffusion_coefficient'])))
+            #define the top_hat class that will be used to sample the condensates
+            top_hat_func = pf.multiple_top_hat_probability(
+                num_subspace = len(initials['diffusion_coefficient']),
+                subspace_centers = initials['initial_centers'],
+                subspace_radius = initials['initial_scale'],
+                density_dif = self.global_params['density_dif'],
+                space_size = self.cell_params['cell_space'],
+            )
+
+            #make a placeholder for the initial position array with all 0s
+            initials = np.zeros((num_tracks,3))
+            #lets use the starting frames to find the inital position based on the position of the condensates
+            for i in range(num_tracks):
+                #get the starting frame
+                starting_frame = starting_frames[i]
+                #condensate positions
+                condensate_positions = np.zeros((len(self.condensates),2))
+                #loop through the condensates
+                for ID,cond in self.condensates.items():
+                    condensate_positions[int(ID)] = cond(int(starting_frame),"20ms")["Position"]
+                #update the top_hat_func with the new condensate positions
+                top_hat_func.update_parameters(subspace_centers=condensate_positions)
+                #sample the top hat to get the initial position
+                initials[i][:2] = sf.generate_points_from_cls(top_hat_func,total_points=1,min_x=self.cell_params["cell_space"][0],max_x=self.cell_params["cell_space"][1],density_dif=self.global_params["density_dif"])[0]
+
+
+
             
         else:
             #make sure that the number of tracks is equal to the number of diffusion coefficients and initials with raise an error if not
@@ -214,30 +260,18 @@ class Simulate_cells(sf.Track_generator):
             #add a third dimension of zeros so that the final shape is (num_tracks,3) with (:,3) being 0s
             initials = np.hstack((initials,np.zeros((num_tracks,1)))) 
             
-        #get the exposure time for the SMT experiment in ms
-        if exposure_time is None:
-            exposure_time = self.global_params['exposure_time'] #ms
-        #get the number of frames to be simulated from simulation_cube
-        movie_frames = simulation_cube.shape[0]
-        #get the lengths of the tracks given a distribution
-        track_lengths = self._get_lengths(track_distribution=track_length_distribution,track_length_mean=mean_track_length,total_tracks=num_tracks)
+
 
         #create tracks
         tracks = {}
         points_per_frame = dict(zip([str(i) for i in range(movie_frames)],[[] for i in range(movie_frames)]))
         for i in range(num_tracks):
             if track_type=="fbm":
-
+                start_frame = starting_frames[i]
                 xyz,t = self._make_fbm_track(length=track_lengths[i],end_time=track_lengths[i],hurst=hursts[i],return_time=True,dim=3)
-                #check if the track length is larger than the number of frames
-                if len(xyz) > movie_frames:
-                    xyz = xyz[:movie_frames]
-                    t = t[:movie_frames]
-                
                 #convery the time to ints
                 t = np.array(t,dtype=int)
-                #find a random starting point for the track frame using 0 as starting and movie_frames-track_length as ending
-                start_frame = random.randint(0,movie_frames-len(xyz))
+
                 #shift the frames to start at the start_frame
                 frames = start_frame + t
                 
@@ -253,12 +287,8 @@ class Simulate_cells(sf.Track_generator):
                 xyz = np.array([initials[i] for ll in range(int(track_lengths[i]))])
                 #make the time array
                 t = np.arange(track_lengths[i],dtype=int)
-                #check if the track length is larger than the number of frames
-                if len(xyz) > movie_frames:
-                    xyz = xyz[:movie_frames]
-                    t = t[:movie_frames]
-                #find a random starting point for the track frame using 0 as starting and movie_frames-track_length as ending
-                start_frame = random.randint(0,movie_frames-len(xyz))
+
+                start_frame = starting_frames[i]
                 #shift the frames to start at the start_frame
                 frames = start_frame + t
                 #add this to the dictionary of tracks
@@ -409,7 +439,7 @@ class Simulate_cells(sf.Track_generator):
             #keys to check for
             keys = ["initial_centers","initial_scale","diffusion_coefficient","hurst_exponent"]
             #check if the keys are in the dictionary
-            if all(k in initials for k in keys):
+            if all(k in initials.keys() for k in keys):
                 pass
             else:
                 raise ValueError("The initials dictionary must contain the following keys at the very least: {}".format(keys))
@@ -720,12 +750,19 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
                             counts = counts.tolist()
                             kwargs["parameters"][i][k] = dict(zip(unique, counts))
                         elif k=="initials":
-                            #from the collection of [[x,y]...] find the unique values of [x,y] combinations and save it as a dictionary "unique_values":count
-                            unique, counts = np.unique(l, axis=0,return_counts=True)
-                            #convert the arrays to lists
-                            unique = map(str,unique.tolist())
-                            counts = counts.tolist()
-                            kwargs["parameters"][i][k] = dict(zip(unique, counts))
+                            if isinstance(l,dict):
+                                temp_dict = {}
+                                for m,n in l.items():
+                                    temp_dict[m] = n.tolist()
+
+                                kwargs["parameters"][i][k] = temp_dict
+                            else:
+                                #from the collection of [[x,y]...] find the unique values of [x,y] combinations and save it as a dictionary "unique_values":count
+                                unique, counts = np.unique(l, axis=0,return_counts=True)
+                                #convert the arrays to lists
+                                unique = map(str,unique.tolist())
+                                counts = counts.tolist()
+                                kwargs["parameters"][i][k] = dict(zip(unique, counts))
                         
                             
             json.dump(kwargs["parameters"], fp,indent=4)
