@@ -14,17 +14,126 @@ from skimage import feature, future
 from skimage.measure import label, regionprops
 from sklearn.ensemble import RandomForestClassifier
 
+TESTED_DICT = {
+    "RPOC_EZ": {
+        "nucleoid_threshold": 10000,
+        "background_threshold": 7000,
+        "background_threshold_2": 2000
+        },
+    "NUSA_EZ": {
+        "nucleoid_threshold": 9200,
+        "background_threshold": 7000,
+        "background_threshold_2": 2000
+        },
+    "RPOC_M9": {
+        "nucleoid_threshold": 9200,
+        "background_threshold": 7000,
+        "background_threshold_2": 2000
+        },
+    "NUSA_M9": {
+        "nucleoid_threshold": 9200,
+        "background_threshold": 7000,
+        "background_threshold_2": 2000
+    },
+    "RPOC_H5": {
+        "nucleoid_threshold": 9200,
+        "background_threshold": 7000,
+        "background_threshold_2": 2000
+        },
+    "NUSA_H5": {
+        "nucleoid_threshold": 9200,
+        "background_threshold": 7000,
+        "background_threshold_2": 2000
+        },
+    "RPOC_H3": {
+        "nucleoid_threshold": 9200,
+        "background_threshold": 7000,
+        "background_threshold_2": 2000
+        },
+    "NUSA_H3": {
+        "nucleoid_threshold": 9200,
+        "background_threshold": 7000,
+        "background_threshold_2": 2000
+        }
+}
 
-def test(img,regions = True,**kwargs):
+def find_nuc(img,typee:str,regions = True,**kwargs):
+    '''
+    Parameters:
+    -----------
+    img : 2D array-like
+        image to be segmented
+    typee : str
+        type of image to be segmented. These should have keys in TESTED_DICT. If not then raise error that the "typee" is not supported
+    regions : bool, default = True
+        if True then return the regionprops of the segmented image
+    **kwargs : dict
+        keyword arguments to be passed to the function. These are:
+            connectivity : int, default = 2
+                connectivity of the image. This is passed to the regionprops function   
+            sigma_max : int, default = 10
+                maximum sigma value to be used in the multiscale_basic_features function
+            sigma_min : int, default = 1
+                minimum sigma value to be used in the multiscale_basic_features function
+            given_type : dict | str, default = None (dict if passing thresholds, str if passing Cell wise threshold)
+                dictionary containing the values of the thresholds. If not given then the values are taken from TESTED_DICT
+                if str:
+                    if "Threshold_23" then use a cell wide threshold where nucleoid_threshold = (2/3)*max(img) and background_threshold = 2000
+                    if "Threshold_12" then use a cell wide threshold where nucleoid_threshold = (1/2)*max(img) and background_threshold = 2000
+                    if "Threshold_13" then use a cell wide threshold where nucleoid_threshold = (1/3)*max(img) and background_threshold = 2000
+                    if "Threshold_34" then use a cell wide threshold where nucleoid_threshold = (3/4)*max(img) and background_threshold = 2000
+    Returns:
+    --------
+    result : 2D array-like
+        segmented image. This is a mask with at max 3 values. 2 for background, 1 for nucleoid and 3 for rest of the cell
+    region_result : list of RegionProperties
+        list of region properties of the segmented image. This is returned only if regions = True
+    
+    '''
+    #check if given_type is in kwargs, if not then check if type is in TESTED_DICT.keys()
+    if kwargs.get('given_type',None) is None:
+        if typee not in TESTED_DICT.keys():
+            raise ValueError(f"Image type {typee} is not supported. Supported types are {list(TESTED_DICT.keys())}")
+        else:
+            given_type = TESTED_DICT[typee]
+    elif kwargs.get('given_type',None) is "Threshold_23":
+        given_type = {
+            "nucleoid_threshold": (2./3.)*np.max(img),
+            "background_threshold": np.min(img),
+            "background_threshold_2": 2000
+        }
+    elif kwargs.get('given_type',None) is "Threshold_12":
+        given_type = {
+            "nucleoid_threshold": (1./2.)*np.max(img),
+            "background_threshold": np.min(img),
+            "background_threshold_2": 2000
+        }
+    elif kwargs.get('given_type',None) is "Threshold_13":
+        given_type = {
+            "nucleoid_threshold": (1./3.)*np.max(img),
+            "background_threshold": np.min(img),
+            "background_threshold_2": 2000
+        }
+    elif kwargs.get('given_type',None) is "Threshold_34":
+        given_type = {
+            "nucleoid_threshold": (3./4.)*np.max(img),
+            "background_threshold": np.min(img),
+            "background_threshold_2": 2000
+        }
+
+    else:
+        given_type = kwargs.get('given_type')
+    
     connectivity = kwargs.get('connectivity', 2)
     sigma_max = kwargs.get('sigma_max', 10)
     sigma_min = kwargs.get('sigma_min', 1)
     training_labels = np.zeros(img.shape[:2], dtype=np.uint8) + 3
 
     #better way to do this
-    index_nuc = np.where(img > 9200)
-    index_rest = np.where(img < 7000)
-    index_back = np.where(img < 2000)
+    
+    index_nuc = np.where(img > given_type["nucleoid_threshold"])
+    index_rest = np.where(img < given_type["background_threshold_2"])
+    index_back = np.where(img < given_type["background_threshold"])
     training_labels[index_rest] = 2
     training_labels[index_nuc] = 1
 

@@ -45,7 +45,7 @@ from src.helpers.Analysis_functions import *
 from src.helpers.blob_detection import *
 from src.helpers.Convert_csv_mat import *
 from src.helpers.plotting_functions import *
-
+from src.helpers.decorators import deprecated
 
 class run_analysis:
 	'''
@@ -577,11 +577,12 @@ class run_analysis:
 														cell_axis_lengths = movies[pp][i][6], \
 														cell_mask = padded_mask, \
 														Cell_Nucleoid_Mask = nuc_img*padded_mask)
-				'''
-				TODO integrate the nucleoid segmentation into the database 
 				
-				bb_nucl, regions = self._find_nucleoid(str(pp),str(i),nuc_img*padded_mask)
-				'''
+				#perform nucleoid segmentation
+				feature_mask, regions = self._find_nucleoid(str(pp),str(i),nuc_img*padded_mask)
+				#store the nucleoid area by using the 1s in the feature mask
+				self.Movie[str(pp)].Cells[str(i)].nucleoid_area = float(np.sum(feature_mask[feature_mask == 1]))
+				
 				#sort points into cells
 				poly_cord = []
 				for temp in movies[pp][i][0]:
@@ -593,7 +594,11 @@ class run_analysis:
 					point = Point(x_points[j],y_points[j])
 					if poly.contains(point) or poly.touches(point):
 						self.Movie[str(pp)].Cells[str(i)].raw_tracks.append(tracks[pp][j])
-
+				#once the raw tracks are added, calculate the points_per_frame
+				if len(self.Movie[str(pp)].Cells[str(i)].raw_tracks) != 0:	
+					self.Movie[str(pp)].Cells[str(i)].points_per_frame = points_per_frame_bulk_sort(x=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,2],
+																									y=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,3],
+																									t=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,1])
 				for j in range(len(drop_s)):
 					for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
 
@@ -610,19 +615,44 @@ class run_analysis:
 		return [tracks,drops,blob_total]
 
 	def _find_nucleoid(self,movie_ID,cell_ID,img=0):
+		'''
+		This function finds the nucleoid for a given cell. This is done by using the
+		segmented image of the nucleoid and finding the largest blob in the image.
+
+		Parameters:
+		-----------
+		movie_ID : int
+			the movie ID number
+		cell_ID : int
+			the cell ID number
+		img : array-like
+			the image to use for nucleoid detection. If not provided, the function will
+			load the image from the Movie object.
+		
+		Returns:
+		--------
+		feature_mask : array-like
+			the mask of the nucleoid with pixel labels = 1
+		regions : regionprops object
+			the regionprops object for the nucleoid detections, see skimage.measure.regionprops and nucleoid_detection.find_nuc
+		'''
 		
 		
 		#find the location of the the nucleoid labeled images
 		#load the image
 		if isinstance(img,int):
 
-			img = import_functions.read_file(self.Movie[movie_ID].Movie_nucleoid)*self.Movie[movie_ID].Cells[cell_ID].cell_mask
+			img = import_functions.read_file(self.Movie[movie_ID].Movie_nucleoid)*self.Movie[movie_ID].Cells[cell_ID].Cell_Nucleoid_Mask
 
-		#find the bounding box of this image
-		# plt.imshow(img)
-		# plt.show()
-
-		return nucleoid_detection.test(img)
+		return nucleoid_detection.find_nuc(img,typee=None,given_type="Threshold_12")
+	def _set_nucleoid_area_bulk(self):
+		'''
+		This function sets the nucleoid area for each cell in the movie.
+		'''
+		for movie in self.Movie:
+			for cell in self.Movie[movie].Cells:
+				feature_mask, regions = self._find_nucleoid(movie,cell)
+				self.Movie[movie].Cells[cell].nucleoid_area = float(np.sum(feature_mask[feature_mask == 1]))
 	def _convert_track_frame(self,track_set,**kwargs):
 		'''
 		This function preps the data such that the tracks satisfy a length
@@ -1167,6 +1197,7 @@ class run_analysis:
 			for j in range(len(self.io_msd_track[i])):
 				self.io_msd_track[i][j] = np.pad(self.io_msd_track[i][j],(0,int(self.max_io[i]-len(self.io_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan))
 		return 
+	@deprecated("This seems useless right now, and sometimes breaks into an infinite loop. Should not be used, but keeping for testing before removing.")
 	def _bulk_msd_plot(self,Movies=None,plot=False):
 		''' Docstring for _bulk_msd_plot
 		
@@ -1297,7 +1328,6 @@ class Cell:
 	_convert_viableDrop_list(self):
 		converts the viableDrop_list to a dictionary of viable drops
 	
-
 	'''
 	def __init__(self, Cell_ID, Cell_Movie_Name,bounding_box=0,r_offset=0,cell_area=0,cell_center=0,cell_long_axis=0,cell_short_axis=0,cell_axis_lengths=0,cell_mask=0,Cell_Nucleoid_Mask=0):
 
@@ -1357,6 +1387,8 @@ class Cell:
 		if not isinstance(points_per_frame,dict):
 			raise TypeError("points_per_frame must be a dictionary")
 		self._points_per_frame = points_per_frame
+		#everytime we set this also change the area_of_points_per_frame using Analysis_functions.area_points_per_frame
+		self.area_of_points_per_frame = area_points_per_frame(self._points_per_frame,radius_of_gyration)
 
 	#in conjunction with points_per_frame, this allows us to see how much area the points in each frame cover
 	#this is of the form {frame_number: area_of_points,...}
@@ -1372,14 +1404,23 @@ class Cell:
 	
 	@property
 	def density_per_frame(self)->dict:
+		#check if points_per_frame and area_of_points_per_frame are defined
+		if not hasattr(self,"points_per_frame"):
+			raise AttributeError("points_per_frame is not defined")
+		if not hasattr(self,"area_of_points_per_frame"):
+			raise AttributeError("area_of_points_per_frame is not defined")
+		#for each frame number, calculate the density of points in that frame by dividing the number of points by the area of points
+		self._density_per_frame = {frame: self.points_per_frame[frame]/self.area_of_points_per_frame[frame] for frame in self.points_per_frame.keys()}
 		return self._density_per_frame
-	@density_per_frame.setter
-	def density_per_frame(self,density_per_frame: dict)->None:
-		#make sure density_per_frame is a dictionary with keys as frame numbers and values as the density of points in that frame
-		if not isinstance(density_per_frame,dict):
-			raise TypeError("density_per_frame must be a dictionary")
-		self._density_per_frame = density_per_frame
 
+	@property
+	def nucleoid_area(self)->float:
+		return self._nucleoid_area
+	@nucleoid_area.setter
+	def nucleoid_area(self,nucleoid_area: float|int)->None:
+		if not isinstance(nucleoid_area,(float,int)):
+			raise TypeError("nucleoid_area must be a float or an int")
+		self._nucleoid_area = nucleoid_area
 	
 class Trajectory_Drop_Mapping:
 	'''

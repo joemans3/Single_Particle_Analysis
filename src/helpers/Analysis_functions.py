@@ -1163,6 +1163,39 @@ def points_per_frame_convert(tracks):
     #return the points per frame dictionary
     return points_per_frame
 
+def points_per_frame_bulk_sort(x:np.ndarray,y:np.ndarray,t:np.ndarray)->dict:
+    '''
+    Utility function, shouldn't be needed.
+
+    Sorts points by frame number. The output should be a dict with keys of frame numbers and values of points in that frame.
+
+    Parameters:
+    -----------
+    x : np.ndarray
+        x coordinates of points
+    y : np.ndarray
+        y coordinates of points
+    t : np.ndarray
+        frame numbers of points
+
+    Returns:
+    --------
+    points_per_frame : dict
+        dictionary of points per frame where the keys are the frame numbers and the values are the points in that frame
+    '''
+    #make sure x,y,t are of same length
+    assert len(x) == len(y) == len(t)
+    #convert the values of t into integers
+    t = t.astype(int)
+    points_frame = {}
+    for i in range(len(t)):
+        if t[i] not in points_frame.keys():
+            points_frame[t[i]] = []
+        points_frame[t[i]].append([x[i],y[i]])
+    for frame_number,points in points_frame.items():
+        points_frame[frame_number] = np.array(points)
+    return points_frame
+
 def convert_point_pairs(tracks):
     '''Docstring for convert_point_pairs
     Convert a track dictionary to a point pair dictionary where the keys is a combination of the two frames of the points and the values are the point pairs
@@ -1256,91 +1289,6 @@ def point_pair_error_detection(true_point_pairs,extracted_point_pairs,threshold=
 
 
 #density calculations 
-def convex_hull_area(points):
-    '''Docstring for convex_hull_area
-    Calculate the convex hull area of a set of points
-    
-    Parameters:
-    -----------
-    points : numpy array of shape (n,2)
-        points to calculate the convex hull area
-    
-    Returns:
-    --------
-    hull_points : numpy array of shape (n,2)
-        convex hull area of the input points
-    '''
-    #check if the points are atlest 3 points
-    if len(points) < 3:
-        #return None
-        return None
-    #calculate the convex hull of the points
-    try:
-        hull = ConvexHull(points)
-    except:
-        return None
-    #return the volume of the convex hull
-    return hull.volume
-
-def MSD_tavg1(x,y,f,f_inc = False):
-    if f_inc == True:
-        return np.mean((np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0])/np.diff(f)))**2)/4.
-    else:
-        return np.mean(np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0]))**2)/4.
-
-def MSD_tavg(x,y,f,f_inc = False):
-    
-    dists = np.zeros(len(x)-1)
-    for i in range(len(x)-1):
-        dists[i] = dist(x[i],y[i],x[i+1],y[i+1])
-    if f_inc == True:
-        return np.mean((np.diff(dists/np.diff(f)))**2)/4.
-    else:
-        return np.mean((np.diff(dists))**2)/4.
-    
-def MSD_tavg_single(x,f,f_inc = False):
-    if f_inc == True:
-        return np.mean((np.diff(x/f))**2)/4.
-    else:
-        return np.mean((np.diff(x))**2)/4.
-    
-def gaussian_fit(x,p0,p1,p2):
-    return ((np.sqrt(2.*np.pi*p0))**-1)*np.exp(-((x-p1)**2)/(2*p0)) + p2
-
-##################################################################################################################################
-#implimenting MLE method for detecting diffusion coeff/ velocity change in single tracks as outlined in: Detection of Velocity and Diffusion Coefficient Change Points in Single-Particle Trajectories, Yin et al. 2018
-
-def prop_vel(x,frame_rate,n):
-    
-    return (1./(n*frame_rate))*np.sum(np.diff(x))
-
-def prop_diff_c(x,frame_rate,n):
-    
-    return (1./(2*n*frame_rate))*np.sum((np.diff(x) - prop_vel(x,frame_rate,n)*frame_rate)**2)
-
-def ll_0(x,n,frame_rate):
-    
-    return 0.5*(n*np.log10(prop_diff_c(x,frame_rate,n)))
-
-def log_likelihood_k(x,n,k,frame_rate):
-    
-    return ll_0(x,n,frame_rate) - ll_0(x[:k],k,frame_rate) - ll_0(x[k+1:n],n-k,frame_rate)
-    
-def MLE_decomp(x,y,frame_rate):
-    N = len(x)
-    pros_k = list(range(1,N))
-    hold_prop_kx = np.zeros(len(pros_k)+1)
-    hold_prop_ky = np.zeros(len(pros_k)+1)
-    
-    #log-likelihood linear in x,y
-    for i in range(len(pros_k)):
-        hold_prop_kx[i+1] = 2.*log_likelihood_k(x,N,pros_k[i],frame_rate)
-        hold_prop_ky[i+1] = 2.*log_likelihood_k(y,N,pros_k[i],frame_rate)
-    
-    max_x = np.sqrt(np.max(hold_prop_kx))
-    max_y = np.sqrt(np.max(hold_prop_ky))
-    
-    return 
 
 def cm_periodic(x,y,sizeN = 1):
     #transform x,y to -pi <-> pi
@@ -1408,6 +1356,111 @@ def radius_of_gyration(*args)->float:
     r = np.sqrt(x**2 + y**2)
 
     return np.mean(np.sqrt((r-r_m)**2))
+
+def area_points_per_frame(points_per_frame:dict,area_func:callable = radius_of_gyration)->dict:
+    '''
+    Parameters:
+    -----------
+    points_per_frame : dict
+        dictionary of points per frame, keys are the frame number and the values are the points in that frame of shape (n,2) given 2D data
+    area_func : callable
+        function to calculate the area of the points per frame, default is radius of gyration
+    Returns:
+    --------
+    area_per_frame : dict
+        dictionary of area per frame, keys are the frame number and the values are the area of the points in that frame
+
+    '''
+    area_per_frame = {}
+    for frame_number,points in points_per_frame.items():
+        area_per_frame[frame_number] = area_func(points)
+    return area_per_frame
+
+def convex_hull_area(points):
+    '''Docstring for convex_hull_area
+    Calculate the convex hull area of a set of points
+    
+    Parameters:
+    -----------
+    points : numpy array of shape (n,2)
+        points to calculate the convex hull area
+    
+    Returns:
+    --------
+    hull_points : numpy array of shape (n,2)
+        convex hull area of the input points
+    '''
+    #check if the points are atlest 3 points
+    if len(points) < 3:
+        #return None
+        return 0
+    #calculate the convex hull of the points
+    try:
+        hull = ConvexHull(points)
+    except:
+        return 0
+    #return the volume of the convex hull
+    return hull.volume
+
+def MSD_tavg1(x,y,f,f_inc = False):
+    if f_inc == True:
+        return np.mean((np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0])/np.diff(f)))**2)/4.
+    else:
+        return np.mean(np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0]))**2)/4.
+
+def MSD_tavg(x,y,f,f_inc = False):
+    
+    dists = np.zeros(len(x)-1)
+    for i in range(len(x)-1):
+        dists[i] = dist(x[i],y[i],x[i+1],y[i+1])
+    if f_inc == True:
+        return np.mean((np.diff(dists/np.diff(f)))**2)/4.
+    else:
+        return np.mean((np.diff(dists))**2)/4.
+    
+def MSD_tavg_single(x,f,f_inc = False):
+    if f_inc == True:
+        return np.mean((np.diff(x/f))**2)/4.
+    else:
+        return np.mean((np.diff(x))**2)/4.
+    
+def gaussian_fit(x,p0,p1,p2):
+    return ((np.sqrt(2.*np.pi*p0))**-1)*np.exp(-((x-p1)**2)/(2*p0)) + p2
+
+##################################################################################################################################
+#implimenting MLE method for detecting diffusion coeff/ velocity change in single tracks as outlined in: Detection of Velocity and Diffusion Coefficient Change Points in Single-Particle Trajectories, Yin et al. 2018
+
+def prop_vel(x,frame_rate,n):
+    
+    return (1./(n*frame_rate))*np.sum(np.diff(x))
+
+def prop_diff_c(x,frame_rate,n):
+    
+    return (1./(2*n*frame_rate))*np.sum((np.diff(x) - prop_vel(x,frame_rate,n)*frame_rate)**2)
+
+def ll_0(x,n,frame_rate):
+    
+    return 0.5*(n*np.log10(prop_diff_c(x,frame_rate,n)))
+
+def log_likelihood_k(x,n,k,frame_rate):
+    
+    return ll_0(x,n,frame_rate) - ll_0(x[:k],k,frame_rate) - ll_0(x[k+1:n],n-k,frame_rate)
+    
+def MLE_decomp(x,y,frame_rate):
+    N = len(x)
+    pros_k = list(range(1,N))
+    hold_prop_kx = np.zeros(len(pros_k)+1)
+    hold_prop_ky = np.zeros(len(pros_k)+1)
+    
+    #log-likelihood linear in x,y
+    for i in range(len(pros_k)):
+        hold_prop_kx[i+1] = 2.*log_likelihood_k(x,N,pros_k[i],frame_rate)
+        hold_prop_ky[i+1] = 2.*log_likelihood_k(y,N,pros_k[i],frame_rate)
+    
+    max_x = np.sqrt(np.max(hold_prop_kx))
+    max_y = np.sqrt(np.max(hold_prop_ky))
+    
+    return 
 
 #end to end distance
 def end_distance(x,y):
