@@ -605,8 +605,11 @@ class run_analysis:
 						point = Point(drop_s[j][self.type_of_blob][k][0],drop_s[j][self.type_of_blob][k][1])
 						if poly.contains(point) or poly.touches(point):
 							#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
-							self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
-							self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
+							if self.type_of_blob == "Fitted":
+								self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k][:2]
+							else:
+								self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
+								self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
 																									"Scale":drop_s[j]["Scale"][k],\
 																									"Fit":drop_s[j]["Fit"][k]}
 
