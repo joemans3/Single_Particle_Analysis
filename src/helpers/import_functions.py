@@ -118,10 +118,11 @@ def find_image(path, ends_with = '.tif',full_path = False):
 	file_paths = []
 	for i in os.listdir(path):
 		if i.endswith(ends_with):
-			if full_path:
-				file_paths.append(combine_path(path,i))
-			else:
-				file_paths.append(i)
+			if not i.startswith('.'):
+				if full_path:
+					file_paths.append(combine_path(path,i))
+				else:
+					file_paths.append(i)
 	return file_paths
 
 def name_sorter(strings,keyword):

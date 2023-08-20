@@ -140,12 +140,12 @@ class run_analysis_plotting:
 
         if plots == 1:
             fig, ax = plt.subplots(plots,squeeze=True)
-            ax.imshow(img)
+            ax.imshow(img,cmap = 'gray')
         else:
             fig, ax = plt.subplots(*plots,squeeze = False)
             for i in range(plots[0]):
                 for j in range(plots[1]):
-                    ax[i,j].imshow(img)
+                    ax[i,j].imshow(img,cmap = 'gray')
         return [fig,ax]
 
 

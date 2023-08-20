@@ -40,7 +40,7 @@ class Simulate_cells(sf.Track_generator):
             number of frames to be simulated
         cell_space : np.ndarray, Default = None
             Space designated for the cell. If None, a space is generated with dimensions dims.
-            Make the assumption that it is a square space. So needs [min_x,max_x]. The second dimension is the same.
+            Need [min_x,max_x,min_y,max_y]
 
         
         List of global parameters:
@@ -220,8 +220,9 @@ class Simulate_cells(sf.Track_generator):
                                                         orig_type='um^2/s',
                                                         update_type='pix^2/ms')
             initials['diffusion_coefficient'] = diff_coef_condensate
-            #initialize the Condensates. TODO
-
+            #initialize the Condensates.
+            #find area assuming cell_space is [min_x,max_x,min_y,max_y]
+            area_cell = np.abs(np.diff(self.cell_params['cell_space'][:2]))*np.abs(np.diff(self.cell_params['cell_space'][2:]))
             self.create_condensate_dict(**initials,units_time=np.array(["20ms"]*len(initials['diffusion_coefficient'])))
             #define the top_hat class that will be used to sample the condensates
             top_hat_func = pf.multiple_top_hat_probability(
@@ -229,7 +230,7 @@ class Simulate_cells(sf.Track_generator):
                 subspace_centers = initials['initial_centers'],
                 subspace_radius = initials['initial_scale'],
                 density_dif = self.global_params['density_dif'],
-                space_size = self.cell_params['cell_space'],
+                space_size = np.array(area_cell),
             )
 
             #make a placeholder for the initial position array with all 0s
@@ -246,7 +247,7 @@ class Simulate_cells(sf.Track_generator):
                 #update the top_hat_func with the new condensate positions
                 top_hat_func.update_parameters(subspace_centers=condensate_positions)
                 #sample the top hat to get the initial position
-                initials[i][:2] = sf.generate_points_from_cls(top_hat_func,total_points=1,min_x=self.cell_params["cell_space"][0],max_x=self.cell_params["cell_space"][1],density_dif=self.global_params["density_dif"])[0]
+                initials[i][:2] = sf.generate_points_from_cls(top_hat_func,total_points=1,min_x=self.cell_params['cell_space'][0],max_x=self.cell_params['cell_space'][1],min_y=self.cell_params['cell_space'][2],max_y=self.cell_params['cell_space'][3],density_dif=self.global_params["density_dif"])[0]
 
 
 

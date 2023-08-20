@@ -46,7 +46,7 @@ from src.helpers.blob_detection import *
 from src.helpers.Convert_csv_mat import *
 from src.helpers.plotting_functions import *
 from src.helpers.decorators import deprecated
-
+from src.helpers.SMT_converters import convert_track_data_SMAUG_format
 class run_analysis:
 	'''
 	Define a class for each dataset to analyse
@@ -88,7 +88,7 @@ class run_analysis:
 	_reinitalizeVariables(): reinitalize the variables for a new dataset
 
 	'''
-	def __init__(self,wd,t_string,sim = False):
+	def __init__(self,wd,t_string,sim = False,unique_name=""):
 		'''
 		Parameters:
 		-----------
@@ -105,6 +105,8 @@ class run_analysis:
 			list of movies in the dataset
 		
 		'''
+		self.my_name = unique_name
+		self.a_file_style = "old"
 		self.sim = sim
 		#global system parameters
 		self.pixel_to_nm = 0
@@ -340,6 +342,31 @@ class run_analysis:
 			else:
 				seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
 		return drop_files,seg_files
+	
+	def _load_segmented_image_locations_trackMate_blobs(self,pp,cd,t_string,max_tag,min_tag):
+
+		if len(pp) == max_tag:
+			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
+		else: 
+			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
+
+		drop_files = 0
+		seg_files = 0
+
+		if max_tag != min_tag:
+			drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
+			if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
+				seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
+			else:
+				seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
+		else:
+			drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
+			if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
+				seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
+			else:
+				seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
+		return drop_files,seg_files
+	
 	def _load_segmented_image_data(self,drop_files,use_cols=(0,1,2),skiprows=0):
 		point_data = []
 
@@ -425,12 +452,21 @@ class run_analysis:
 		tracks = []
 		drops = []
 		segf = []
-
+		#make a matlab folder to store data for SMAUG analysis
+		self.mat_path_dir = cd + "/Analysis/" + t_string + "MATLAB_dat/"
+		if not os.path.exists(self.mat_path_dir):
+			os.makedirs(self.mat_path_dir)
 		for pp in range(len(all_files)):
 			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
 			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
 			tracks.append(test)
 			drop_files, seg_files = self._load_segmented_image_locations(pp = all_files[pp], \
+											cd = cd, \
+											t_string = t_string, \
+											max_tag = max_tag, \
+											min_tag = min_tag)
+			if self.type_of_blob == "TRACKMATE":
+				drop_files, seg_files = self._load_segmented_image_locations_trackMate_blobs(pp = all_files[pp], \
 											cd = cd, \
 											t_string = t_string, \
 											max_tag = max_tag, \
@@ -444,13 +480,14 @@ class run_analysis:
 														plot = False,
 														kwargs=self.blob_parameters))
 			#blob segmented data
-			drops.append(self._load_segmented_image_data(drop_files))
+			dropss = self._load_segmented_image_data(drop_files)
+			drops.append(dropss)
 			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
 			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
 			self.Movie[str(pp)].Movie_nucleoid = None
 			drop_s = blob_total[pp]
 			#each movie is a cell in this scenario since there is no cell segmentation
-			self.Movie[str(pp)].Cells[0] = Cell(Cell_ID = 0, \
+			self.Movie[str(pp)].Cells[str(0)] = Cell(Cell_ID = 0, \
 										Cell_Movie_Name = all_files[pp], \
 										bounding_box = None, \
 										r_offset = None, \
@@ -462,18 +499,30 @@ class run_analysis:
 										cell_mask = None, \
 										Cell_Nucleoid_Mask = None)
 			self.Movie[str(pp)].Cells[str(0)].raw_tracks=tracks[pp]
-			
-			for j in range(len(drop_s)):
-				for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
+			if self.type_of_blob == "TRACKMATE":
+				for j in range(len(dropss)):
+					if len(dropss[j]) != 0:
+						if isinstance(dropss[j][0],float|int):
+							#print a warning if the drop data is not in the correct format
+							print("Warning: Drop data is not in the correct format. Please check the drop data file.")
+							dropss[j] = [dropss[j]]
+					for k in range(len(dropss[j])):
+							self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = dropss[j][k]
+							self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
+																								"Scale":dropss[j][k],\
+																								"Fit":dropss[j][k]}
+			else:
+				for j in range(len(drop_s)):
+					for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
 
-					#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
-					self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
-					self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
-																							"Scale":drop_s[j]["Scale"][k],\
-																							"Fit":drop_s[j]["Fit"][k]}
+						#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
+						self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
+						self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
+																								"Scale":drop_s[j]["Scale"][k],\
+																								"Fit":drop_s[j]["Fit"][k]}
 		self.segmented_drop_files = segf
 		return [tracks,drops,blob_total]
-			
+
 	def _read_track_data(self,wd,t_string,**kwargs):
 		'''
 		TODO: full explination
@@ -521,6 +570,9 @@ class run_analysis:
 		
 		#make a matlab folder to store data for SMAUG analysis
 		self.mat_path_dir = cd + "/Analysis/" + t_string + "MATLAB_dat/"
+		if not os.path.exists(self.mat_path_dir):
+			os.makedirs(self.mat_path_dir)
+		
 		
 		#tag for segmented images
 
@@ -535,13 +587,23 @@ class run_analysis:
 		#initialize data structure
 		for pp in range(len(movies)):
 			#loading the track data  (formated as [track_ID,frame_ID,x,y,intensity])
-			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
+			#if new track_mate style:
+			if self.a_file_style == "new":
+				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
+			else:
+				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
 
 			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
 
 			tracks.append(test)
 
 			drop_files, seg_files = self._load_segmented_image_locations(pp = all_files[pp], \
+											cd = cd, \
+											t_string = t_string, \
+											max_tag = max_tag, \
+											min_tag = min_tag)
+			if self.type_of_blob == "TRACKMATE":
+				drop_files, seg_files = self._load_segmented_image_locations_trackMate_blobs(pp = all_files[pp], \
 											cd = cd, \
 											t_string = t_string, \
 											max_tag = max_tag, \
@@ -555,7 +617,8 @@ class run_analysis:
 														plot = False,
 														kwargs=self.blob_parameters))
 			#blob segmented data
-			drops.append(self._load_segmented_image_data(drop_files))
+			dropss = self._load_segmented_image_data(drop_files)
+			drops.append(dropss)
 
 			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
 			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
@@ -599,19 +662,37 @@ class run_analysis:
 					self.Movie[str(pp)].Cells[str(i)].points_per_frame = points_per_frame_bulk_sort(x=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,2],
 																									y=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,3],
 																									t=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,1])
-				for j in range(len(drop_s)):
-					for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
+				if self.type_of_blob != "TRACKMATE":
+					for j in range(len(drop_s)):
+						for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
 
-						point = Point(drop_s[j][self.type_of_blob][k][0],drop_s[j][self.type_of_blob][k][1])
-						if poly.contains(point) or poly.touches(point):
-							#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
-							if self.type_of_blob == "Fitted":
-								self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k][:2]
-							else:
-								self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
+							point = Point(drop_s[j][self.type_of_blob][k][0],drop_s[j][self.type_of_blob][k][1])
+							if poly.contains(point) or poly.touches(point):
+								#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
+								if self.type_of_blob == "Fitted":
+									self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k][:-1]
+								else:
+									self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
 								self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
-																									"Scale":drop_s[j]["Scale"][k],\
-																									"Fit":drop_s[j]["Fit"][k]}
+																										"Scale":drop_s[j]["Scale"][k],\
+																										"Fit":drop_s[j]["Fit"][k]}
+				else:
+					for j in range(len(dropss)):
+						if len(dropss[j]) != 0:
+							if isinstance(dropss[j][0],float|int):
+								#raise a warning that the dropss is not a list of lists
+								print("Warning: Drop data is not in the correct format. Please check the drop data file.")
+								dropss[j] = [dropss[j]]
+							for k in range(len(dropss[j])):
+								point = Point(dropss[j][k][0],dropss[j][k][1])
+								if poly.contains(point) or poly.touches(point):
+									self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = dropss[j][k]
+									self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
+																										"Scale":dropss[j][k],\
+																										"Fit":dropss[j][k]}
+
+					
+
 
 		self.segmented_drop_files = segf
 
@@ -870,7 +951,7 @@ class run_analysis:
 													sorted_tracks=sorted_tracks)
 
 		
-		#if true drops don't exist make all the tracks out tracks
+		#if true drops don't exist make all the tracks None tracks
 		for ii in range(len(sorted_tracks[0])):
 			if len(true_drop_per_frame[ii]) == 0:
 				for l in range(len(sorted_tracks[0][ii])): #running over the tracks in frame k
@@ -1006,7 +1087,10 @@ class run_analysis:
 		return
 	def run_flow_sim(self,cd,t_string): #very hacky to get this to work for simulation data. Assumes the whole movie is one cell. 
 		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + ".tif_spots.csv"))
-
+		#make a matlab folder to store data for SMAUG analysis
+		self.mat_path_dir = cd + "/Analysis/" + t_string + "MATLAB_dat/"
+		if not os.path.exists(self.mat_path_dir):
+			os.makedirs(self.mat_path_dir)
 		blob_total = []
 		tracks = []
 		drops = []
@@ -1185,7 +1269,7 @@ class run_analysis:
 		to it.
 		'''
 		self.fitting_parameters = kwargs
-
+	@deprecated("This is not used anymore. Use cases were for allowing matrix operations on uneven arrays. Better ways to do this now.")
 	def _correct_msd_vectors(self):
 		'''
 		pad msd vectors with NaNs so they are the same length as you increase tau
@@ -1254,15 +1338,70 @@ class run_analysis:
 		for i,j in Movie.items():
 			for k,l in j.Cells.items():
 				for n,m in l.All_Tracjectories.items():
-					track_dict_all[n] = np.array([m.X,m.Y,m.Frames]).T
+					track_dict_all[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
 					if m.Classification == "IN":
-						track_dict_in[n] = np.array([m.X,m.Y,m.Frames]).T
-					if m.Classification == "IO":
-						track_dict_io[n] = np.array([m.X,m.Y,m.Frames]).T
-					else:
-						track_dict_out[n] = np.array([m.X,m.Y,m.Frames]).T
+						track_dict_in[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
+					elif m.Classification == "IO":
+						track_dict_io[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
+					elif m.Classification == "OUT":
+						track_dict_out[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
 		return {"IN": track_dict_in, "OUT": track_dict_out, "IO": track_dict_io, "ALL": track_dict_all}
-					
+	def _make_SMAUG_files(self,Movie=None)->None:
+
+		#make a directory for the SMAUG files using self.mat_path_dir
+		#check if the directory exists, if not make it
+		if not os.path.exists(self.mat_path_dir):
+			os.mkdir(self.mat_path_dir)
+		#if Movie is none check if self.Movie is not empty
+		if Movie is None:
+			if len(self.Movie) == 0:
+				raise ValueError("Movie is empty")
+			else:
+				Movie = self.Movie
+		for i,j in Movie.items():
+			tracks_all = {}
+			tracks_IN = {}
+			tracks_OUT = {}
+			tracks_IO = {}
+			tracks_NONE = {}
+			track_ID_counter = 0
+			for k,l in j.Cells.items():
+				for n,m in l.All_Tracjectories.items():
+					tracks_all[track_ID_counter] = np.array([m.X,m.Y,m.Frames]).T
+					if m.Classification == "IN":
+						tracks_IN[track_ID_counter] = np.array([m.X,m.Y,m.Frames]).T
+					elif m.Classification == "IO":
+						tracks_IO[track_ID_counter] = np.array([m.X,m.Y,m.Frames]).T
+					elif m.Classification == "OUT":
+						tracks_OUT[track_ID_counter] = np.array([m.X,m.Y,m.Frames]).T
+					elif m.Classification == None:
+						tracks_NONE[track_ID_counter] = np.array([m.X,m.Y,m.Frames]).T
+					track_ID_counter += 1
+			#we need to convert this into the SMAUG format using convert_track_data_SMAUG_format
+			Smaug_all = convert_track_data_SMAUG_format(tracks_all)
+			Smaug_IN = convert_track_data_SMAUG_format(tracks_IN)
+			Smaug_OUT = convert_track_data_SMAUG_format(tracks_OUT)
+			Smaug_IO = convert_track_data_SMAUG_format(tracks_IO)
+			Smaug_NONE = convert_track_data_SMAUG_format(tracks_NONE)
+			#make subdirectories for each type of smaugfile
+			if not os.path.exists(self.mat_path_dir + "/ALL"):
+				os.mkdir(self.mat_path_dir + "/ALL")
+			if not os.path.exists(self.mat_path_dir + "/IN"):
+				os.mkdir(self.mat_path_dir + "/IN")
+			if not os.path.exists(self.mat_path_dir + "/OUT"):
+				os.mkdir(self.mat_path_dir + "/OUT")
+			if not os.path.exists(self.mat_path_dir + "/IO"):
+				os.mkdir(self.mat_path_dir + "/IO")
+			if not os.path.exists(self.mat_path_dir + "/NONE"):
+				os.mkdir(self.mat_path_dir + "/NONE")
+			#save the files
+			sio.savemat(self.mat_path_dir + "/ALL/" + str(self.t_string) + str(i) + "_ALL.mat",{"trfile":Smaug_all})
+			sio.savemat(self.mat_path_dir + "/IN/" + str(self.t_string) + str(i) + "_IN.mat",{"trfile":Smaug_IN})
+			sio.savemat(self.mat_path_dir + "/OUT/" + str(self.t_string) + str(i) + "_OUT.mat",{"trfile":Smaug_OUT})
+			sio.savemat(self.mat_path_dir + "/IO/" + str(self.t_string) + str(i) + "_IO.mat",{"trfile":Smaug_IO})
+			sio.savemat(self.mat_path_dir + "/NONE/" + str(self.t_string) + str(i) + "_NONE.mat",{"trfile":Smaug_NONE})
+		return 
+	
 class Movie_frame:
 	'''
 	Frame of reference for one movie

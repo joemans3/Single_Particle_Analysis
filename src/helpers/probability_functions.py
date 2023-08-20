@@ -146,3 +146,21 @@ class multiple_top_hat_probability:
     def non_subspace_probability(self, value: float)->None:
         self._non_subspace_probability = value
     
+
+
+def test_multiple_top_hat_probability():
+    # Define test parameters
+    num_subspace = 2
+    subspace_centers = np.array([[0, 0], [2, 2]])
+    subspace_radius = np.array([1, 1])
+    density_dif = 0.1
+    space_size = np.array([5, 5])
+
+    # Initialize probability function object
+    prob_func = multiple_top_hat_probability(num_subspace, subspace_centers, subspace_radius, density_dif, space_size)
+
+    # Test probability function for points inside and outside subspaces
+    assert np.isclose(prob_func(np.array([0.5, 0.5])), density_dif / np.prod(space_size))
+    assert np.isclose(prob_func(np.array([2.5, 2.5])), density_dif / np.prod(space_size))
+    assert np.isclose(prob_func(np.array([1.5, 1.5])), density_dif / np.prod(space_size))
+    assert np.isclose(prob_func(np.array([3.5, 3.5])), (prob_func.non_subspace_probability))

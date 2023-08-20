@@ -15,6 +15,8 @@ from skimage.color import rgb2gray
 from sklearn import mixture
 import copy
 from scipy.spatial import ConvexHull
+#import gmm
+from sklearn.mixture import GaussianMixture
 
 #curve fitting utility functions
 def non_linear_curvefit(func,xdata,ydata,p0=None,method='lm',bounds=None):
@@ -627,7 +629,7 @@ def angle_multi(v1):
 
 
 
-#######MSD calculations
+#######MSD calculations for sim data format of dict ###
 
 def MSD_tau_utility(x,y,tau=1,permutation=True):
     '''Documentation for MSD_tau_utility
@@ -696,7 +698,7 @@ def _msd_tau_utility_all(x,y,tau):
     #return the displacements as (x,y) pairs
     return displacements
 
-def _msd_tau_utility_single(x,y,tau):
+def _msd_tau_utility_single(x,y,tau): 
     #dont use this, its just to show this doesn't work as well as the permutation method
     x_dis = np.diff(x[::tau])
     y_dis = np.diff(y[::tau])
@@ -778,8 +780,8 @@ def MSD_Tracks(tracks,permutation=True,return_type="msd_curves",verbose=False,co
     if verbose == True:
         ensemble_msd_copy = copy.deepcopy(ensemble_msd)
     #update the ensemble MSD curve dictionary
-    ensemble_msd = msd_avgerage_utility(ensemble_msd)
-    return_dict = {"msd_curves":ensemble_msd,"displacements":tracks_displacements}
+    ensemble_msd,errors_ensemble_msd = msd_avgerage_utility(ensemble_msd)
+    return_dict = {"msd_curves":[ensemble_msd,errors_ensemble_msd],"displacements":tracks_displacements}
     if verbose == True:
         if return_type == "both":
             return return_dict,ensemble_msd_copy
@@ -794,7 +796,7 @@ def MSD_Tracks(tracks,permutation=True,return_type="msd_curves",verbose=False,co
 def msd_avgerage_utility(displacements):
     '''Documentation for _msd_avgerage_utility
 
-    Parameters:
+    Parameters: 
     -----------
     displacements : dict
         dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,D), D is the dimension of the data
@@ -803,10 +805,13 @@ def msd_avgerage_utility(displacements):
     --------
     msd : dict
         dictionary of the MSD for each time lag, key = time lag, value = array of MSD values, shape (n,)
+    error_msd : dict (this is the standard error of the mean of the MSD)
+        dictionary of the error in the MSD for each time lag, key = time lag, value = array of error in the MSD values, shape (n,) 
     
     '''
     #create a dictionary to store the MSD for each time lag
     msd = {}
+    error_msd = {}
     #loop through the time lags
     for key,value in displacements.items():
         #calculate the MSD for each time lag
@@ -814,8 +819,12 @@ def msd_avgerage_utility(displacements):
         #the squared displacements are the sum of the squared components of the displacements
         #divide by the number of dimensions to get the average of the squared displacements
         msd[key] = np.mean(np.sum(np.array(value)**2,axis=1))
+        #calculate the error in the MSD for each time lag
+        #the error in the MSD is the standard deviation of the standard error of the mean of the squared displacements
+        #the standard error of the mean of the squared displacements is the standard deviation of the squared displacements divided by the square root of the number of displacements
+        error_msd[key] = np.std(np.sum(np.array(value)**2,axis=1))/np.sqrt(len(value))
     #return the MSD
-    return msd
+    return [msd,error_msd]
 
 def dic_union_two(dic_1,dic_2):
     '''Documentation for dic_union_two
@@ -1402,6 +1411,9 @@ def convex_hull_area(points):
     #return the volume of the convex hull
     return hull.volume
 
+
+
+
 def MSD_tavg1(x,y,f,f_inc = False):
     if f_inc == True:
         return np.mean((np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0])/np.diff(f)))**2)/4.
@@ -1495,7 +1507,7 @@ def track_decomp(x,y,f,max_track_decomp):
 def fit_MSD_loc_err(t,p_0,p_1,p_2):
     return p_0 * (t**(p_1)) + p_2
 
-def fit_MSD(t,p_0,p_1):
+def fit_MSD(t,p_0,p_1,p_2):
     return p_0 * (t**(p_1)) 
 
 def fit_MSD_Linear(t,p_0,p_1):
@@ -1923,6 +1935,39 @@ def trajectory_angle(X,Y):
         return np.array(angles)
 
 
+###########################
+#utility functions for GMM calculations
+###########################
+def GMM_1D(data:np.ndarray|list, n_components:int, **kwargs)->tuple:
+    ''' Docstring for GMM_1D
+    Uses sklearn.mixture.GaussianMixture to fit a 1D Gaussian Mixture Model to data
+    See https://scikit-learn.org/stable/modules/generated/sklearn.mixture.GaussianMixture.html for more details
+
+    Parameters:
+    -----------
+    data: np.ndarray|list
+        data to be fit
+    n_components: int
+        number of components to fit to data
+    **kwargs:
+        additional keyword arguments to pass to GaussianMixture
+    
+    Returns:
+    --------
+    tuple:
+        (means, covariances, weights, gmm_model)
+
+    '''
+    #reshape data
+    data = np.array(data).reshape(-1,1)
+    #fit GMM
+    gmm = GaussianMixture(n_components=n_components, **kwargs).fit(data)
+    #get means, covariances, and weights
+    means = gmm.means_
+    covariances = gmm.covariances_
+    weights = gmm.weights_
+    #return tuple
+    return (means, covariances, weights, gmm)
 
 
 

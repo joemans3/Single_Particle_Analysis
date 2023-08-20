@@ -86,12 +86,12 @@ class sim_foci():
 
 		self.uniform_blob = kwargs.get("unifrom",False)
 
-		@property
-		def condensates(self)->dict:
-			return self._condensates
-		@condensates.setter
-		def condensates(self,condensates: dict):
-			self._condensates = condensates
+	@property
+	def condensates(self)->dict:
+		return self._condensates
+	@condensates.setter
+	def condensates(self,condensates: dict):
+		self._condensates = condensates
 
 	def create_condensate_dict(self,initial_centers: np.ndarray,
 			    			initial_scale: np.ndarray,
@@ -1007,16 +1007,17 @@ def generate_points(pdf,total_points,min_x,max_x,center,radius,bias_subspace_x,s
 			xy_coords.append(var)
 	return np.array(xy_coords)
 	
-def generate_points_from_cls(pdf,total_points,min_x,max_x,density_dif):
+def generate_points_from_cls(pdf,total_points,min_x,max_x,min_y,max_y,density_dif):
 	xy_coords = []
+	area = (max_x-min_x)*(max_y-min_y)
 	while len(xy_coords) < total_points:
 		#generate candidate variable
-		var = np.random.uniform([min_x,min_x],[max_x,max_x])
+		var = np.random.uniform([min_x,min_y],[max_x,max_y])
 		#generate varibale to condition var1
 		var2 = np.random.uniform(0,1)
 		#apply condition
 		pdf_val = pdf(var)
-		if (var2 < ((1./density_dif)*(max_x-min_x)**2) * pdf_val):
+		if (var2 < ((1./density_dif)*area) * pdf_val):
 			xy_coords.append(var)
 	return np.array(xy_coords)
 
@@ -1141,8 +1142,8 @@ def axial_intensity_factor(abs_axial_pos: float|np.ndarray,**kwargs) -> float|np
 	the focal plane. This is the factor that is multiplied by the intensity of the PSF
 
 	For now this is a negative exponential decay i.e:
-		I = I_0*e^(-2*|z-z_0|) 
-	This function returns the factor e^(-2*|z-z_0|) only. 
+		I = I_0*e^(-|z-z_0|) 
+	This function returns the factor e^(-|z-z_0|**2 / (2*2.2**2)) only. 
 
 	Parameters:
 	-----------
@@ -1160,7 +1161,7 @@ def axial_intensity_factor(abs_axial_pos: float|np.ndarray,**kwargs) -> float|np
 		return np.ones(len(abs_axial_pos))
 	elif func_type == "exponential":
 		#for now this uses a negative exponential decay
-		return np.exp(-abs_axial_pos)
+		return np.exp(-abs_axial_pos**2 / (2*2.2**2))
 
 if __name__ == "__main__":
 	#define whole space
