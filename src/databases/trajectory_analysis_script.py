@@ -46,7 +46,7 @@ from src.helpers.blob_detection import *
 from src.helpers.Convert_csv_mat import *
 from src.helpers.plotting_functions import *
 from src.helpers.decorators import deprecated
-from src.helpers.SMT_converters import convert_track_data_SMAUG_format
+from src.helpers.SMT_converters import convert_track_data_SMAUG_format, convert_track_data_NOBIAS_format_global, _convert_track_data_NOBIAS_format_tau
 class run_analysis:
 	'''
 	Define a class for each dataset to analyse
@@ -453,7 +453,7 @@ class run_analysis:
 		drops = []
 		segf = []
 		#make a matlab folder to store data for SMAUG analysis
-		self.mat_path_dir = cd + "/Analysis/" + t_string + "MATLAB_dat/"
+		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
 		if not os.path.exists(self.mat_path_dir):
 			os.makedirs(self.mat_path_dir)
 		for pp in range(len(all_files)):
@@ -569,7 +569,7 @@ class run_analysis:
 		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + "_**.tif_spots.csv"))
 		
 		#make a matlab folder to store data for SMAUG analysis
-		self.mat_path_dir = cd + "/Analysis/" + t_string + "MATLAB_dat/"
+		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
 		if not os.path.exists(self.mat_path_dir):
 			os.makedirs(self.mat_path_dir)
 		
@@ -1088,7 +1088,7 @@ class run_analysis:
 	def run_flow_sim(self,cd,t_string): #very hacky to get this to work for simulation data. Assumes the whole movie is one cell. 
 		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + ".tif_spots.csv"))
 		#make a matlab folder to store data for SMAUG analysis
-		self.mat_path_dir = cd + "/Analysis/" + t_string + "MATLAB_dat/"
+		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
 		if not os.path.exists(self.mat_path_dir):
 			os.makedirs(self.mat_path_dir)
 		blob_total = []
@@ -1350,8 +1350,10 @@ class run_analysis:
 
 		#make a directory for the SMAUG files using self.mat_path_dir
 		#check if the directory exists, if not make it
-		if not os.path.exists(self.mat_path_dir):
-			os.mkdir(self.mat_path_dir)
+		#make a SMAUG subdirectory inside it to store the SMAUG files
+		smaug_dir = os.path.join(self.mat_path_dir,"SMAUG")
+		if not os.path.exists(smaug_dir):
+			os.mkdir(smaug_dir)
 		#if Movie is none check if self.Movie is not empty
 		if Movie is None:
 			if len(self.Movie) == 0:
@@ -1383,25 +1385,84 @@ class run_analysis:
 			Smaug_OUT = convert_track_data_SMAUG_format(tracks_OUT)
 			Smaug_IO = convert_track_data_SMAUG_format(tracks_IO)
 			Smaug_NONE = convert_track_data_SMAUG_format(tracks_NONE)
-			#make subdirectories for each type of smaugfile
-			if not os.path.exists(self.mat_path_dir + "/ALL"):
-				os.mkdir(self.mat_path_dir + "/ALL")
-			if not os.path.exists(self.mat_path_dir + "/IN"):
-				os.mkdir(self.mat_path_dir + "/IN")
-			if not os.path.exists(self.mat_path_dir + "/OUT"):
-				os.mkdir(self.mat_path_dir + "/OUT")
-			if not os.path.exists(self.mat_path_dir + "/IO"):
-				os.mkdir(self.mat_path_dir + "/IO")
-			if not os.path.exists(self.mat_path_dir + "/NONE"):
-				os.mkdir(self.mat_path_dir + "/NONE")
+
+			#make a dir for each type of track
+			smaug_IN_dir = os.path.join(smaug_dir,"IN")
+			smaug_OUT_dir = os.path.join(smaug_dir,"OUT")
+			smaug_IO_dir = os.path.join(smaug_dir,"IO")
+			smaug_ALL_dir = os.path.join(smaug_dir,"ALL")
+			smaug_NONE_dir = os.path.join(smaug_dir,"NONE")
+
+			#check if the directories exist, if not make them
+			if not os.path.exists(smaug_IN_dir):
+				os.mkdir(smaug_IN_dir)
+			if not os.path.exists(smaug_OUT_dir):
+				os.mkdir(smaug_OUT_dir)
+			if not os.path.exists(smaug_IO_dir):
+				os.mkdir(smaug_IO_dir)
+			if not os.path.exists(smaug_ALL_dir):
+				os.mkdir(smaug_ALL_dir)
+			if not os.path.exists(smaug_NONE_dir):
+				os.mkdir(smaug_NONE_dir)
+
+			
 			#save the files
-			sio.savemat(self.mat_path_dir + "/ALL/" + str(self.t_string) + str(i) + "_ALL.mat",{"trfile":Smaug_all})
-			sio.savemat(self.mat_path_dir + "/IN/" + str(self.t_string) + str(i) + "_IN.mat",{"trfile":Smaug_IN})
-			sio.savemat(self.mat_path_dir + "/OUT/" + str(self.t_string) + str(i) + "_OUT.mat",{"trfile":Smaug_OUT})
-			sio.savemat(self.mat_path_dir + "/IO/" + str(self.t_string) + str(i) + "_IO.mat",{"trfile":Smaug_IO})
-			sio.savemat(self.mat_path_dir + "/NONE/" + str(self.t_string) + str(i) + "_NONE.mat",{"trfile":Smaug_NONE})
-		return 
+			sio.savemat(os.path.join(smaug_ALL_dir,str(self.t_string) + str(i) + "_ALL.mat"),{"trfile":Smaug_all})
+			sio.savemat(os.path.join(smaug_IN_dir,str(self.t_string) + str(i) + "_IN.mat"),{"trfile":Smaug_IN})
+			sio.savemat(os.path.join(smaug_OUT_dir,str(self.t_string) + str(i) + "_OUT.mat"),{"trfile":Smaug_OUT})
+			sio.savemat(os.path.join(smaug_IO_dir,str(self.t_string) + str(i) + "_IO.mat"),{"trfile":Smaug_IO})
+			sio.savemat(os.path.join(smaug_NONE_dir,str(self.t_string) + str(i) + "_NONE.mat"),{"trfile":Smaug_NONE})
+		#print a log message to say the location of the files
+		print("SMAUG files saved to: {0}".format(smaug_dir))
 	
+	def _make_NOBIAS_files(self,Movie=None,taus=1)->None:
+
+		#we want to use the matlab dir to store the NOBIAS files
+		#make a subdirectory inside it to store the NOBIAS files
+		#make a platform independent path for the nobias files
+		nobias_path_dir = os.path.join(self.mat_path_dir,"NOBIAS")
+		#check if the directory exists, if not make it
+		if not os.path.exists(nobias_path_dir):
+			os.mkdir(nobias_path_dir)
+		#if Movie is none check if self.Movie is not empty
+		if Movie is None:
+			if len(self.Movie) == 0:
+				raise ValueError("Movie is empty")
+			else:
+				Movie = self.Movie
+		#use _convert_to_track_dict_bulk to get the tracks in the correct format
+		tracks = self._convert_to_track_dict_bulk(Movie=Movie)
+		#now we need to convert this into the NOBIAS format using convert_track_data_NOBIAS_format
+		track_IN = convert_track_data_NOBIAS_format_global(tracks["IN"],max_tau=taus)
+		track_OUT = convert_track_data_NOBIAS_format_global(tracks["OUT"],max_tau=taus)
+		track_IO = convert_track_data_NOBIAS_format_global(tracks["IO"],max_tau=taus)
+		track_ALL = convert_track_data_NOBIAS_format_global(tracks["ALL"],max_tau=taus)
+
+		#lets make 4 subdirectories for each type of track that is platform independent
+		track_IN_dir = os.path.join(nobias_path_dir,"IN")
+		track_OUT_dir = os.path.join(nobias_path_dir,"OUT")
+		track_IO_dir = os.path.join(nobias_path_dir,"IO")
+		track_ALL_dir = os.path.join(nobias_path_dir,"ALL")
+
+		#check if the directories exist, if not make them
+		if not os.path.exists(track_IN_dir):
+			os.mkdir(track_IN_dir)
+		if not os.path.exists(track_OUT_dir):
+			os.mkdir(track_OUT_dir)
+		if not os.path.exists(track_IO_dir):
+			os.mkdir(track_IO_dir)
+		if not os.path.exists(track_ALL_dir):
+			os.mkdir(track_ALL_dir)
+		
+		#save the files
+		sio.savemat(os.path.join(track_IN_dir,str(self.t_string) + "_IN.mat"),track_IN[taus-1])
+		sio.savemat(os.path.join(track_OUT_dir,str(self.t_string) + "_OUT.mat"),track_OUT[taus-1])
+		sio.savemat(os.path.join(track_IO_dir,str(self.t_string) + "_IO.mat"),track_IO[taus-1])
+		sio.savemat(os.path.join(track_ALL_dir,str(self.t_string) + "_ALL.mat"),track_ALL[taus-1])
+
+		#print a log message to say the location of the files
+		print("NOBIAS files saved to: {0}".format(nobias_path_dir))
+
 class Movie_frame:
 	'''
 	Frame of reference for one movie
