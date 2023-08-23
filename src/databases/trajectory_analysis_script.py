@@ -162,6 +162,16 @@ class run_analysis:
 		#condensed analysis data
 		#Cells in the specific movie being analysed
 		self.Movie = {}
+	def _Analysis_path_util(self):
+		if self.a_file_style == "old":
+			return os.path.join(self.wd,"Analysis")
+		else:
+			return os.path.join(self.wd,"Analysis_new")
+	def _Segmentation_path_util(self):
+		if self.a_file_style == "new":
+			return os.path.join(self.wd,"Segmented_mean")
+		else:
+			return os.path.join(self.wd,"Segmented")
 	def _reinitalizeVariables(self):
 		self.segmented_drop_files = []
 		##########################
@@ -320,12 +330,16 @@ class run_analysis:
 			movies.append(cells)
 		return movies
 	def _load_segmented_image_locations(self,pp,cd,t_string,max_tag,min_tag):
-
-		if len(pp) == max_tag:
-			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
-		else: 
-			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
-
+		if self.a_file_style == "old":
+			if len(pp) == max_tag:
+				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
+			else: 
+				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
+		else:
+			if len(pp) == max_tag:
+				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+2]
+			else: 
+				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
 		drop_files = 0
 		seg_files = 0
 
@@ -344,12 +358,16 @@ class run_analysis:
 		return drop_files,seg_files
 	
 	def _load_segmented_image_locations_trackMate_blobs(self,pp,cd,t_string,max_tag,min_tag):
-
-		if len(pp) == max_tag:
-			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
-		else: 
-			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
-
+		if self.a_file_style == "old":
+			if len(pp) == max_tag:
+				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
+			else: 
+				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
+		else:
+			if len(pp) == max_tag:
+				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+2]
+			else: 
+				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
 		drop_files = 0
 		seg_files = 0
 
@@ -444,7 +462,9 @@ class run_analysis:
 				drop statistics from blob_detection on time projected images
 		'''
 		cd = wd
-		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + "_**.tif_spots.csv"))
+		#use the self._Analysis_path_util() function to get the path to the analysis folder
+		analysis_path = os.path.join(self._Analysis_path_util(),t_string + "_**.tif_spots.csv")
+		all_files = sorted(glob.glob(analysis_path))
 		max_tag = np.max([len(i) for i in all_files]) 
 		min_tag = np.min([len(i) for i in all_files])
 
@@ -457,7 +477,13 @@ class run_analysis:
 		if not os.path.exists(self.mat_path_dir):
 			os.makedirs(self.mat_path_dir)
 		for pp in range(len(all_files)):
-			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
+			#loading the track data  (formated as [track_ID,frame_ID,x,y,intensity])
+			#if new track_mate style:
+			if self.a_file_style == "new":
+				test_t = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
+				test = test_t[:,[0,3,1,2,4]]
+			else:
+				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
 			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
 			tracks.append(test)
 			drop_files, seg_files = self._load_segmented_image_locations(pp = all_files[pp], \
@@ -566,8 +592,10 @@ class run_analysis:
 		
 		movies = self._read_supersegger(np.sort(xy_frame_dir_names))
 
-		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + "_**.tif_spots.csv"))
-		
+		#use the self._Analysis_path_util() function to get the path to the analysis folder
+		analysis_path = os.path.join(self._Analysis_path_util(),t_string + "_**.tif_spots.csv")
+		all_files = sorted(glob.glob(analysis_path))
+		print(all_files)
 		#make a matlab folder to store data for SMAUG analysis
 		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
 		if not os.path.exists(self.mat_path_dir):
@@ -589,7 +617,8 @@ class run_analysis:
 			#loading the track data  (formated as [track_ID,frame_ID,x,y,intensity])
 			#if new track_mate style:
 			if self.a_file_style == "new":
-				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
+				test_t = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
+				test = test_t[:,[0,3,1,2,4]]
 			else:
 				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
 
@@ -610,6 +639,7 @@ class run_analysis:
 											min_tag = min_tag)
 			#store seg_files
 			segf.append(seg_files)
+			print(seg_files)
 			#blob analysis
 			#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
 			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
@@ -867,7 +897,7 @@ class run_analysis:
 			for k,l in j.Cells.items():
 				#sort the tracks based on the frame segmentation and cutoff criteria
 				if len(l.raw_tracks)!=0:
-					if self.sim:
+					if self.sim==True:
 						sorted_track = self._convert_track_frame(np.array(l.raw_tracks),order=(0,3,1,2,4))
 					else:
 						sorted_track = self._convert_track_frame(np.array(l.raw_tracks))
@@ -1346,12 +1376,12 @@ class run_analysis:
 					elif m.Classification == "OUT":
 						track_dict_out[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
 		return {"IN": track_dict_in, "OUT": track_dict_out, "IO": track_dict_io, "ALL": track_dict_all}
-	def _make_SMAUG_files(self,Movie=None)->None:
+	def _make_SMAUG_files(self,Movie=None,dir_name="SMAUG")->None:
 
 		#make a directory for the SMAUG files using self.mat_path_dir
 		#check if the directory exists, if not make it
 		#make a SMAUG subdirectory inside it to store the SMAUG files
-		smaug_dir = os.path.join(self.mat_path_dir,"SMAUG")
+		smaug_dir = os.path.join(self.mat_path_dir,dir_name)
 		if not os.path.exists(smaug_dir):
 			os.mkdir(smaug_dir)
 		#if Movie is none check if self.Movie is not empty
@@ -1415,12 +1445,12 @@ class run_analysis:
 		#print a log message to say the location of the files
 		print("SMAUG files saved to: {0}".format(smaug_dir))
 	
-	def _make_NOBIAS_files(self,Movie=None,taus=1)->None:
+	def _make_NOBIAS_files(self,Movie=None,taus=1,dir_name="NOBIAS")->None:
 
 		#we want to use the matlab dir to store the NOBIAS files
 		#make a subdirectory inside it to store the NOBIAS files
 		#make a platform independent path for the nobias files
-		nobias_path_dir = os.path.join(self.mat_path_dir,"NOBIAS")
+		nobias_path_dir = os.path.join(self.mat_path_dir,dir_name)
 		#check if the directory exists, if not make it
 		if not os.path.exists(nobias_path_dir):
 			os.mkdir(nobias_path_dir)

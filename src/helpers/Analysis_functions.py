@@ -17,6 +17,7 @@ import copy
 from scipy.spatial import ConvexHull
 #import gmm
 from sklearn.mixture import GaussianMixture
+from src.helpers.decorators import deprecated
 
 #curve fitting utility functions
 def non_linear_curvefit(func,xdata,ydata,p0=None,method='lm',bounds=None):
@@ -347,7 +348,7 @@ def point_inside_circle2D(circle,point):
         return False
 
 
-
+@deprecated("Sometimes this breaks, use with caution. Use array slicing instead (ex: a[:,[0,2,1,3]] to switch the 2nd and 3rd columns)")
 def reshape_col2d(arr,permutations):
     '''
     Docstring for reshape_col2d
@@ -364,6 +365,10 @@ def reshape_col2d(arr,permutations):
     --------
     numpy array
         The reshaped array
+
+    NOTES:
+    ------
+    Sometimes this breaks i have no idea why. Use with caution
     
     '''
     # Check that permutations is a list of integers 
