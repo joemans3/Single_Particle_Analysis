@@ -247,7 +247,13 @@ class Simulate_cells(sf.Track_generator):
                 #update the top_hat_func with the new condensate positions
                 top_hat_func.update_parameters(subspace_centers=condensate_positions)
                 #sample the top hat to get the initial position
-                initials[i][:2] = sf.generate_points_from_cls(top_hat_func,total_points=1,min_x=self.cell_params['cell_space'][0],max_x=self.cell_params['cell_space'][1],min_y=self.cell_params['cell_space'][2],max_y=self.cell_params['cell_space'][3],density_dif=self.global_params["density_dif"])[0]
+                initials[i][:2] = sf.generate_points_from_cls(top_hat_func,
+                                                              total_points=1,
+                                                              min_x=self.cell_params['cell_space'][0],
+                                                              max_x=self.cell_params['cell_space'][1],
+                                                              min_y=self.cell_params['cell_space'][2],
+                                                              max_y=self.cell_params['cell_space'][3],
+                                                              density_dif=self.global_params["density_dif"])[0]
 
 
 
