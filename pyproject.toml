@@ -1,0 +1,37 @@
+[project]
+#template from https://github.com/pypa/sampleproject/blob/main/pyproject.toml
+name = "SMT_Analysis"  # Required
+
+version = "1.0.0"  # Required
+
+description = "Jumbled code for SMT analysis and simulation developed for the Weber Lab"  # Optional
+
+readme = "README.md" # Optional
+
+requires-python = ">=3.10"
+
+license = {file = "LICENSE"}
+
+keywords = ["SMT"]  # Optional
+
+authors = [
+  {name = "Baljyot Singh Parmar", email = "baljyotparmar@hotmail.com" } # Optional
+]
+
+maintainers = [
+  {name = "Baljyot Singh Parmar", email = "baljyotparmar@hotmail.com" } # Optional
+]
+
+dependencies = [
+  "numpy>=1.21.2",
+  "matplotlib>=3.6.0",
+  "scipy>=1.7.1",
+  "pandas>=1.3.3",
+  "scikit-learn>=1.0",
+  "scikit-image>=0.18.3",
+  "lmfit>=1.0.2",
+]
+
+[build-system]
+requires = ["setuptools>=43.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
