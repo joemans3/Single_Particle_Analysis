@@ -1492,6 +1492,48 @@ class run_analysis:
 
 		#print a log message to say the location of the files
 		print("NOBIAS files saved to: {0}".format(nobias_path_dir))
+	
+	def _track_collection_utility(self)->list:
+		#run over all the movies if they exist and get the track lengths and store the originla tracks another dict. Return both
+		track_lengths = {"IN":[], "OUT":[], "IO":[], "ALL":[], "NONE":[]}
+		track_vals = {"IN":[], "OUT":[], "IO":[], "ALL":[], "NONE":[]}
+		#make sure Movie is not empty
+		if len(self.Movie) == 0:
+			raise ValueError("Movie is empty")
+		for i,j in self.Movie.items():
+			for k,l in j.Cells.items():
+				for n,m in l.All_Tracjectories.items():
+					if m.Classification == None:
+						track_lengths["NONE"].append(len(m.X))
+						track_vals["NONE"].append(m)
+					else:
+						track_lengths[m.Classification].append(len(m.X))
+						track_vals[m.Classification].append(m)
+		return [track_lengths,track_vals]
+	
+	@property
+	def track_durations(self)->dict:
+		#check if the _track_durations variable is defined
+		if not hasattr(self,"_track_durations"):
+			#update with a call to _track_collection_utility and also update the _track_collection variable
+			self._track_durations,self.track_collection = self._track_collection_utility()
+		return self._track_durations
+	
+	@property
+	def track_collection(self)->dict:
+		#check if the _track_collection variable is defined
+		if not hasattr(self,"_track_collection"):
+			#update with a call to _track_collection_utility
+			self._track_collection = self._track_collection_utility()
+		return self._track_collection
+	@track_collection.setter
+	def track_collection(self,track_collection):
+		#make sure the input is a dictionary
+		if type(track_collection) is not dict:
+			raise TypeError("track_collection must be a dictionary")
+		self._track_collection = track_collection
+
+
 
 class Movie_frame:
 	'''
