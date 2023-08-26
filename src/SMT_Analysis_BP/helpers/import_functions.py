@@ -28,10 +28,10 @@ class IO_run_analysis:
 	def _load_superSegger(cd,_string):
 		xy_frame_dir_names = []
 		#load the data of segmented cells from SuperSegger (cell files)
-		for root, subdirs, files in os.walk(cd + _string):
+		for root, subdirs, files in os.walk(os.path.join(cd,_string)):
 			for d in subdirs:
 				if d[:2] == 'xy':
-					xy_frame_dir_names.append(cd + _string+ '/' +d)
+					xy_frame_dir_names.append(os.path.join(cd,_string,d))
 		return xy_frame_dir_names
 
 

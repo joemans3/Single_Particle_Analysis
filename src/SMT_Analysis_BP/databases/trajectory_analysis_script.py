@@ -312,7 +312,8 @@ class run_analysis:
 		movies = []
 		for i in sorted_cells:
 			cells = []
-			all_files = sorted(glob.glob(i +"/cell"+ "/cell**.mat"))
+			all_files = sorted(glob.glob(os.path.join(i,"cell","cell**.mat")))
+			#all_files = sorted(glob.glob(i +"/cell"+ "/cell**.mat"))
 
 			for j in range(len(all_files)):
 				
@@ -342,20 +343,37 @@ class run_analysis:
 				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
 		drop_files = 0
 		seg_files = 0
-
-		if max_tag != min_tag:
-			drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
-			if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
-				seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
+		#TODO: old way keep for now but remember to remove later
+		# drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
+		# 	if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
+		# 		seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
+		# 	else:
+		# 		seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
+		# else:
+		# 	drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
+		# 	if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
+		# 		seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
+		# 	else:
+		# 		seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
+		# return drop_files,seg_files
+		if max_tag != min_tag: 
+			cd_path_seg = os.path.join(cd,"Segmented_mean")
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
+			
+			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
 			else:
-				seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
 		else:
-			drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
-			if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
-				seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
+			cd_path_seg = os.path.join(cd,"Segmented_mean")
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
+			print(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
+			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
 			else:
-				seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
 		return drop_files,seg_files
+
 	
 	def _load_segmented_image_locations_trackMate_blobs(self,pp,cd,t_string,max_tag,min_tag):
 		if self.a_file_style == "old":
@@ -370,19 +388,34 @@ class run_analysis:
 				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
 		drop_files = 0
 		seg_files = 0
-
+		#TODO old way keep for now but remember to remove later
+		# if max_tag != min_tag:
+		# 	drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
+		# 	if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
+		# 		seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
+		# 	else:
+		# 		seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
+		# else:
+		# 	drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
+		# 	if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
+		# 		seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
+		# 	else:
+		# 		seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
+		# return drop_files,seg_files
 		if max_tag != min_tag:
-			drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
-			if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
-				seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
+			cd_path_seg = os.path.join(cd,"Segmented")
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
+			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
 			else:
-				seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
 		else:
-			drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
-			if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
-				seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
+			cd_path_seg = os.path.join(cd,"Segmented")
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
+			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
 			else:
-				seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
 		return drop_files,seg_files
 	
 	def _load_segmented_image_data(self,drop_files,use_cols=(0,1,2),skiprows=0):
@@ -395,51 +428,6 @@ class run_analysis:
 			point_data.append(points)
 		return point_data
 
-#	def _load_segmented_image_data(self,all_files,cd,t_string,max_tag):
-
-		blob_total = []
-		tracks = []
-		drops = []
-		segf = []
-		for pp in range(len(all_files)):
-
-			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
-			IO_run_analysis._save_sptanalysis_data(pp,test)
-
-			tracks.append(test)
-			if len(all_files[pp]) == max_tag:
-				tag = all_files[pp][len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
-			else: 
-				tag = all_files[pp][len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
-
-
-			drop_files = 0
-			seg_files = 0
-			if max_tag != np.min([len(i) for i in all_files]):
-				drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
-				if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
-					seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
-				else:
-					seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
-			else:
-				drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
-				if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
-					seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
-				else:
-					seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
-
-			blob_total.append(self._blob_detection_utility(seg_files,plot = False))
-			point_data = []
-			segf.append(seg_files)
-
-			for i in drop_files:
-
-				points = np.loadtxt("{0}".format(i),delimiter=",",usecols=(0,1,2))
-
-				point_data.append(points)
-
-			drops.append(point_data)
-		return blob_total,tracks,drops,segf
 	def _read_track_data_nocells(self,wd,t_string,**kwargs):
 		'''Docstring
 		Alternative to _read_track_data for cases when there is no cell segmentation via the supersegger method
@@ -578,7 +566,7 @@ class run_analysis:
 
 		cd = wd
 		#use gfp images for nuceloid segmentation
-		nucleoid_path = kwargs.get("nucleoid_path",cd + '/gfp')
+		nucleoid_path = kwargs.get("nucleoid_path",os.path.join(cd,'gfp'))
 		#check if cd+/gfp exists
 		if not os.path.exists(nucleoid_path):
 			Warning("No gfp folder found in {0}. Assuming no cell segmentation exists and running analysis without use of segmentation. \n Note this mean the whole frame is a considered one cell".format(cd))
@@ -588,8 +576,7 @@ class run_analysis:
 		nucleoid_imgs_sorted = sorted_alphanumeric(nucleoid_imgs)
 
 		#load the data of segmented cells from SuperSegger (cell files)
-		xy_frame_dir_names = IO_run_analysis._load_superSegger(cd,'/gfp/Inverted_Images')
-		
+		xy_frame_dir_names = IO_run_analysis._load_superSegger(cd,os.path.join("gfp","Inverted_Images"))#'/gfp/Inverted_Images') 
 		movies = self._read_supersegger(np.sort(xy_frame_dir_names))
 
 		#use the self._Analysis_path_util() function to get the path to the analysis folder
@@ -1116,7 +1103,7 @@ class run_analysis:
 
 		return
 	def run_flow_sim(self,cd,t_string): #very hacky to get this to work for simulation data. Assumes the whole movie is one cell. 
-		all_files = sorted(glob.glob(cd + "/Analysis/" + t_string + ".tif_spots.csv"))
+		all_files = sorted(glob.glob(os.path.join(cd,"Analysis",t_string,".tif_spots.csv")))
 		#make a matlab folder to store data for SMAUG analysis
 		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
 		if not os.path.exists(self.mat_path_dir):
@@ -1129,8 +1116,8 @@ class run_analysis:
 		for pp in range(len(all_files)):
 			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
 			tracks.append(test)
-
-			seg_files = sorted(glob.glob("{0}/segmented/**.tif".format(cd)))
+			seg_files = sorted(glob.glob(os.path.join(cd,"segmented","**.tif")))
+			# seg_files = sorted(glob.glob("{0}/segmented/**.tif".format(cd)))
 
 			#store seg_files
 			segf.append(seg_files)

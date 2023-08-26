@@ -4,7 +4,7 @@ name = "SMT_Analysis"  # Required
 
 version = "0.0.1"  # Required
 
-description = "Jumbled code for SMT analysis and simulation developed for the Weber Lab"  # Optional
+description = "Jumbled code for SMT analysis and simulation developed for the Weber Lab by Baljyot Singh Parmar"  # Optional
 
 readme = "README.md" # Optional
 
