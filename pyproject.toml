@@ -2,7 +2,7 @@
 #template from https://github.com/pypa/sampleproject/blob/main/pyproject.toml
 name = "SMT_Analysis"  # Required
 
-version = "1.0.0"  # Required
+version = "0.0.1"  # Required
 
 description = "Jumbled code for SMT analysis and simulation developed for the Weber Lab"  # Optional
 
