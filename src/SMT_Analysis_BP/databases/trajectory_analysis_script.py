@@ -48,6 +48,8 @@ from src.SMT_Analysis_BP.helpers.Convert_csv_mat import *
 from src.SMT_Analysis_BP.helpers.plotting_functions import *
 from src.SMT_Analysis_BP.helpers.decorators import deprecated
 from src.SMT_Analysis_BP.helpers.SMT_converters import convert_track_data_SMAUG_format, convert_track_data_NOBIAS_format_global, _convert_track_data_NOBIAS_format_tau
+from src.SMT_Analysis_BP.databases.structure_storage import SEGMENTATION_FOLDER_TYPES, ANALYSIS_FOLDER_TYPES, LOADING_DROP_BLOB_TYPES
+
 class run_analysis:
 	'''
 	Define a class for each dataset to analyse
@@ -107,7 +109,7 @@ class run_analysis:
 		
 		'''
 		self.my_name = unique_name
-		self.a_file_style = "old"
+		self.a_file_style = "old" #also can be "new" (stands for analysis file style) (old is the custom TRACKMATE script output, and new is the TRACKMATE GUI output style (spots))
 		self.sim = sim
 		#global system parameters
 		self.pixel_to_nm = 0
@@ -146,7 +148,7 @@ class run_analysis:
 		self.detection_name = 'bp'
 		self.log_scale = False
 		
-		self.type_of_blob = "Scale" #takes values of "Fitted" or "Scale", "Fitted" is not implemented yet and the code will crash if you try to use it
+		self.type_of_blob = "Scale" #takes values indicated in SEGMENTATION_FOLDER_TYPES
 
 		self.blob_parameters = {"threshold": self.threshold_blob, \
 					"overlap": self.overlap_blob, \
@@ -163,6 +165,7 @@ class run_analysis:
 		#condensed analysis data
 		#Cells in the specific movie being analysed
 		self.Movie = {}
+
 	def _Analysis_path_util(self):
 		if self.a_file_style == "old":
 			return os.path.join(self.wd,"Analysis")
@@ -332,22 +335,7 @@ class run_analysis:
 			movies.append(cells)
 		return movies
 	def _load_segmented_image_locations(self,pp,cd,t_string,max_tag,min_tag,seg_name="TRACKMATE",analysis_name="TRACKMATE"):
-		seg_types = {
-			"TRACKMATE": "Segmented",
-			"Scale": "Segmented_mean",
-			"Fitted": "Segmented_mean",
-			"SCALE_SPACE_PLUS": "segmented_scale_space_plus",
-			"DBSCAN": "segmented_scale_space_plus"
-		}
-
-		analysis_types = {
-			"TRACKMATE": "Analysis",
-			"Scale": "Analysis",
-			"Fitted": "Analysis",
-			"SCALE_SPACE_PLUS": "Analysis",
-			"DBSCAN": "Analysis_DBSCAN"
-		}
-	
+		
 		if self.a_file_style == "old":
 			if len(pp) == max_tag:
 				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
@@ -360,109 +348,24 @@ class run_analysis:
 				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
 		drop_files = 0
 		seg_files = 0
-		#TODO: old way keep for now but remember to remove later
-		# drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
-		# 	if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
-		# 		seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
-		# 	else:
-		# 		seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
-		# else:
-		# 	drop_files = sorted(glob.glob("{0}/Segmented_mean/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
-		# 	if len(sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
-		# 		seg_files = sorted(glob.glob("{0}/Segmented_mean/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
-		# 	else:
-		# 		seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
-		# return drop_files,seg_files
+		
 		if max_tag != min_tag: 
-			cd_path_seg = os.path.join(cd,seg_types[seg_name])
-			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,analysis_types[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
+			cd_path_seg = os.path.join(cd,SEGMENTATION_FOLDER_TYPES[seg_name])
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,ANALYSIS_FOLDER_TYPES[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
 			
 			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
 				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
 			else:
 				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
 		else:
-			cd_path_seg = os.path.join(cd,seg_types[seg_name])
-			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,analysis_types[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
+			cd_path_seg = os.path.join(cd,SEGMENTATION_FOLDER_TYPES[seg_name])
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,ANALYSIS_FOLDER_TYPES[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
 			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
 				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
 			else:
 				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
 		return drop_files,seg_files
 
-	# def _load_scale_space_plus_segmented_image_locations(self,pp,cd,t_string,max_tag,min_tag):
-	# 	if self.a_file_style == "old":
-	# 		if len(pp) == max_tag:
-	# 			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
-	# 		else: 
-	# 			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
-	# 	else:
-	# 		if len(pp) == max_tag:
-	# 			tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+2]
-	# 		else: 
-	# 			tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
-	# 	drop_files = 0
-	# 	seg_files = 0
-	# 	if max_tag != min_tag: 
-	# 		cd_path_seg = os.path.join(cd,"segmented_scale_space_plus")
-	# 		drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
-			
-	# 		if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
-	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
-	# 		else:
-	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
-	# 	else:
-	# 		cd_path_seg = os.path.join(cd,"segmented_scale_space_plus")
-	# 		drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
-	# 		if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
-	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
-	# 		else:
-	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
-	# 	return drop_files,seg_files
-
-	
-	# def _load_segmented_image_locations_trackMate_blobs(self,pp,cd,t_string,max_tag,min_tag):
-	# 	if self.a_file_style == "old":
-	# 		if len(pp) == max_tag:
-	# 			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
-	# 		else: 
-	# 			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
-	# 	else:
-	# 		if len(pp) == max_tag:
-	# 			tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+2]
-	# 		else: 
-	# 			tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
-	# 	drop_files = 0
-	# 	seg_files = 0
-	# 	#TODO old way keep for now but remember to remove later
-	# 	# if max_tag != min_tag:
-	# 	# 	drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
-	# 	# 	if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
-	# 	# 		seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
-	# 	# 	else:
-	# 	# 		seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
-	# 	# else:
-	# 	# 	drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
-	# 	# 	if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
-	# 	# 		seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
-	# 	# 	else:
-	# 	# 		seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
-	# 	# return drop_files,seg_files
-	# 	if max_tag != min_tag:
-	# 		cd_path_seg = os.path.join(cd,"Segmented")
-	# 		drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
-	# 		if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
-	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
-	# 		else:
-	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
-	# 	else:
-	# 		cd_path_seg = os.path.join(cd,"Segmented")
-	# 		drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
-	# 		if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
-	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
-	# 		else:
-	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
-	# 	return drop_files,seg_files
 	
 	def _load_segmented_image_data(self,drop_files,use_cols=(0,1,2),skiprows=0):
 		point_data = []
@@ -495,10 +398,21 @@ class run_analysis:
 			blob_total
 				drop statistics from blob_detection on time projected images
 		'''
+
 		cd = wd
+
 		#use the self._Analysis_path_util() function to get the path to the analysis folder
 		analysis_path = os.path.join(self._Analysis_path_util(),t_string + "_**.tif_spots.csv")
 		all_files = sorted(glob.glob(analysis_path))
+		print(all_files)
+		#make a matlab folder to store data for SMAUG analysis
+		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
+		if not os.path.exists(self.mat_path_dir):
+			os.makedirs(self.mat_path_dir)
+		
+		
+		#tag for segmented images
+
 		max_tag = np.max([len(i) for i in all_files]) 
 		min_tag = np.min([len(i) for i in all_files])
 
@@ -506,52 +420,64 @@ class run_analysis:
 		tracks = []
 		drops = []
 		segf = []
-		#make a matlab folder to store data for SMAUG analysis
-		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
-		if not os.path.exists(self.mat_path_dir):
-			os.makedirs(self.mat_path_dir)
+
+		#initialize data structure
 		for pp in range(len(all_files)):
 			#loading the track data  (formated as [track_ID,frame_ID,x,y,intensity])
 			#if new track_mate style:
+
+			#####LOADING TRACK DATA#####
 			if self.a_file_style == "new":
-				test_t = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
-				test = test_t[:,[0,3,1,2,4]]
+				test_t = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12)) #TRACKMATE GUI OUTPUT STYLE
+				test = test_t[:,[0,3,1,2,4]] #reorder the columns to match the old style
 			else:
-				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
+				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",") #CUSTOM SCRIPTING TRACKMATE OUTPUT STYLE
+
 			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
+
 			tracks.append(test)
+			#####LOADING TRACK DATA END#####
+
+			#####LOADING SEGMENTED IMAGES#####
 			drop_files, seg_files = self._load_segmented_image_locations(pp = all_files[pp], \
 											cd = cd, \
 											t_string = t_string, \
 											max_tag = max_tag, \
-											min_tag = min_tag)
-			if self.type_of_blob == "TRACKMATE":
-				drop_files, seg_files = self._load_segmented_image_locations_trackMate_blobs(pp = all_files[pp], \
-											cd = cd, \
-											t_string = t_string, \
-											max_tag = max_tag, \
-											min_tag = min_tag)
-			if os.path.exists(os.path.join(cd,"segmented_scale_space_plus")) and self.type_of_blob == "SCALE_SPACE_PLUS":
-				drop_files, seg_files = self._load_scale_space_plus_segmented_image_locations(pp = all_files[pp], \
-											cd = cd, \
-											t_string = t_string, \
-											max_tag = max_tag, \
-											min_tag = min_tag)
+											min_tag = min_tag,
+											seg_name = self.type_of_blob,
+											analysis_name = self.type_of_blob)
+
 			#store seg_files
 			segf.append(seg_files)
-			#blob analysis
-			#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
-			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
-														movie_ID=pp,
-														plot = False,
-														kwargs=self.blob_parameters))
-			#blob segmented data
-			dropss = self._load_segmented_image_data(drop_files)
-			drops.append(dropss)
+			print(seg_files)
+			print(drop_files)
+			#####LOADING SEGMENTED IMAGES END#####
+
+			#####LOADING SEGMENTED BLOB DATA#####
+			if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
+				#blob analysis
+				#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
+				blob_total.append(self._blob_detection_utility(seg_files=seg_files,
+															movie_ID=pp,
+															plot = False,
+															kwargs=self.blob_parameters))
+				#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
+				drop_s = blob_total[pp]
+
+			
+			if LOADING_DROP_BLOB_TYPES[self.type_of_blob]:
+				#blob segmented data
+				dropss = self._load_segmented_image_data(drop_files)
+				drops.append(dropss)
+
+			#####LOADING SEGMENTED BLOB DATA END#####
+
+
+			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
+
 			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
 			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
 			self.Movie[str(pp)].Movie_nucleoid = None
-			drop_s = blob_total[pp]
 			#each movie is a cell in this scenario since there is no cell segmentation
 			self.Movie[str(pp)].Cells[str(0)] = Cell(Cell_ID = 0, \
 										Cell_Movie_Name = all_files[pp], \
@@ -565,41 +491,35 @@ class run_analysis:
 										cell_mask = None, \
 										Cell_Nucleoid_Mask = None)
 			self.Movie[str(pp)].Cells[str(0)].raw_tracks=tracks[pp]
-			if self.type_of_blob == "TRACKMATE":
-				for j in range(len(dropss)):
-					if len(dropss[j]) != 0:
-						if isinstance(dropss[j][0],float|int):
-							#print a warning if the drop data is not in the correct format
-							print("Warning: Drop data is not in the correct format. Please check the drop data file.")
-							dropss[j] = [dropss[j]]
-					for k in range(len(dropss[j])):
-							self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = dropss[j][k]
-							self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
-																								"Scale":dropss[j][k],\
-																								"Fit":dropss[j][k]}
-			if self.type_of_blob == "SCALE_SPACE_PLUS":
-				for j in range(len(dropss)):
-					if len(dropss[j]) != 0:
-						if isinstance(dropss[j][0],float|int):
-							#print a warning if the drop data is not in the correct format
-							print("Warning: Drop data is not in the correct format. Please check the drop data file.")
-							dropss[j] = [dropss[j]]
-					for k in range(len(dropss[j])):
-							self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = dropss[j][k]
-							self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
-																								"Scale":dropss[j][k],\
-																								"Fit":dropss[j][k]}
 
-			else:
+			if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
 				for j in range(len(drop_s)):
 					for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
-
 						#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
-						self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
+						if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
+							self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k][:-1]
+						if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
+							self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
 						self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
 																								"Scale":drop_s[j]["Scale"][k],\
 																								"Fit":drop_s[j]["Fit"][k]}
+			else:
+				for j in range(len(dropss)):
+					if len(dropss[j]) != 0:
+						if isinstance(dropss[j][0],float|int):
+							#raise a warning that the dropss is not a list of lists
+							print("Warning: Drop data is not in the correct format. Please check the drop data file.")
+							dropss[j] = [dropss[j]]
+						for k in range(len(dropss[j])):
+							self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = dropss[j][k]
+							self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
+																								"Scale":dropss[j][k],\
+																								"Fit":dropss[j][k]}
+				
+
+
 		self.segmented_drop_files = segf
+
 		return [tracks,drops,blob_total]
 
 	def _read_track_data(self,wd,t_string,**kwargs):
@@ -669,8 +589,7 @@ class run_analysis:
 		tracks = []
 		drops = []
 		segf = []
-		#find the dims of the movie using the first file of seg_files
-		movie_dims = 0
+
 
 		#initialize data structure
 		for pp in range(len(movies)):
@@ -697,19 +616,7 @@ class run_analysis:
 											min_tag = min_tag,
 											seg_name = self.type_of_blob,
 											analysis_name = self.type_of_blob)
-			# if os.path.exists(os.path.join(cd,"segmented_scale_space_plus")) and self.type_of_blob == "SCALE_SPACE_PLUS":
-			# 	drop_files, seg_files = self._load_scale_space_plus_segmented_image_locations(pp = all_files[pp], \
-			# 								cd = cd, \
-			# 								t_string = t_string, \
-			# 								max_tag = max_tag, \
-			# 								min_tag = min_tag)
-			# if self.type_of_blob == "TRACKMATE":
-			# 	drop_files, seg_files = self._load_segmented_image_locations_trackMate_blobs(pp = all_files[pp], \
-			# 								cd = cd, \
-			# 								t_string = t_string, \
-			# 								max_tag = max_tag, \
-			# 								min_tag = min_tag)
-			
+
 			#store seg_files
 			segf.append(seg_files)
 			print(seg_files)
@@ -717,7 +624,7 @@ class run_analysis:
 			#####LOADING SEGMENTED IMAGES END#####
 
 			#####LOADING SEGMENTED BLOB DATA#####
-			if (self.type_of_blob == "Fitted") or (self.type_of_blob == "Scale"):
+			if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
 				#blob analysis
 				#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
 				blob_total.append(self._blob_detection_utility(seg_files=seg_files,
@@ -726,11 +633,13 @@ class run_analysis:
 															kwargs=self.blob_parameters))
 				#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
 				drop_s = blob_total[pp]
+
 			
-			if self.type_of_blob == "TRACKMATE" or self.type_of_blob == "SCALE_SPACE_PLUS" or self.type_of_blob == "DBSCAN":
+			if LOADING_DROP_BLOB_TYPES[self.type_of_blob]:
 				#blob segmented data
 				dropss = self._load_segmented_image_data(drop_files)
 				drops.append(dropss)
+
 			#####LOADING SEGMENTED BLOB DATA END#####
 
 
@@ -774,16 +683,16 @@ class run_analysis:
 					self.Movie[str(pp)].Cells[str(i)].points_per_frame = points_per_frame_bulk_sort(x=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,2],
 																									y=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,3],
 																									t=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,1])
-				if (self.type_of_blob == "Fitted") or (self.type_of_blob == "Scale"):
+				if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
 					for j in range(len(drop_s)):
 						for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
 
 							point = Point(drop_s[j][self.type_of_blob][k][0],drop_s[j][self.type_of_blob][k][1])
 							if poly.contains(point) or poly.touches(point):
 								#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
-								if self.type_of_blob == "Fitted":
+								if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
 									self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k][:-1]
-								if self.type_of_blob == "Scale":
+								if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
 									self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
 								self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
 																										"Scale":drop_s[j]["Scale"][k],\
@@ -802,36 +711,6 @@ class run_analysis:
 									self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
 																										"Scale":dropss[j][k],\
 																										"Fit":dropss[j][k]}
-				# if self.type_of_blob == "SCALE_SPACE_PLUS":
-				# 	for j in range(len(dropss)):
-				# 		if len(dropss[j]) != 0:
-				# 			if isinstance(dropss[j][0],float|int):
-				# 				#raise a warning that the dropss is not a list of lists
-				# 				print("Warning: Drop data is not in the correct format. Please check the drop data file.")
-				# 				dropss[j] = [dropss[j]]
-				# 			for k in range(len(dropss[j])):
-				# 				point = Point(dropss[j][k][0],dropss[j][k][1])
-				# 				if poly.contains(point) or poly.touches(point):
-				# 					self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = dropss[j][k]
-				# 					self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
-				# 																						"Scale":dropss[j][k],\
-				# 																						"Fit":dropss[j][k]}
-		#check if there is a segmented_scale_space_plus folder in the analysis folder exists
-		#this folder is used for the segmented scale space analysis
-		# if not os.path.exists(os.path.join(cd,"Segmented_scale_space_plus")):
-		# 	scale_plus_imp = segmentation_scale_space(
-		# 		cd=cd,
-		# 		t_string=t_string,
-		# 		blob_parameters=self.blob_parameters,
-		# 		img_dim=movie_dims,
-		# 		type_analysis_file=self.a_file_style,
-		# 		total_frames=self.frame_total,
-		# 		subframes=int(self.frame_total/self.frame_step),
-		# 		pixel_size=self.pixel_to_nm,
-		# 		loc_error=30.,
-		# 		include_all=True
-		# 	)
-		# 	scale_plus_imp.main_run()
 					
 
 
@@ -1217,6 +1096,7 @@ class run_analysis:
 						self.Movie[i].Cells[k].Trajectory_Collection[inx_in].IN_Trajectory_Collection[str(kk)+','+str(l)] = track
 						#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
 						self.Movie[i].Cells[k].All_Tracjectories[str(kk)+','+str(l)] = track
+
 	def run_flow(self):
 		'''
 		Controls the flow of this dataset analysis
@@ -1224,8 +1104,8 @@ class run_analysis:
 		tracks, _, _ = self._read_track_data(self.wd,self.t_string)
 		self.total_experiments = len(tracks)
 		self._analyse_cell_tracks()
-
 		return
+	
 	def run_flow_sim(self,cd,t_string): #very hacky to get this to work for simulation data. Assumes the whole movie is one cell. 
 		all_files = sorted(glob.glob(os.path.join(cd,"Analysis",t_string,".tif_spots.csv")))
 		#make a matlab folder to store data for SMAUG analysis
@@ -1410,21 +1290,6 @@ class run_analysis:
 		to it.
 		'''
 		self.fitting_parameters = kwargs
-	@deprecated("This is not used anymore. Use cases were for allowing matrix operations on uneven arrays. Better ways to do this now.")
-	def _correct_msd_vectors(self):
-		'''
-		pad msd vectors with NaNs so they are the same length as you increase tau
-		'''
-		for i in range(len(self.in_msd_track)):
-			for j in range(len(self.in_msd_track[i])):
-				self.in_msd_track[i][j] = np.pad(self.in_msd_track[i][j],(0,int(self.max_in[i]-len(self.in_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan))
-		for i in range(len(self.out_msd_track)):
-			for j in range(len(self.out_msd_track[i])):
-				self.out_msd_track[i][j] = np.pad(self.out_msd_track[i][j],(0,int(self.max_out[i]-len(self.out_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan)) 
-		for i in range(len(self.io_msd_track)):
-			for j in range(len(self.io_msd_track[i])):
-				self.io_msd_track[i][j] = np.pad(self.io_msd_track[i][j],(0,int(self.max_io[i]-len(self.io_msd_track[i][j]))),'constant',constant_values=(np.nan,np.nan))
-		return 
 	@deprecated("This seems useless right now, and sometimes breaks into an infinite loop. Should not be used, but keeping for testing before removing.")
 	def _bulk_msd_plot(self,Movies=None,plot=False):
 		''' Docstring for _bulk_msd_plot
@@ -1621,7 +1486,18 @@ class run_analysis:
 						track_lengths[m.Classification].append(len(m.X))
 						track_vals[m.Classification].append(m)
 		return [track_lengths,track_vals]
-	
+		
+	@property
+	def type_of_blob(self):
+		return self._type_of_blob
+
+	@type_of_blob.setter
+	def type_of_blob(self,value):
+		if value not in SEGMENTATION_FOLDER_TYPES.keys():
+			raise ValueError("The type of blob must be one of the following: {0}".format(SEGMENTATION_FOLDER_TYPES.keys()))
+		else:
+			self._type_of_blob = value
+
 	@property
 	def track_durations(self)->dict:
 		#check if the _track_durations variable is defined
@@ -1630,20 +1506,6 @@ class run_analysis:
 			self._track_durations,self.track_collection = self._track_collection_utility()
 		return self._track_durations
 	
-	@property
-	def track_collection(self)->dict:
-		#check if the _track_collection variable is defined
-		if not hasattr(self,"_track_collection"):
-			#update with a call to _track_collection_utility
-			self._track_collection = self._track_collection_utility()
-		return self._track_collection
-	@track_collection.setter
-	def track_collection(self,track_collection):
-		#make sure the input is a dictionary
-		if type(track_collection) is not dict:
-			raise TypeError("track_collection must be a dictionary")
-		self._track_collection = track_collection
-
 
 
 class Movie_frame:

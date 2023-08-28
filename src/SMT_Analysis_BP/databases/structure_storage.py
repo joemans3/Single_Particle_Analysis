@@ -20,5 +20,14 @@ ANALYSIS_FOLDER_TYPES = {
     "SCALE_SPACE_PLUS": "Analysis",
     "DBSCAN": "Analysis_DBSCAN"
 }
+
+LOADING_DROP_BLOB_TYPES = {
+    "TRACKMATE": True,
+    "Scale": False,
+    "Fitted": False,
+    "SCALE_SPACE_PLUS": True,
+    "DBSCAN": True
+}
+    
 ####### FOLDER STRUCTURES END########
 
