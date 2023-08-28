@@ -744,7 +744,7 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
 
     #in this directory, dump the parameters into a json file
     if "parameters" in kwargs.keys():
-        with open('{0}/parameters.json'.format(cd), 'w') as fp:
+        with open(os.path.join(cd,"parameters.json"), 'w') as fp:
             #check if parameter values are dictionaries
             for i,j in kwargs["parameters"].items():
                 if type(j) == dict:
@@ -776,20 +776,24 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
 
 
     #make a diretory inside cd called Analysis if it does not exist
-    if not os.path.exists('{0}/Analysis'.format(cd)):
-        os.makedirs('{0}/Analysis'.format(cd))
-
+    # if not os.path.exists('{0}/Analysis'.format(cd)):
+    #     os.makedirs('{0}/Analysis'.format(cd))
+    if not os.path.exists(os.path.join(cd,"Analysis")):
+        os.makedirs(os.path.join(cd,"Analysis"))
     #save the img file with its name in the cd directory
     save_tiff(img,cd,img_name=img_name)
     #make a directory inside cd called segmented if it does not exist
-    if not os.path.exists('{0}/segmented'.format(cd)):
-        os.makedirs('{0}/segmented'.format(cd))
+    # if not os.path.exists('{0}/segmented'.format(cd)):
+    #     os.makedirs('{0}/segmented'.format(cd))
+    if not os.path.exists(os.path.join(cd,"segmented")):
+        os.makedirs(os.path.join(cd,"segmented"))
     #perform subsegmentation on the image
     hold_img = sub_segment(img,sub_frame_num,img_name=img_name,subsegment_type=subsegment_type)
     #create the names for the subsegmented images
     hold_name = []
     for i in np.arange(sub_frame_num):
-        hold_name.append( '{0}segmented/{1}.tif'.format(cd,str(int(i)+1)+"_"+img_name))
+        # hold_name.append( '{0}segmented/{1}.tif'.format(cd,str(int(i)+1)+"_"+img_name))
+        hold_name.append(os.path.join(cd,"segmented",str(int(i)+1)+"_"+img_name+".tif"))
     #save the subsegmented images
     for i in np.arange(sub_frame_num):
     

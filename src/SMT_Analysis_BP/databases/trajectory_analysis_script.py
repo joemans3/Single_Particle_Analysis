@@ -39,6 +39,7 @@ import scipy.io as sio
 from scipy.stats import gaussian_kde
 from shapely.geometry import Point, Polygon
 
+from src.SMT_Analysis_BP.databases.scale_scale_plus_database import segmentation_scale_space
 import src.SMT_Analysis_BP.helpers.import_functions as import_functions
 import src.SMT_Analysis_BP.helpers.nucleoid_detection as nucleoid_detection
 from src.SMT_Analysis_BP.helpers.Analysis_functions import *
@@ -330,7 +331,23 @@ class run_analysis:
 
 			movies.append(cells)
 		return movies
-	def _load_segmented_image_locations(self,pp,cd,t_string,max_tag,min_tag):
+	def _load_segmented_image_locations(self,pp,cd,t_string,max_tag,min_tag,seg_name="TRACKMATE",analysis_name="TRACKMATE"):
+		seg_types = {
+			"TRACKMATE": "Segmented",
+			"Scale": "Segmented_mean",
+			"Fitted": "Segmented_mean",
+			"SCALE_SPACE_PLUS": "segmented_scale_space_plus",
+			"DBSCAN": "segmented_scale_space_plus"
+		}
+
+		analysis_types = {
+			"TRACKMATE": "Analysis",
+			"Scale": "Analysis",
+			"Fitted": "Analysis",
+			"SCALE_SPACE_PLUS": "Analysis",
+			"DBSCAN": "Analysis_DBSCAN"
+		}
+	
 		if self.a_file_style == "old":
 			if len(pp) == max_tag:
 				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
@@ -357,73 +374,102 @@ class run_analysis:
 		# 		seg_files = sorted(glob.glob("{0}/Segmented_mean/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
 		# return drop_files,seg_files
 		if max_tag != min_tag: 
-			cd_path_seg = os.path.join(cd,"Segmented_mean")
-			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
+			cd_path_seg = os.path.join(cd,seg_types[seg_name])
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,analysis_types[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
 			
 			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
 				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
 			else:
 				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
 		else:
-			cd_path_seg = os.path.join(cd,"Segmented_mean")
-			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
-			print(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
+			cd_path_seg = os.path.join(cd,seg_types[seg_name])
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,analysis_types[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
 			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
 				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
 			else:
 				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
 		return drop_files,seg_files
 
+	# def _load_scale_space_plus_segmented_image_locations(self,pp,cd,t_string,max_tag,min_tag):
+	# 	if self.a_file_style == "old":
+	# 		if len(pp) == max_tag:
+	# 			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
+	# 		else: 
+	# 			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
+	# 	else:
+	# 		if len(pp) == max_tag:
+	# 			tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+2]
+	# 		else: 
+	# 			tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
+	# 	drop_files = 0
+	# 	seg_files = 0
+	# 	if max_tag != min_tag: 
+	# 		cd_path_seg = os.path.join(cd,"segmented_scale_space_plus")
+	# 		drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
+			
+	# 		if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
+	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
+	# 		else:
+	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
+	# 	else:
+	# 		cd_path_seg = os.path.join(cd,"segmented_scale_space_plus")
+	# 		drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
+	# 		if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
+	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
+	# 		else:
+	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
+	# 	return drop_files,seg_files
+
 	
-	def _load_segmented_image_locations_trackMate_blobs(self,pp,cd,t_string,max_tag,min_tag):
-		if self.a_file_style == "old":
-			if len(pp) == max_tag:
-				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
-			else: 
-				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
-		else:
-			if len(pp) == max_tag:
-				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+2]
-			else: 
-				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
-		drop_files = 0
-		seg_files = 0
-		#TODO old way keep for now but remember to remove later
-		# if max_tag != min_tag:
-		# 	drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
-		# 	if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
-		# 		seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
-		# 	else:
-		# 		seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
-		# else:
-		# 	drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
-		# 	if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
-		# 		seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
-		# 	else:
-		# 		seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
-		# return drop_files,seg_files
-		if max_tag != min_tag:
-			cd_path_seg = os.path.join(cd,"Segmented")
-			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
-			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
-				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
-			else:
-				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
-		else:
-			cd_path_seg = os.path.join(cd,"Segmented")
-			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
-			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
-				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
-			else:
-				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
-		return drop_files,seg_files
+	# def _load_segmented_image_locations_trackMate_blobs(self,pp,cd,t_string,max_tag,min_tag):
+	# 	if self.a_file_style == "old":
+	# 		if len(pp) == max_tag:
+	# 			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
+	# 		else: 
+	# 			tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
+	# 	else:
+	# 		if len(pp) == max_tag:
+	# 			tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+2]
+	# 		else: 
+	# 			tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
+	# 	drop_files = 0
+	# 	seg_files = 0
+	# 	#TODO old way keep for now but remember to remove later
+	# 	# if max_tag != min_tag:
+	# 	# 	drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[:])))
+	# 	# 	if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))) == 0:
+	# 	# 		seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[:])))
+	# 	# 	else:
+	# 	# 		seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[:])))
+	# 	# else:
+	# 	# 	drop_files = sorted(glob.glob("{0}/Segmented/Analysis/*_".format(cd)+t_string+"_{0}_seg.tif_spots.csv".format(tag[0])))
+	# 	# 	if len(sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))) == 0:
+	# 	# 		seg_files = sorted(glob.glob("{0}/Segmented/*".format(cd)+"_{0}_seg.tif".format(tag[0])))
+	# 	# 	else:
+	# 	# 		seg_files = sorted(glob.glob("{0}/Segmented/*_".format(cd)+t_string+"_{0}_seg.tif".format(tag[0])))
+	# 	# return drop_files,seg_files
+	# 	if max_tag != min_tag:
+	# 		cd_path_seg = os.path.join(cd,"Segmented")
+	# 		drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
+	# 		if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
+	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
+	# 		else:
+	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
+	# 	else:
+	# 		cd_path_seg = os.path.join(cd,"Segmented")
+	# 		drop_files = sorted(glob.glob(os.path.join(cd_path_seg,"Analysis","*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
+	# 		if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
+	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
+	# 		else:
+	# 			seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
+	# 	return drop_files,seg_files
 	
 	def _load_segmented_image_data(self,drop_files,use_cols=(0,1,2),skiprows=0):
 		point_data = []
 
 		for i in drop_files:
 
-			points = np.loadtxt("{0}".format(i),delimiter=",",usecols=(0,1,2),skiprows=0)
+			points = np.loadtxt("{0}".format(i),delimiter=",",usecols=use_cols,skiprows=skiprows)
 
 			point_data.append(points)
 		return point_data
@@ -485,6 +531,12 @@ class run_analysis:
 											t_string = t_string, \
 											max_tag = max_tag, \
 											min_tag = min_tag)
+			if os.path.exists(os.path.join(cd,"segmented_scale_space_plus")) and self.type_of_blob == "SCALE_SPACE_PLUS":
+				drop_files, seg_files = self._load_scale_space_plus_segmented_image_locations(pp = all_files[pp], \
+											cd = cd, \
+											t_string = t_string, \
+											max_tag = max_tag, \
+											min_tag = min_tag)
 			#store seg_files
 			segf.append(seg_files)
 			#blob analysis
@@ -525,6 +577,19 @@ class run_analysis:
 							self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
 																								"Scale":dropss[j][k],\
 																								"Fit":dropss[j][k]}
+			if self.type_of_blob == "SCALE_SPACE_PLUS":
+				for j in range(len(dropss)):
+					if len(dropss[j]) != 0:
+						if isinstance(dropss[j][0],float|int):
+							#print a warning if the drop data is not in the correct format
+							print("Warning: Drop data is not in the correct format. Please check the drop data file.")
+							dropss[j] = [dropss[j]]
+					for k in range(len(dropss[j])):
+							self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = dropss[j][k]
+							self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
+																								"Scale":dropss[j][k],\
+																								"Fit":dropss[j][k]}
+
 			else:
 				for j in range(len(drop_s)):
 					for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
@@ -565,6 +630,8 @@ class run_analysis:
 		'''
 
 		cd = wd
+
+		#####NUCLEOID DETECTION#####
 		#use gfp images for nuceloid segmentation
 		nucleoid_path = kwargs.get("nucleoid_path",os.path.join(cd,'gfp'))
 		#check if cd+/gfp exists
@@ -574,10 +641,14 @@ class run_analysis:
 		
 		nucleoid_imgs = find_image(nucleoid_path,full_path=True)
 		nucleoid_imgs_sorted = sorted_alphanumeric(nucleoid_imgs)
-
+		#####NUCLEOID DETECTION END#####
+		
+		#####CELL DETECTION#####
 		#load the data of segmented cells from SuperSegger (cell files)
 		xy_frame_dir_names = IO_run_analysis._load_superSegger(cd,os.path.join("gfp","Inverted_Images"))#'/gfp/Inverted_Images') 
 		movies = self._read_supersegger(np.sort(xy_frame_dir_names))
+		#####CELL DETECTION END#####
+
 
 		#use the self._Analysis_path_util() function to get the path to the analysis folder
 		analysis_path = os.path.join(self._Analysis_path_util(),t_string + "_**.tif_spots.csv")
@@ -598,48 +669,72 @@ class run_analysis:
 		tracks = []
 		drops = []
 		segf = []
+		#find the dims of the movie using the first file of seg_files
+		movie_dims = 0
 
 		#initialize data structure
 		for pp in range(len(movies)):
 			#loading the track data  (formated as [track_ID,frame_ID,x,y,intensity])
 			#if new track_mate style:
+
+			#####LOADING TRACK DATA#####
 			if self.a_file_style == "new":
-				test_t = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
-				test = test_t[:,[0,3,1,2,4]]
+				test_t = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12)) #TRACKMATE GUI OUTPUT STYLE
+				test = test_t[:,[0,3,1,2,4]] #reorder the columns to match the old style
 			else:
-				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",")
+				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",") #CUSTOM SCRIPTING TRACKMATE OUTPUT STYLE
 
 			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
 
 			tracks.append(test)
+			#####LOADING TRACK DATA END#####
 
+			#####LOADING SEGMENTED IMAGES#####
 			drop_files, seg_files = self._load_segmented_image_locations(pp = all_files[pp], \
 											cd = cd, \
 											t_string = t_string, \
 											max_tag = max_tag, \
-											min_tag = min_tag)
-			if self.type_of_blob == "TRACKMATE":
-				drop_files, seg_files = self._load_segmented_image_locations_trackMate_blobs(pp = all_files[pp], \
-											cd = cd, \
-											t_string = t_string, \
-											max_tag = max_tag, \
-											min_tag = min_tag)
+											min_tag = min_tag,
+											seg_name = self.type_of_blob,
+											analysis_name = self.type_of_blob)
+			# if os.path.exists(os.path.join(cd,"segmented_scale_space_plus")) and self.type_of_blob == "SCALE_SPACE_PLUS":
+			# 	drop_files, seg_files = self._load_scale_space_plus_segmented_image_locations(pp = all_files[pp], \
+			# 								cd = cd, \
+			# 								t_string = t_string, \
+			# 								max_tag = max_tag, \
+			# 								min_tag = min_tag)
+			# if self.type_of_blob == "TRACKMATE":
+			# 	drop_files, seg_files = self._load_segmented_image_locations_trackMate_blobs(pp = all_files[pp], \
+			# 								cd = cd, \
+			# 								t_string = t_string, \
+			# 								max_tag = max_tag, \
+			# 								min_tag = min_tag)
+			
 			#store seg_files
 			segf.append(seg_files)
 			print(seg_files)
-			#blob analysis
-			#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
-			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
-														movie_ID=pp,
-														plot = False,
-														kwargs=self.blob_parameters))
-			#blob segmented data
-			dropss = self._load_segmented_image_data(drop_files)
-			drops.append(dropss)
+			print(drop_files)
+			#####LOADING SEGMENTED IMAGES END#####
+
+			#####LOADING SEGMENTED BLOB DATA#####
+			if (self.type_of_blob == "Fitted") or (self.type_of_blob == "Scale"):
+				#blob analysis
+				#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
+				blob_total.append(self._blob_detection_utility(seg_files=seg_files,
+															movie_ID=pp,
+															plot = False,
+															kwargs=self.blob_parameters))
+				#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
+				drop_s = blob_total[pp]
+			
+			if self.type_of_blob == "TRACKMATE" or self.type_of_blob == "SCALE_SPACE_PLUS" or self.type_of_blob == "DBSCAN":
+				#blob segmented data
+				dropss = self._load_segmented_image_data(drop_files)
+				drops.append(dropss)
+			#####LOADING SEGMENTED BLOB DATA END#####
+
 
 			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
-			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
-			drop_s = blob_total[pp]
 			self.Movie[str(pp)].Movie_nucleoid = nucleoid_imgs_sorted[pp]
 
 			for i in range(len(movies[pp])):
@@ -679,7 +774,7 @@ class run_analysis:
 					self.Movie[str(pp)].Cells[str(i)].points_per_frame = points_per_frame_bulk_sort(x=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,2],
 																									y=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,3],
 																									t=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,1])
-				if self.type_of_blob != "TRACKMATE":
+				if (self.type_of_blob == "Fitted") or (self.type_of_blob == "Scale"):
 					for j in range(len(drop_s)):
 						for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
 
@@ -688,7 +783,7 @@ class run_analysis:
 								#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
 								if self.type_of_blob == "Fitted":
 									self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k][:-1]
-								else:
+								if self.type_of_blob == "Scale":
 									self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
 								self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
 																										"Scale":drop_s[j]["Scale"][k],\
@@ -707,7 +802,36 @@ class run_analysis:
 									self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
 																										"Scale":dropss[j][k],\
 																										"Fit":dropss[j][k]}
-
+				# if self.type_of_blob == "SCALE_SPACE_PLUS":
+				# 	for j in range(len(dropss)):
+				# 		if len(dropss[j]) != 0:
+				# 			if isinstance(dropss[j][0],float|int):
+				# 				#raise a warning that the dropss is not a list of lists
+				# 				print("Warning: Drop data is not in the correct format. Please check the drop data file.")
+				# 				dropss[j] = [dropss[j]]
+				# 			for k in range(len(dropss[j])):
+				# 				point = Point(dropss[j][k][0],dropss[j][k][1])
+				# 				if poly.contains(point) or poly.touches(point):
+				# 					self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = dropss[j][k]
+				# 					self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
+				# 																						"Scale":dropss[j][k],\
+				# 																						"Fit":dropss[j][k]}
+		#check if there is a segmented_scale_space_plus folder in the analysis folder exists
+		#this folder is used for the segmented scale space analysis
+		# if not os.path.exists(os.path.join(cd,"Segmented_scale_space_plus")):
+		# 	scale_plus_imp = segmentation_scale_space(
+		# 		cd=cd,
+		# 		t_string=t_string,
+		# 		blob_parameters=self.blob_parameters,
+		# 		img_dim=movie_dims,
+		# 		type_analysis_file=self.a_file_style,
+		# 		total_frames=self.frame_total,
+		# 		subframes=int(self.frame_total/self.frame_step),
+		# 		pixel_size=self.pixel_to_nm,
+		# 		loc_error=30.,
+		# 		include_all=True
+		# 	)
+		# 	scale_plus_imp.main_run()
 					
 
 

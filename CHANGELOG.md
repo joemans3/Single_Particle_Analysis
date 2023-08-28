@@ -7,16 +7,16 @@ and this project adheres to [Semantic Versioning].
 
 ## [Unreleased]
 
-- / We need to update the macOS specific code that deals with I/O especially in the trajectory_analysis_scripy.py DONE
 - / We also need to create test cases for general testing on the script.
 - / We need to create an executable script that pip installs the requirements.txt and also creates a conda env. Although the second part can be left for the end user to do. 
-- / Impliment scale space + to work on the experimental images. 
+
 
 ## [0.0.2] - 2023-08-26
 
 ### Added
 
 - We need to update the macOS specific code that deals with I/O especially in the trajectory_analysis_scripy.py DONE
+- Impliment scale space + to work on the experimental images. 
 
 ### Changed
 
