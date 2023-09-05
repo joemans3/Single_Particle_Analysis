@@ -9,9 +9,9 @@ from PIL import Image
 import PIL.ImageOps
 import sys
 import glob as glob
-import import_functions
 
 if __name__ == "__main__":
+    sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts')
     try:
         dir_path = str(sys.argv[1])
         if not isinstance(dir_path,str):
@@ -22,6 +22,7 @@ if __name__ == "__main__":
         if not isinstance(dir_path,str):
             dir_path = str(dir_path)
 
+import src.SMT_Analysis_BP.helpers.import_functions as import_functions
 
 
 def save_invert_images(path,**kwargs):
@@ -38,13 +39,25 @@ def save_invert_images(path,**kwargs):
     
     
     image_paths = import_functions.find_image(path,ends_with = '.tif',full_path = False)
+
     for i in range(len(inverted_imgs)):
         new_path = import_functions.combine_path(invert_path,image_paths[i])
         inverted_imgs[i].save(new_path)
     return 
 
 if __name__ == "__main__":
-    save_invert_images(dir_path)
+    if dir_path == "":
+        dir_path = [
+            "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/16/ll_hex5/gfp",
+            "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/15/rp_ez_hex5/gfp",
+            "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/15/rp_ez_hex52/gfp",
+            "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/12/rpoc_m9/gfp",
+            "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/12/rpoc_m9_2/gfp"
+        ]
+        for i in dir_path:
+            save_invert_images(i)
+    else:
+        save_invert_images(dir_path)
     
 
 

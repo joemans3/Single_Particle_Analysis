@@ -166,6 +166,10 @@ class run_analysis:
 		#Cells in the specific movie being analysed
 		self.Movie = {}
 
+
+
+		####forgot to change scale on some images before trackmate now i need to convert the scale from um to pixel so this all doesn't break
+		self.baljyot_idiot_factor = 1 #only used right now for 12/rpoc_m9, 12/rpoc_m9_2, 15/rp_ez_hex5_2, rpoc_M9/20190515
 	def _Analysis_path_util(self):
 		if self.a_file_style == "old":
 			return os.path.join(self.wd,"Analysis")
@@ -429,6 +433,9 @@ class run_analysis:
 			#####LOADING TRACK DATA#####
 			if self.a_file_style == "new":
 				test_t = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12)) #TRACKMATE GUI OUTPUT STYLE
+				#divide the 1,2 columns by the self.baljyot_idiot_factor
+				test_t[:,1] = test_t[:,1]/self.baljyot_idiot_factor
+				test_t[:,2] = test_t[:,2]/self.baljyot_idiot_factor
 				test = test_t[:,[0,3,1,2,4]] #reorder the columns to match the old style
 			else:
 				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",") #CUSTOM SCRIPTING TRACKMATE OUTPUT STYLE
@@ -599,6 +606,10 @@ class run_analysis:
 			#####LOADING TRACK DATA#####
 			if self.a_file_style == "new":
 				test_t = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12)) #TRACKMATE GUI OUTPUT STYLE
+				#divide the 1,2 columns by the self.baljyot_idiot_factor
+				test_t[:,1] = test_t[:,1]/self.baljyot_idiot_factor
+				test_t[:,2] = test_t[:,2]/self.baljyot_idiot_factor
+
 				test = test_t[:,[0,3,1,2,4]] #reorder the columns to match the old style
 			else:
 				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",") #CUSTOM SCRIPTING TRACKMATE OUTPUT STYLE
@@ -778,6 +789,8 @@ class run_analysis:
 				the lower limit of the track length
 			order : tuple
 				the order of the data in track_set
+			conversion : float
+				the conversion factor for the data in track_set
 
 		
 		Returns
@@ -801,11 +814,12 @@ class run_analysis:
 		track_len_lower = kwargs.get("t_len_l",self.t_len_l)
 
 		data_order = kwargs.get("order",(0,1,2,3,4))
+		conversion = kwargs.get("conversion",1)
 		
 		track_ID = track_set[:,data_order[0]]
 		frame_ID = track_set[:,data_order[1]]
-		x_ID = track_set[:,data_order[2]]
-		y_ID = track_set[:,data_order[3]]
+		x_ID = track_set[:,data_order[2]]/conversion
+		y_ID = track_set[:,data_order[3]]/conversion
 		intensity_ID = track_set[:,data_order[4]]
 
 		tp=[]
@@ -1107,7 +1121,8 @@ class run_analysis:
 		return
 	
 	def run_flow_sim(self,cd,t_string): #very hacky to get this to work for simulation data. Assumes the whole movie is one cell. 
-		all_files = sorted(glob.glob(os.path.join(cd,"Analysis",t_string,".tif_spots.csv")))
+		all_files = sorted(glob.glob(os.path.join(cd,"Analysis",t_string+".tif_spots.csv")))
+		print(all_files)
 		#make a matlab folder to store data for SMAUG analysis
 		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
 		if not os.path.exists(self.mat_path_dir):
@@ -1506,6 +1521,43 @@ class run_analysis:
 			self._track_durations,self.track_collection = self._track_collection_utility()
 		return self._track_durations
 	
+	@property
+	def isempty(self)->bool:
+		#check if the Movies dictionary is empty
+		if len(self.Movie) == 0:
+			return True
+		else:
+			return False
+		
+	@property
+	def parameter_storage(self)->dict:
+		#storage of all the parameters used in this analysis (does not include outputs)
+		#we should use the most current one so always do the computation below
+		self._parameter_storage = {
+			"frame_step": self.frame_step,
+			"frame_total": self.frame_total,
+			"t_len_l": self.t_len_l,
+			"t_len_u": self.t_len_u,
+			"MSD_avg_threshold": self.MSD_avg_threshold,
+			"upper_bp": self.upper_bp,
+			"lower_bp": self.lower_bp,
+			"max_track_decomp": self.max_track_decomp,
+			"minimum_tracks_per_drop": self.minimum_tracks_per_drop,
+			"minimum_percent_per_drop_in": self.minimum_percent_per_drop_in,
+			"frames": self.frames,
+			"blob_parameters": self.blob_parameters,
+			"fitting_parameters": self.fitting_parameters,
+			"t_string": self.t_string,
+			"track_durations": self.track_durations,
+			"track_collection": self.track_collection,
+			"pixel_to_um": self.pixel_to_um,
+			"pixel_to_nm": self.pixel_to_nm,
+			"type_of_blob": self.type_of_blob,
+			"wd": self.wd,
+			"my_name": self.my_name,
+			"a_file_style": self.a_file_style
+		}
+		return self._parameter_storage
 
 
 class Movie_frame:

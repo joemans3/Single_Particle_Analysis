@@ -14,7 +14,7 @@ from src.SMT_Analysis_BP.helpers.Analysis_functions import reshape_col2d
 from sklearn.cluster import DBSCAN
 #import convex hull
 from scipy.spatial import ConvexHull
-
+CORRECTION_FACTOR=1.
 '''
 Helper script to create a new folder in the directory with the name segmented_scale_space_plus
 This assumes an Analysis or Analysis_new folder exists in the directory that contains the raw SMT data for each movie
@@ -116,6 +116,7 @@ class segmentation_scale_space:
         for i in range(len(SMT_data)):
             #find the string between self.t_string_ and _seg.tif_spots.csv
             movie_ID = SMT_data[i].split('_seg.tif_spots.csv')[0].split(self.t_string+'_')[1]
+            print(movie_ID,SMT_data[i])
             #load the data
             if self.type_analysis_file == "new":
                 #the column names are not correct so rename them
@@ -133,7 +134,7 @@ class segmentation_scale_space:
                 seg_num = str(j)
                 #get the name of the file
                 file_name = seg_num+'_'+self.t_string+'_'+movie_ID+'_seg'
-
+                print(file_name)
                 #get the frame numbers
                 frame_numbers_lower = (j-1)*self.total_frames/self.subframes
                 frame_numbers_upper = j*self.total_frames/self.subframes
@@ -151,7 +152,7 @@ class segmentation_scale_space:
                 
 
                 #get the localizations
-                localizations = df_sub[['x','y']].to_numpy()
+                localizations = df_sub[['x','y']].to_numpy()/CORRECTION_FACTOR
                 #get the localizations error
                 localization_error = np.ones(len(localizations))*self.loc_error
                 #create the reconstruction image
@@ -166,15 +167,25 @@ class segmentation_scale_space:
                 blobs["Fitted"] = blobs["Fitted"]/(self.pixel_size/img.rescale_pixel_size)
                 blobs["Scale"] = blobs["Scale"]/(self.pixel_size/img.rescale_pixel_size)
                 #save the data in the Analysis folder
-                np.savetxt(os.path.join(SM_reconstruction_Analysis_path,file_name+'.tif_spots.csv'),blobs["Fitted"],delimiter=',')
+                np.savetxt(os.path.join(SM_reconstruction_Analysis_path,file_name+'.tif_spots.csv'),blobs["Scale"],delimiter=',')
 
                 #perform DBSCAN clustering on the localizations
-                cluster_labels,cluster_centers,cluster_radii = perfrom_DBSCAN_Cluster(localizations,D=self.loc_error/self.pixel_size,minP=5)
+                try:
+                    cluster_labels,cluster_centers,cluster_radii = perfrom_DBSCAN_Cluster(localizations,D=2*self.loc_error/self.pixel_size,minP=5)#self.loc_error/self.pixel_size,minP=5)
+                except:
+                    cluster_labels = np.zeros(len(localizations))
+                    cluster_centers = np.zeros((1,2))
+                    cluster_radii = np.zeros(1)
+                    print('DBSCAN failed for '+file_name)
+                print(cluster_radii)
                 #save the data in the Analysis_DBSCAN folder
                 np.savetxt(os.path.join(self.SM_DBSCAN_Analysis_Path,file_name+'.tif_spots.csv'),np.hstack((cluster_centers,cluster_radii.reshape(-1,1))),delimiter=',')
                 #lets visualize the clusters
                 fig,ax = plt.subplots()
                 ax.imshow(img_space,cmap='gray')
+                #plot the localizations
+                ax.scatter(localizations[:,0]*13,localizations[:,1]*13,s=1,c='b')
+
                 #make a circle with the radius of the blob
                 for i in range(len(cluster_centers)):
                     #get the radius
@@ -368,9 +379,10 @@ def perfrom_DBSCAN_Cluster(localizations,D,minP):
 #lets to a main run
 if __name__ == '__main__':
     #make a batch for a set of cds
+    CORRECTION_FACTOR = 0.13
     cds = [
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/new_days/20190527/rpoc_ez"
-    ]
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/12/rpoc_m9_2"
+    ]           
     t_strings = [
         "rpoc_ez"
     ]
@@ -378,7 +390,7 @@ if __name__ == '__main__':
     blob_parameters = {
         "threshold": 3e-2, \
         "overlap": 0, \
-        "median": True, \
+        "median": False, \
         "min_sigma": 4/np.sqrt(2), \
         "max_sigma": 20/np.sqrt(2), \
         "num_sigma": 30, \
@@ -397,7 +409,7 @@ if __name__ == '__main__':
         }
 
     img_dims = [
-        (292,290)
+        (196,196)
     ]
 
     rescale_pixel_size = [
@@ -425,6 +437,17 @@ if __name__ == '__main__':
     #loop through each cd
     for i in range(len(cds)):
         #make the batch
-        batch = segmentation_scale_space(cds[i],t_strings[i],blob_parameters,fitting_parameters,img_dims[i],rescale_pixel_size[i],type_analysis_file[i],total_frames[i],subframes[i],pixel_size[i],loc_error[i],include_all[i])
+        batch = segmentation_scale_space(cds[i],
+                                         t_strings[i],
+                                         blob_parameters,
+                                         fitting_parameters,
+                                         img_dims[i],
+                                         rescale_pixel_size[i],
+                                         type_analysis_file[i],
+                                         total_frames[i],
+                                         subframes[i],
+                                         pixel_size[i],
+                                         loc_error[i],
+                                         include_all[i])
         #run the batch
         batch.main_run()

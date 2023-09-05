@@ -112,12 +112,6 @@ class SM_reconstruction_image:
         #save the image
         skimage.io.imsave(name,self.img_space.T)
 
-        # #now we need to save the object of the localizations
-        # #create a PickleUtil object
-        # pickle_util = PickleUtil()
-        # #save the object
-        # pickle_util.save(path=full_path, name=name, docs='This is the reconstruction image data as a pickle file: x,y,loc_error in the scaled image space', obj=self.df_localizations)
-
 
     
     def _make_uniform_localizations(self): #TODO impliment this
