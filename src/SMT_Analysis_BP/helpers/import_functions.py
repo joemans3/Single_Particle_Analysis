@@ -14,28 +14,7 @@ import PIL.ImageOps
 import sys
 import glob as glob
 
-class IO_run_analysis:
-	
-	def __init__(self) -> None:
-		pass
-
-	@staticmethod
-	def _save_sptanalysis_data(pp,test):
-		fmt = '%d', '%d', '%1.9f', '%1.9f', '%d'
-		np.savetxt(pp[:-4] + '_sptsanalysis.csv',test,delimiter = "\t",fmt=fmt)
-
-	@staticmethod
-	def _load_superSegger(cd,_string):
-		xy_frame_dir_names = []
-		#load the data of segmented cells from SuperSegger (cell files)
-		for root, subdirs, files in os.walk(os.path.join(cd,_string)):
-			for d in subdirs:
-				if d[:2] == 'xy':
-					xy_frame_dir_names.append(os.path.join(cd,_string,d))
-		return xy_frame_dir_names
-
-
-def read_data(path, delimiter = ',',skiprow = 1):
+def read_data(path, delimiter = ',',skiprow = 1,**kwargs):
 	'''
 	Parameters
 	----------
@@ -56,7 +35,7 @@ def read_data(path, delimiter = ',',skiprow = 1):
 		array of the loaded data
 	
 	'''
-	data = np.loadtxt(path,delimiter = delimiter,skiprows = skiprow)
+	data = np.loadtxt(path,delimiter = delimiter,skiprows = skiprow,**kwargs)
 
 	return data
 

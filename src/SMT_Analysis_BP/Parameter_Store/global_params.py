@@ -6,4 +6,4 @@ Author: Baljyot Singh Parmar
 Date: 2023-04-20
 '''
 
-pixel_sizes = {"olympus_pixel_size":130,"confocal_pixel_size":79}
+PIXELSIZES = {"olympus_pixel_size":130,"confocal_pixel_size":79}

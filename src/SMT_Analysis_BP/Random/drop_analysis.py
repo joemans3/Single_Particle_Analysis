@@ -4,7 +4,6 @@ import os
 import sys
 import glob 
 from skimage import io
-import plotting_functions
 from matplotlib.patches import Circle
 
 def read_drop_data(dir_):

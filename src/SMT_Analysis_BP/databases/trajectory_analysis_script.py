@@ -38,18 +38,19 @@ import numpy as np
 import scipy.io as sio
 from scipy.stats import gaussian_kde
 from shapely.geometry import Point, Polygon
+from src.SMT_Analysis_BP.helpers.SMT_converters import IO_run_analysis
 
 from src.SMT_Analysis_BP.databases.scale_scale_plus_database import segmentation_scale_space
 import src.SMT_Analysis_BP.helpers.import_functions as import_functions
 import src.SMT_Analysis_BP.helpers.nucleoid_detection as nucleoid_detection
 from src.SMT_Analysis_BP.helpers.Analysis_functions import *
 from src.SMT_Analysis_BP.helpers.blob_detection import *
-from src.SMT_Analysis_BP.helpers.Convert_csv_mat import *
+from src.SMT_Analysis_BP.Random.Convert_csv_mat import *
 from src.SMT_Analysis_BP.helpers.plotting_functions import *
 from src.SMT_Analysis_BP.helpers.decorators import deprecated
 from src.SMT_Analysis_BP.helpers.SMT_converters import convert_track_data_SMAUG_format, convert_track_data_NOBIAS_format_global, _convert_track_data_NOBIAS_format_tau
 from src.SMT_Analysis_BP.databases.structure_storage import SEGMENTATION_FOLDER_TYPES, ANALYSIS_FOLDER_TYPES, LOADING_DROP_BLOB_TYPES
-
+from src.SMT_Analysis_BP.databases.utility_database import Counter_start_stop
 class run_analysis:
 	'''
 	Define a class for each dataset to analyse
@@ -119,7 +120,10 @@ class run_analysis:
 
 		self.wd = wd
 		self.t_string = t_string
-		self.mat_path_dir = 0
+		self.mat_path_dir = os.path.join(wd,t_string + "_MATLAB_dat")
+		#make a matlab folder to store data
+		if not os.path.exists(self.mat_path_dir):
+			os.makedirs(self.mat_path_dir)
 
 		self.frame_step = 1 #change manual
 		self.frame_total = 1 #change manual
@@ -408,11 +412,19 @@ class run_analysis:
 		#use the self._Analysis_path_util() function to get the path to the analysis folder
 		analysis_path = os.path.join(self._Analysis_path_util(),t_string + "_**.tif_spots.csv")
 		all_files = sorted(glob.glob(analysis_path))
-		print(all_files)
-		#make a matlab folder to store data for SMAUG analysis
-		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
-		if not os.path.exists(self.mat_path_dir):
-			os.makedirs(self.mat_path_dir)
+		
+		#print all the files in a concise manner for the user
+		print("All files in the dataset:")
+		for i in range(len(all_files)):
+			print(all_files[i])
+		print("")
+
+
+
+		# #make a matlab folder to store data for SMAUG analysis
+		# self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
+		# if not os.path.exists(self.mat_path_dir):
+		# 	os.makedirs(self.mat_path_dir)
 		
 		
 		#tag for segmented images
@@ -440,6 +452,7 @@ class run_analysis:
 			else:
 				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",") #CUSTOM SCRIPTING TRACKMATE OUTPUT STYLE
 
+			#save for SPT analysis pipeline Parutto et al 2022 (Cell Rep Methods)
 			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
 
 			tracks.append(test)
@@ -456,8 +469,6 @@ class run_analysis:
 
 			#store seg_files
 			segf.append(seg_files)
-			print(seg_files)
-			print(drop_files)
 			#####LOADING SEGMENTED IMAGES END#####
 
 			#####LOADING SEGMENTED BLOB DATA#####
@@ -470,7 +481,6 @@ class run_analysis:
 															kwargs=self.blob_parameters))
 				#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
 				drop_s = blob_total[pp]
-
 			
 			if LOADING_DROP_BLOB_TYPES[self.type_of_blob]:
 				#blob segmented data
@@ -479,8 +489,9 @@ class run_analysis:
 
 			#####LOADING SEGMENTED BLOB DATA END#####
 
-
-			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
+			#print the drop and segmented image locations
+			print("Drop files: {0}".format(drop_files))
+			print("Segmented files: {0}".format(seg_files))
 
 			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
 			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
@@ -522,9 +533,6 @@ class run_analysis:
 							self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
 																								"Scale":dropss[j][k],\
 																								"Fit":dropss[j][k]}
-				
-
-
 		self.segmented_drop_files = segf
 
 		return [tracks,drops,blob_total]
@@ -563,7 +571,7 @@ class run_analysis:
 		nucleoid_path = kwargs.get("nucleoid_path",os.path.join(cd,'gfp'))
 		#check if cd+/gfp exists
 		if not os.path.exists(nucleoid_path):
-			Warning("No gfp folder found in {0}. Assuming no cell segmentation exists and running analysis without use of segmentation. \n Note this mean the whole frame is a considered one cell".format(cd))
+			print("No gfp folder found in {0}. Assuming no cell segmentation exists and running analysis without use of segmentation. \n Note this mean the whole frame is a considered one cell".format(cd))
 			return self._read_track_data_nocells(wd,t_string,**kwargs)
 		
 		nucleoid_imgs = find_image(nucleoid_path,full_path=True)
@@ -580,17 +588,27 @@ class run_analysis:
 		#use the self._Analysis_path_util() function to get the path to the analysis folder
 		analysis_path = os.path.join(self._Analysis_path_util(),t_string + "_**.tif_spots.csv")
 		all_files = sorted(glob.glob(analysis_path))
-		print(all_files)
+
+
+		#print all the files in a concise manner for the user
+		print("All files in the dataset:")
+		for i in range(len(all_files)):
+			print(all_files[i])
+		print("")
+
+
 		#make a matlab folder to store data for SMAUG analysis
-		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
-		if not os.path.exists(self.mat_path_dir):
-			os.makedirs(self.mat_path_dir)
+		# self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
+		# if not os.path.exists(self.mat_path_dir):
+		# 	os.makedirs(self.mat_path_dir)
 		
 		
 		#tag for segmented images
 
 		max_tag = np.max([len(i) for i in all_files]) 
 		min_tag = np.min([len(i) for i in all_files])
+		print("max_tag: {0}".format(max_tag))
+		print("min_tag: {0}".format(min_tag))
 
 		blob_total = []
 		tracks = []
@@ -614,6 +632,7 @@ class run_analysis:
 			else:
 				test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",") #CUSTOM SCRIPTING TRACKMATE OUTPUT STYLE
 
+			#save for SPT analysis pipeline Parutto et al 2022 (Cell Rep Methods)
 			IO_run_analysis._save_sptanalysis_data(all_files[pp],test)
 
 			tracks.append(test)
@@ -630,8 +649,8 @@ class run_analysis:
 
 			#store seg_files
 			segf.append(seg_files)
-			print(seg_files)
-			print(drop_files)
+			print("seg_files",seg_files)
+			print("drop_files",drop_files)
 			#####LOADING SEGMENTED IMAGES END#####
 
 			#####LOADING SEGMENTED BLOB DATA#####
@@ -658,9 +677,17 @@ class run_analysis:
 			self.Movie[str(pp)].Movie_nucleoid = nucleoid_imgs_sorted[pp]
 
 			for i in range(len(movies[pp])):
-				nuc_img = import_functions.read_file(self.Movie[str(pp)].Movie_nucleoid)
-				padded_mask = pad_array(movies[pp][i][7],np.shape(nuc_img),movies[pp][i][1])
-
+				#this needs more work TODO
+				try:
+					nuc_img = import_functions.read_file(self.Movie[str(pp)].Movie_nucleoid)
+					padded_mask = pad_array(movies[pp][i][7],np.shape(nuc_img),movies[pp][i][1])
+					#perform nucleoid segmentation
+					feature_mask, regions = self._find_nucleoid(str(pp),str(i),nuc_img*padded_mask)
+					#store the nucleoid area by using the 1s in the feature mask
+					self.Movie[str(pp)].Cells[str(i)].nucleoid_area = float(np.sum(feature_mask[feature_mask == 1]))
+				except:
+					nuc_img = 0
+					padded_mask = 0
 				self.Movie[str(pp)].Cells[str(i)] = Cell(Cell_ID = i, \
 														Cell_Movie_Name = all_files[pp], \
 														bounding_box = movies[pp][i][0], \
@@ -673,10 +700,6 @@ class run_analysis:
 														cell_mask = padded_mask, \
 														Cell_Nucleoid_Mask = nuc_img*padded_mask)
 				
-				#perform nucleoid segmentation
-				feature_mask, regions = self._find_nucleoid(str(pp),str(i),nuc_img*padded_mask)
-				#store the nucleoid area by using the 1s in the feature mask
-				self.Movie[str(pp)].Cells[str(i)].nucleoid_area = float(np.sum(feature_mask[feature_mask == 1]))
 				
 				#sort points into cells
 				poly_cord = []
@@ -923,7 +946,7 @@ class run_analysis:
 					for l in range(len(sorted_tracks[0][kk])): #running over the tracks in frame k
 						#find the distance of track from the drop center
 						n_dist=dist(np.array(sorted_tracks[1][kk][l]),np.array(sorted_tracks[2][kk][l]),j[0],j[1]) 
-						percent_drop_in = np.float(np.sum(n_dist <= j[2]))/len(n_dist) #find percentage of track loc inside
+						percent_drop_in = float(np.sum(n_dist <= j[2]))/len(n_dist) #find percentage of track loc inside
 						if percent_drop_in >= self.minimum_percent_per_drop_in: #if condition holds
 							key = str(kk)+","+str(l)
 							checks_low = 0
@@ -1023,7 +1046,7 @@ class run_analysis:
 							#find distance from drop center
 							n_dist=dist(np.array(sorted_tracks[1][kk][l]),np.array(sorted_tracks[2][kk][l]),j[0],j[1])
 							#for in/out and out we need to know the percentage of in and out.
-							percent_in = np.float(np.sum(n_dist <= j[2]))/len(n_dist) 
+							percent_in = float(np.sum(n_dist <= j[2]))/len(n_dist) 
 							
 
 							if (n_dist <= j[2]).all():#if all localizations are inside 
@@ -1305,31 +1328,8 @@ class run_analysis:
 		to it.
 		'''
 		self.fitting_parameters = kwargs
-	@deprecated("This seems useless right now, and sometimes breaks into an infinite loop. Should not be used, but keeping for testing before removing.")
-	def _bulk_msd_plot(self,Movies=None,plot=False):
-		''' Docstring for _bulk_msd_plot
-		
-		'''
-		if Movies is None:
-			Movies = self.Movie
-		no_drop = []
-		in_drop = []
-		ot_drop = []
-		io_drop = []
-		for i,j in Movies.items():
-			for k,l in j.Cells.items():
-				for n,m in l.All_Tracjectories.items():
-					if m.Classification == None:
-						no_drop.append([m.MSD_total_um,len(m.X)])
-					if m.Classification == "IN":
-						in_drop.append([m.MSD_total_um,len(m.X)])
-					if m.Classification == "OUT":
-						ot_drop.append([m.MSD_total_um,len(m.X)])
-					if m.Classification == "IO":
-						io_drop.append([m.MSD_total_um,len(m.X)])
 
-		return {"no_drop": no_drop, "in_drop": in_drop, "ot_drop": ot_drop, "io_drop": io_drop}
-	def _convert_to_track_dict_bulk(self,Movie=None):
+	def _convert_to_track_dict_bulk(self,Movie=None,track_name_original=True):
 		''' Docstring for _convert_to_track_dict_bulk
 		Purpose: convert the Movie object into a dictionary of tracks for the bulk analysis of MSD
 
@@ -1356,17 +1356,74 @@ class run_analysis:
 		track_dict_io = {}
 		#make a collection for all the tracks
 		track_dict_all = {}
-		for i,j in Movie.items():
-			for k,l in j.Cells.items():
-				for n,m in l.All_Tracjectories.items():
-					track_dict_all[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
-					if m.Classification == "IN":
-						track_dict_in[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
-					elif m.Classification == "IO":
-						track_dict_io[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
-					elif m.Classification == "OUT":
-						track_dict_out[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
+		if track_name_original == False:
+			counting = Counter_start_stop(0)
+			for i,j in Movie.items():
+				for k,l in j.Cells.items():
+					for n,m in l.All_Tracjectories.items():
+						counting_val = counting()
+						track_dict_all[counting_val] = np.array([m.X,m.Y,m.Frames]).T
+						if m.Classification == "IN":
+							track_dict_in[counting_val] = np.array([m.X,m.Y,m.Frames]).T
+						elif m.Classification == "IO":
+							track_dict_io[counting_val] = np.array([m.X,m.Y,m.Frames]).T
+						elif m.Classification == "OUT":
+							track_dict_out[counting_val] = np.array([m.X,m.Y,m.Frames]).T
+		else:
+			for i,j in Movie.items():
+				for k,l in j.Cells.items():
+					for n,m in l.All_Tracjectories.items():
+						track_dict_all[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
+						if m.Classification == "IN":
+							track_dict_in[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
+						elif m.Classification == "IO":
+							track_dict_io[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
+						elif m.Classification == "OUT":
+							track_dict_out[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
 		return {"IN": track_dict_in, "OUT": track_dict_out, "IO": track_dict_io, "ALL": track_dict_all}
+	
+	def _store_combined_SMAUG_files(self,combined_dir_name,Movie=None):
+		'''
+		Store the SMAUG style data to a combined directory which will contain data from multiple run_analysis objects
+
+		Parameters:
+		-----------
+		combined_dir_name: string, default "SMAUG_COMBINED"
+			name of the directory to store the combined SMAUG files
+		Movie: Movie object, default None
+			Movie object to convert to a dictionary of tracks
+		'''
+		if Movie is None:
+			if len(self.Movie) == 0:
+				raise ValueError("Movie is empty")
+			else:
+				Movie = self.Movie
+		#if the directory doesn't exist make it, make sure to do this recursively
+		if not os.path.exists(combined_dir_name):
+			os.makedirs(combined_dir_name)
+		#convert the Movie object to a dictionary of tracks
+		track_dict = self._convert_to_track_dict_bulk(Movie=Movie,track_name_original=False)
+		#convert the tracks to SMAUG format
+		Smaug_all = convert_track_data_SMAUG_format(track_dict["ALL"])
+		Smaug_IN = convert_track_data_SMAUG_format(track_dict["IN"])
+		Smaug_OUT = convert_track_data_SMAUG_format(track_dict["OUT"])
+		Smaug_IO = convert_track_data_SMAUG_format(track_dict["IO"])
+		#Make sub folders for IN,OUT,IO,ALL if they don't exist
+		smaug_IN_dir, smaug_OUT_dir, smaug_IO_dir, smaug_ALL_dir = [
+			os.path.join(combined_dir_name, x) for x in ["IN", "OUT", "IO", "ALL"]
+		]
+		for i in [smaug_IN_dir, smaug_OUT_dir, smaug_IO_dir, smaug_ALL_dir]:
+			if not os.path.exists(i):
+				os.mkdir(i)
+		#save the files
+		unique_identifier = str(self.my_name) + "_" + str(self.t_string)
+		sio.savemat(os.path.join(smaug_ALL_dir, unique_identifier + "_ALL.mat"), {"trfile": Smaug_all})
+		sio.savemat(os.path.join(smaug_IN_dir, unique_identifier + "_IN.mat"), {"trfile": Smaug_IN})
+		sio.savemat(os.path.join(smaug_OUT_dir, unique_identifier + "_OUT.mat"), {"trfile": Smaug_OUT})
+		sio.savemat(os.path.join(smaug_IO_dir, unique_identifier + "_IO.mat"), {"trfile": Smaug_IO})
+
+		return
+	
 	def _make_SMAUG_files(self,Movie=None,dir_name="SMAUG")->None:
 
 		#make a directory for the SMAUG files using self.mat_path_dir
@@ -1426,15 +1483,51 @@ class run_analysis:
 			if not os.path.exists(smaug_NONE_dir):
 				os.mkdir(smaug_NONE_dir)
 
-			
+			#make a unique identifier for the files
+			unique_identifier = str(self.my_name) + "_" + str(self.t_string) + "_" + str(i)
 			#save the files
-			sio.savemat(os.path.join(smaug_ALL_dir,str(self.t_string) + str(i) + "_ALL.mat"),{"trfile":Smaug_all})
-			sio.savemat(os.path.join(smaug_IN_dir,str(self.t_string) + str(i) + "_IN.mat"),{"trfile":Smaug_IN})
-			sio.savemat(os.path.join(smaug_OUT_dir,str(self.t_string) + str(i) + "_OUT.mat"),{"trfile":Smaug_OUT})
-			sio.savemat(os.path.join(smaug_IO_dir,str(self.t_string) + str(i) + "_IO.mat"),{"trfile":Smaug_IO})
-			sio.savemat(os.path.join(smaug_NONE_dir,str(self.t_string) + str(i) + "_NONE.mat"),{"trfile":Smaug_NONE})
+			sio.savemat(os.path.join(smaug_ALL_dir,unique_identifier + "_ALL.mat"),{"trfile":Smaug_all})
+			sio.savemat(os.path.join(smaug_IN_dir,unique_identifier + "_IN.mat"),{"trfile":Smaug_IN})
+			sio.savemat(os.path.join(smaug_OUT_dir,unique_identifier + "_OUT.mat"),{"trfile":Smaug_OUT})
+			sio.savemat(os.path.join(smaug_IO_dir,unique_identifier + "_IO.mat"),{"trfile":Smaug_IO})
+			sio.savemat(os.path.join(smaug_NONE_dir,unique_identifier + "_NONE.mat"),{"trfile":Smaug_NONE})
 		#print a log message to say the location of the files
 		print("SMAUG files saved to: {0}".format(smaug_dir))
+	
+	def _store_combined_NOBIAS_files(self,combined_dir_name,Movie=None):
+		'''
+		Store the NOBIAS style data to a combined directory which will contain data from multiple run_analysis objects
+		'''
+		if Movie is None:
+			if len(self.Movie) == 0:
+				raise ValueError("Movie is empty")
+			else:
+				Movie = self.Movie
+		#if the directory doesn't exist make it
+		if not os.path.exists(combined_dir_name):
+			os.makedirs(combined_dir_name)
+		#convert the Movie object to a dictionary of tracks
+		track_dict = self._convert_to_track_dict_bulk(Movie=Movie,track_name_original=False)
+		#convert the tracks to NOBIAS format
+		NOBIAS_all = convert_track_data_NOBIAS_format_global(track_dict["ALL"])
+		NOBIAS_IN = convert_track_data_NOBIAS_format_global(track_dict["IN"])
+		NOBIAS_OUT = convert_track_data_NOBIAS_format_global(track_dict["OUT"])
+		NOBIAS_IO = convert_track_data_NOBIAS_format_global(track_dict["IO"])
+		#Make sub folders for IN,OUT,IO,ALL if they don't exist
+		nobias_IN_dir, nobias_OUT_dir, nobias_IO_dir, nobias_ALL_dir = [
+			os.path.join(combined_dir_name, x) for x in ["IN", "OUT", "IO", "ALL"]
+		]
+		for i in [nobias_IN_dir, nobias_OUT_dir, nobias_IO_dir, nobias_ALL_dir]:
+			if not os.path.exists(i):
+				os.mkdir(i)
+		#save the files
+		unique_identifier = str(self.my_name) + "_" + str(self.t_string)
+		sio.savemat(os.path.join(nobias_ALL_dir, unique_identifier + "_ALL.mat"), NOBIAS_all)
+		sio.savemat(os.path.join(nobias_IN_dir, unique_identifier + "_IN.mat"), NOBIAS_IN)
+		sio.savemat(os.path.join(nobias_OUT_dir, unique_identifier + "_OUT.mat"), NOBIAS_OUT)
+		sio.savemat(os.path.join(nobias_IO_dir, unique_identifier + "_IO.mat"), NOBIAS_IO)
+
+		return
 	
 	def _make_NOBIAS_files(self,Movie=None,taus=1,dir_name="NOBIAS")->None:
 
@@ -1452,7 +1545,7 @@ class run_analysis:
 			else:
 				Movie = self.Movie
 		#use _convert_to_track_dict_bulk to get the tracks in the correct format
-		tracks = self._convert_to_track_dict_bulk(Movie=Movie)
+		tracks = self._convert_to_track_dict_bulk(Movie=Movie,track_name_original=False)
 		#now we need to convert this into the NOBIAS format using convert_track_data_NOBIAS_format
 		track_IN = convert_track_data_NOBIAS_format_global(tracks["IN"],max_tau=taus)
 		track_OUT = convert_track_data_NOBIAS_format_global(tracks["OUT"],max_tau=taus)
@@ -1475,11 +1568,13 @@ class run_analysis:
 		if not os.path.exists(track_ALL_dir):
 			os.mkdir(track_ALL_dir)
 		
+		#make a unique identifier for the files
+		unique_identifier = str(self.my_name) + "_" + str(self.t_string)
 		#save the files
-		sio.savemat(os.path.join(track_IN_dir,str(self.t_string) + "_IN.mat"),track_IN[taus-1])
-		sio.savemat(os.path.join(track_OUT_dir,str(self.t_string) + "_OUT.mat"),track_OUT[taus-1])
-		sio.savemat(os.path.join(track_IO_dir,str(self.t_string) + "_IO.mat"),track_IO[taus-1])
-		sio.savemat(os.path.join(track_ALL_dir,str(self.t_string) + "_ALL.mat"),track_ALL[taus-1])
+		sio.savemat(os.path.join(track_IN_dir,unique_identifier + "_IN.mat"),track_IN[taus-1])
+		sio.savemat(os.path.join(track_OUT_dir,unique_identifier + "_OUT.mat"),track_OUT[taus-1])
+		sio.savemat(os.path.join(track_IO_dir,unique_identifier + "_IO.mat"),track_IO[taus-1])
+		sio.savemat(os.path.join(track_ALL_dir,unique_identifier + "_ALL.mat"),track_ALL[taus-1])
 
 		#print a log message to say the location of the files
 		print("NOBIAS files saved to: {0}".format(nobias_path_dir))
@@ -1710,7 +1805,7 @@ class Cell:
 		if not hasattr(self,"area_of_points_per_frame"):
 			raise AttributeError("area_of_points_per_frame is not defined")
 		#for each frame number, calculate the density of points in that frame by dividing the number of points by the area of points
-		self._density_per_frame = {frame: self.points_per_frame[frame]/self.area_of_points_per_frame[frame] for frame in self.points_per_frame.keys()}
+		self._density_per_frame = {frame: len(self.points_per_frame[frame])/self.area_of_points_per_frame[frame] for frame in self.points_per_frame.keys()}
 		return self._density_per_frame
 
 	@property
@@ -1778,8 +1873,8 @@ class Trajectory:
 			"IN" or "OUT" or "IO", for In Drop, Out Drop, In and Out Drop
 		Drop_Identifier : str
 			ID of the drop that the trajectory belongs to
-		Frames : int
-			number of frames in the trajectory
+		Frames : list or np.array
+			frame numbers of the trajectory (based on the original frames) 
 		Intensity : list or np.array
 			intensity of the trajectory (same length as X and Y and Frames)
 		MSD_total_um : float, default = None

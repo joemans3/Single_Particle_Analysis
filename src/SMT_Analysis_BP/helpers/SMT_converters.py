@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import glob as glob
 from src.SMT_Analysis_BP.helpers import Analysis_functions as af
@@ -118,3 +119,24 @@ def _convert_track_data_NOBIAS_format_tau(displacement_dict,tau,include_cor_obs:
         nobias_dict_out.pop("cor_obs")
     nobias_dict_out["TrID"] = np.array(nobias_dict_out["TrID"])
     return nobias_dict_out
+
+
+class IO_run_analysis:
+
+	def __init__(self) -> None:
+		pass
+
+	@staticmethod
+	def _save_sptanalysis_data(pp,test):
+		fmt = '%d', '%d', '%1.9f', '%1.9f', '%d'
+		np.savetxt(pp[:-4] + '_sptsanalysis.csv',test,delimiter = "\t",fmt=fmt)
+
+	@staticmethod
+	def _load_superSegger(cd,_string):
+		xy_frame_dir_names = []
+		#load the data of segmented cells from SuperSegger (cell files)
+		for root, subdirs, files in os.walk(os.path.join(cd,_string)):
+			for d in subdirs:
+				if d[:2] == 'xy':
+					xy_frame_dir_names.append(os.path.join(cd,_string,d))
+		return xy_frame_dir_names

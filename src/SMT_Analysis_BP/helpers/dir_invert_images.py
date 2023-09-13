@@ -28,6 +28,19 @@ import src.SMT_Analysis_BP.helpers.import_functions as import_functions
 def save_invert_images(path,**kwargs):
     '''
     Makes directory to store inverted images and put files there
+
+    Parameters:
+    -----------
+    path: str
+        path to the directory holding the images to invert
+    Keyword Arguments:
+    ------------------
+    invert_path: str
+        path to the directory to store the inverted images
+    
+    Returns:
+    --------
+    None
     '''
 
     #make new directory inside the provided dir_path to store the inverted images
