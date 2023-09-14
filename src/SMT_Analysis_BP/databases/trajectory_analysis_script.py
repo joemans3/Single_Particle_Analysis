@@ -40,17 +40,24 @@ from scipy.stats import gaussian_kde
 from shapely.geometry import Point, Polygon
 from src.SMT_Analysis_BP.helpers.SMT_converters import IO_run_analysis
 
-from src.SMT_Analysis_BP.databases.scale_scale_plus_database import segmentation_scale_space
 import src.SMT_Analysis_BP.helpers.import_functions as import_functions
 import src.SMT_Analysis_BP.helpers.nucleoid_detection as nucleoid_detection
 from src.SMT_Analysis_BP.helpers.Analysis_functions import *
 from src.SMT_Analysis_BP.helpers.blob_detection import *
 from src.SMT_Analysis_BP.Random.Convert_csv_mat import *
 from src.SMT_Analysis_BP.helpers.plotting_functions import *
-from src.SMT_Analysis_BP.helpers.decorators import deprecated
 from src.SMT_Analysis_BP.helpers.SMT_converters import convert_track_data_SMAUG_format, convert_track_data_NOBIAS_format_global, _convert_track_data_NOBIAS_format_tau
 from src.SMT_Analysis_BP.databases.structure_storage import SEGMENTATION_FOLDER_TYPES, ANALYSIS_FOLDER_TYPES, LOADING_DROP_BLOB_TYPES
 from src.SMT_Analysis_BP.databases.utility_database import Counter_start_stop
+
+TRACK_TYPES = [
+	"IN",
+	"IO",
+	"OUT",
+	"ALL"
+]
+
+
 class run_analysis:
 	'''
 	Define a class for each dataset to analyse
@@ -1017,7 +1024,7 @@ class run_analysis:
 										Frame_number = ii, 
 										X = sorted_tracks[1][ii][l], 
 										Y = sorted_tracks[2][ii][l], 
-										Classification = None, 
+										Classification = "OUT", #making a change here from NONE to OUT
 										Drop_Identifier = None, 
 										Frames = sorted_tracks[4][ii][l], 
 										MSD_total_um = con_pix_si(MSD_tavg(sorted_tracks[1][ii][l],sorted_tracks[2][ii][l],sorted_tracks[4][ii][l]),which = 'msd'), 

@@ -741,7 +741,7 @@ def MSD_tau(x,y,permutation=True):
     #return the displacements
     return displacements
 
-def MSD_Tracks(tracks,permutation=True,return_type="msd_curves",verbose=False,conversion_factor=None):
+def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_factor=None,**kwargs):#return_type="msd_curves",verbose=False,conversion_factor=None):
     '''Documentation for MSD_Tracks
 
     Parameters:
@@ -760,43 +760,53 @@ def MSD_Tracks(tracks,permutation=True,return_type="msd_curves",verbose=False,co
         TODO: this is annoying and should be separated into a different function but is not yet
     conversion_factor : float (default = None)
         if conversion_factor != None then the coordinates are converted to the desired units before the MSD is calculated
+    tau_conversion_factor : float (default = None)
+        if tau_conversion_factor != None then the time lags are converted to the desired units before the MSD is calculated
+        units are for [0->n] (int) -> seconds (1 = 0.02 seconds)
     
     Returns:
     --------
     return_dict : dict
         dictionary of MSD curves for each track, key = track ID, value = dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,2)
     
+    Notes:
+    ------
+    1. Only implimented sequential tau. If trajectories are missing coordinate values (ex. if using gap linking in TRACKMATE) then this is not accounted for.
+    
     '''
-    #create a dictionary to store the MSD curves for each track
-    ensemble_msd = {}
+    #create a dictionary to store the ensemble disp for each track
+
+    track_copy = copy.deepcopy(tracks) #so that the original tracks are not modified since python is pass by reference
+
+    ensemble_disp = {}
     #create a dictionary to store the displacements for each track
     tracks_displacements = {}
+    track_msds = {}
+    track_msds_error = {}
     #loop through the tracks
-    for key,value in tracks.items():
+    for key,value in track_copy.items():
 
         #convert the coordinates based on the conversion factor
         if conversion_factor != None:
             value *= conversion_factor
         #calculate the displacements for each track
         disp = MSD_tau(value[:,0],value[:,1],permutation)
+        #lets convert the taus (in the keys of disp) to the desired units
+        if tau_conversion_factor != None:
+            disp = {key*tau_conversion_factor:value for key,value in disp.items()}
+
         tracks_displacements[key] = disp
+        track_msd_temp = msd_avgerage_utility(disp)
+        track_msds[key] = track_msd_temp[0]
+        track_msds_error[key] = track_msd_temp[1]
         #unify the ensemble MSD curve dictionary with disp
-        ensemble_msd = dic_union_two(ensemble_msd,disp)
-    if verbose == True:
-        ensemble_msd_copy = copy.deepcopy(ensemble_msd)
+        ensemble_disp = dic_union_two(ensemble_disp,disp)
+
     #update the ensemble MSD curve dictionary
-    ensemble_msd,errors_ensemble_msd = msd_avgerage_utility(ensemble_msd)
-    return_dict = {"msd_curves":[ensemble_msd,errors_ensemble_msd],"displacements":tracks_displacements}
-    if verbose == True:
-        if return_type == "both":
-            return return_dict,ensemble_msd_copy
-        else:
-            return return_dict[return_type],ensemble_msd_copy
-    else:
-        if return_type == "both":
-            return return_dict
-        else:
-            return return_dict[return_type]
+    ensemble_msd,errors_ensemble_msd = msd_avgerage_utility(ensemble_disp)
+    return_dict = {"msd_curves":[ensemble_msd,errors_ensemble_msd,track_msds,track_msds_error],"displacements":[ensemble_disp,tracks_displacements]}
+    #keeping the code below for backwards compatibility, but is useless now
+    return return_dict,ensemble_disp
 
 def msd_avgerage_utility(displacements):
     '''Documentation for _msd_avgerage_utility
