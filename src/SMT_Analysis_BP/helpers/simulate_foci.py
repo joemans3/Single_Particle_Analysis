@@ -1126,6 +1126,9 @@ def get_gaussian(mu, sigma,domain = [list(range(10)),list(range(10))]):
 	array-like 2D 
 		values of the gaussian centered at mu with sigma across the (x,y) points defined in domain
 	
+	Notes:
+	------
+	THIS IS IMPORTANT: MAKE SURE THE TYPES IN EACH PARAMETER ARE THE SAME!!!!
 	'''
 
 	mvn = tfp.distributions.MultivariateNormalDiag(loc=mu, scale_diag=sigma)

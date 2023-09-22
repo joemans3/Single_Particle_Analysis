@@ -17,8 +17,8 @@ SEGMENT_TYPE = {
     "std":np.std
 }
 STACK_STEP = 5
-CONVERT_NAME = 0
-DIR_PATH = "/Volumes/Baljyot_HD/SMT_Olympus/Baljyot_temp/20181003" 
+CONVERT_NAME = 1
+DIR_PATH = "/Volumes/Baljyot_HD/SMT_Olympus/Baljyot_temp/15/ll_m9" 
 
 #check if the directory exists
 if not os.path.exists(DIR_PATH):

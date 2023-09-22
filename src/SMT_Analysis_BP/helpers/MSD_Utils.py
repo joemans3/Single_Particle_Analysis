@@ -1,5 +1,5 @@
 import numpy as np
-
+from abc import ABC, abstractmethod
 from src.SMT_Analysis_BP.helpers import Analysis_functions as af
 from src.SMT_Analysis_BP.databases import trajectory_analysis_script as tas
 
@@ -19,9 +19,20 @@ def power_law_xy(t,alpha,D,loc_msd_x,loc_msd_y):
 def power_law(t,alpha,D,loc_msd):
     return 4*(loc_msd**2) + 4.*D*t**(alpha)
 
+def linear_MSD_fit(t,a,b):
+    '''
+    linear fit function
+    expects t to be scaled with log10, and returns msd output in log10
+    b = log10(4*D)
+    a = alpha
+    t = log10(tau)
+    '''
+    return b + a*t
+
+
 def combine_track_dicts(dicts):
-    #each dict is going to contain 4 dicts of name "IN","IO","OUT","ALL"
-    #we need to keep this strucutre for the final combined dict
+    '''each dict is going to contain 4 dicts of name "IN","IO","OUT","ALL"
+    we need to keep this strucutre for the final combined dict'''
     combined_dict = {"IN":{},"IO":{},"OUT":{},"ALL":{}}
     #iterate over the dicts
     track_counter = 1
@@ -36,10 +47,66 @@ def combine_track_dicts(dicts):
     return combined_dict
 
 
+class MSD_Calculation_abc(ABC):
+    '''
+    Abstract base class for MSD Calculations
+    Will only inforce pixel size, units and frame length, units
+    '''
+    def __init__(self,pixel_size:float,frame_length:float,pixel_unit:str,frame_unit:str) -> None:
+        self._pixel_size = pixel_size
+        self._frame_length = frame_length
+        self._pixel_unit = pixel_unit
+        self._frame_unit = frame_unit
+        #print a warning
+        self._initialized_print_warning()
 
-#lets create a generic MSD analysis class which will store all the MSD analysis for a single dataset or multiple datasets
-#using encapsulation we will utilize smaller functions to do the analysis
+    def _initialized_print_warning(self):
+        print_statement = '''
+        ##############################################################################################################
+        #You have initialized a Calculation class with the following parameters:
+        #pixel_size: {}
+        #frame_length: {}
+        #pixel_unit: {}
+        #frame_unit: {}
+        '''
+        print(print_statement.format(self.pixel_size,self.frame_length,self.pixel_unit,self.frame_unit))
+
+    @property
+    def pixel_size(self):
+        return self._pixel_size
+    @property
+    def frame_length(self):
+        return self._frame_length
+    @property
+    def pixel_unit(self):
+        return self._pixel_unit
+    @property
+    def frame_unit(self):
+        return self._frame_unit
+
+    @abstractmethod
+    def _build_MSD_Tracks(self):
+        '''
+        Does the actual building of the MSD_Tracks to create the storage objects
+        '''
+        raise NotImplementedError("This is an abstract method and needs to be implemented in the child class")
+    
+    @property
+    @abstractmethod
+    def combined_store(self):
+        raise NotImplementedError("This is an abstract method and needs to be implemented in the child class")
+    @property
+    @abstractmethod
+    def individual_store(self):
+        raise NotImplementedError("This is an abstract method and needs to be implemented in the child class")
+
+
+
 class MsdDatabaseUtil:
+    '''
+    lets create a generic MSD analysis class which will store all the MSD analysis for a single dataset or multiple datasets
+    using encapsulation we will utilize smaller functions to do the analysis
+    '''
     def __init__(self,data_set_RA:list|None=None,pixel_to_um:float=0.13,frame_to_seconds:float=0.02):
         '''
         Parameters:
@@ -121,7 +188,6 @@ class MsdDatabaseUtil:
         return self._pixel_to_um
     @pixel_to_um.setter
     def pixel_to_um(self,pixel_to_um:float):
-        print("The value of one pixel is set to be {0} um".format(pixel_to_um))
         self._pixel_to_um = pixel_to_um
     
     @property
@@ -129,9 +195,7 @@ class MsdDatabaseUtil:
         return self._frame_to_seconds
     @frame_to_seconds.setter
     def frame_to_seconds(self,frame_to_seconds:float):
-        print("The value of one frame is set to be {0} seconds".format(frame_to_seconds))
         self._frame_to_seconds = frame_to_seconds
-
 
 class MSD_storage:
     def __init__(self,name,track_class_type,storage_data) -> None:
@@ -233,7 +297,7 @@ class MSD_storage:
             self._ensemble_displacement_r = temp_dict
             return self._ensemble_displacement_r
 
-class MSD_Calculations:
+class MSD_Calculations(MSD_Calculation_abc):
     def __init__(self,data_set_RA:list,**kwargs) -> None:
         '''
         Parameters:
@@ -246,7 +310,18 @@ class MSD_Calculations:
             pixel to um conversion
         frame_to_seconds: float
             frame to seconds conversion
+        frame_units: str
+            frame units
+        pixel_units: str
+            pixel units
         '''
+        #initialize the MSD_Calculation_abc class
+        super().__init__(pixel_size=kwargs.get("pixel_to_um",0.13),
+                        frame_length=kwargs.get("frame_to_seconds",0.02),
+                        pixel_unit=kwargs.get("pixel_units","um"),
+                        frame_unit=kwargs.get("frame_units","s")
+                        )
+        
         #list has to be made up of objects of type tas.run_analysis
         self.MSD_dataset = MsdDatabaseUtil(data_set_RA=data_set_RA,**kwargs)
         #build the MSD_Tracks
@@ -320,8 +395,6 @@ class MSD_Calculations:
         self._build_MSD_Tracks_individual(**kwargs)
         self._build_MSD_Tracks_combined(**kwargs)
     
-    
-
     @property
     def combined_store(self):
         if hasattr(self,"_combined_store"):
@@ -348,9 +421,85 @@ class MSD_Calculations:
     def individual_store(self,individual_store):
         raise ValueError("individual_store cannot be set")
 
-
-
+class MSD_Calculations_Track_Dict(MSD_Calculation_abc):
     
+    #this is a similar class to the MSD_Calculations class but it takes in a track_dict instead of a data_set_RA
+    def __init__(self,track_dict,**kwargs) -> None:
+        '''
+        Parameters:
+        -----------
+        track_dict: dict
+            dict of tracks in the form: 
+            {
+            track_ID: [[x,y],...,[x,y]],
+            .
+            .
+            .
+            }
+        KWARGS:
+        -------
+        pixel_to_um: float
+            pixel to um conversion
+        frame_to_seconds: float
+            frame to seconds conversion
+        frame_units: str
+            frame units
+        pixel_units: str
+            pixel units
+        '''
+        #initialize the MSD_Calculation_abc class
+        super().__init__(pixel_size=kwargs.get("pixel_to_um",0.13),
+                        frame_length=kwargs.get("frame_to_seconds",0.02),
+                        pixel_unit=kwargs.get("pixel_units","um"),
+                        frame_unit=kwargs.get("frame_units","s")
+                        )
+        #make sure that the track_dict is a dict
+        if isinstance(track_dict,dict):
+            #set the track_dict
+            self.track_dict = track_dict
+        else:
+            raise ValueError("track_dict must be a dict")
+        self.pixel_to_um = kwargs.get("pixel_to_um",0.13)
+        self.frame_to_seconds = kwargs.get("frame_to_seconds",0.02)
+        #build the MSD_Tracks
+        self._build_MSD_Tracks()
+
+    def _build_MSD_Tracks(self,**kwargs):
+        #build the MSD_Tracks
+        MSD_tracks,_ = af.MSD_Tracks(
+            self.track_dict, 
+            conversion_factor=self.pixel_to_um, 
+            tau_conversion_factor=self.frame_to_seconds,
+            **kwargs
+            )
+        ensemble_MSD,ensemble_MSD_error,track_MSD,track_MSD_error = MSD_tracks["msd_curves"]
+        ensemble_displacements,track_displacements = MSD_tracks["displacements"]
+        #create the storage object
+        storage_data = {"ensemble_MSD":ensemble_MSD,
+                        "ensemble_MSD_error":ensemble_MSD_error,
+                        "ensemble_displacement":ensemble_displacements,
+                        "track_MSD":track_MSD,
+                        "track_MSD_error":track_MSD_error,
+                        "track_displacement":track_displacements}
+        #create the storage object
+        storage_object = MSD_storage("track_dict","ALL",storage_data)
+        #store the storage object
+        self._storage = storage_object
+
+    @property
+    def combined_store(self):
+        Warning("This is a track_dict and does not have a combined_store, returning the individual_store variable")
+        return self._storage
+    @combined_store.setter
+    def combined_store(self,combined_store):
+        raise ValueError("combined_store cannot be set")
+    @property
+    def individual_store(self):
+        return self._storage
+    @individual_store.setter
+    def individual_store(self,individual_store):
+        raise ValueError("individual_store cannot be set")
+
 
 
 

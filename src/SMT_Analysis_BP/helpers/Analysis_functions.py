@@ -348,7 +348,6 @@ def point_inside_circle2D(circle,point):
         return False
 
 
-@deprecated("Sometimes this breaks, use with caution. Use array slicing instead (ex: a[:,[0,2,1,3]] to switch the 2nd and 3rd columns)")
 def reshape_col2d(arr,permutations):
     '''
     Docstring for reshape_col2d
@@ -425,18 +424,12 @@ def rt_to_xy(r,theta):
         The x and y coordinates
     
     '''
-    # Check to see if r and theta are floats
-    if type(r) != float or type(theta) != float:
-        raise TypeError('r and theta must be floats')
     # Check to see if r and theta are arrays
     if type(r) == np.ndarray or type(theta) == np.ndarray:
         raise ValueError('r and theta must be floats')
     # Check to see if r is negative
     if r<0:
         raise ValueError('r must be positive')
-    # Check to see if theta is between 0 and 2pi
-    if theta < 0 or theta > 2*np.pi:
-        raise ValueError('theta must be between 0 and 2*pi')
     # If all of the above checks pass, convert to cartesian coordinates
     x = r*np.cos(theta)
     y = r*np.sin(theta)
@@ -741,7 +734,7 @@ def MSD_tau(x,y,permutation=True):
     #return the displacements
     return displacements
 
-def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_factor=None,**kwargs):#return_type="msd_curves",verbose=False,conversion_factor=None):
+def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_factor=None,min_track_length=1,**kwargs):#return_type="msd_curves",verbose=False,conversion_factor=None):
     '''Documentation for MSD_Tracks
 
     Parameters:
@@ -763,6 +756,8 @@ def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_fac
     tau_conversion_factor : float (default = None)
         if tau_conversion_factor != None then the time lags are converted to the desired units before the MSD is calculated
         units are for [0->n] (int) -> seconds (1 = 0.02 seconds)
+    min_track_length : int (default = 1)
+        the minimum length of a track to be included in the MSD calculation
     
     Returns:
     --------
@@ -785,22 +780,23 @@ def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_fac
     track_msds_error = {}
     #loop through the tracks
     for key,value in track_copy.items():
+        #check if the track is long enough to calculate the MSD
+        if len(value) >= min_track_length:
+            #convert the coordinates based on the conversion factor
+            if conversion_factor != None:
+                value *= conversion_factor
+            #calculate the displacements for each track
+            disp = MSD_tau(value[:,0],value[:,1],permutation)
+            #lets convert the taus (in the keys of disp) to the desired units
+            if tau_conversion_factor != None:
+                disp = {key*tau_conversion_factor:value for key,value in disp.items()}
 
-        #convert the coordinates based on the conversion factor
-        if conversion_factor != None:
-            value *= conversion_factor
-        #calculate the displacements for each track
-        disp = MSD_tau(value[:,0],value[:,1],permutation)
-        #lets convert the taus (in the keys of disp) to the desired units
-        if tau_conversion_factor != None:
-            disp = {key*tau_conversion_factor:value for key,value in disp.items()}
-
-        tracks_displacements[key] = disp
-        track_msd_temp = msd_avgerage_utility(disp)
-        track_msds[key] = track_msd_temp[0]
-        track_msds_error[key] = track_msd_temp[1]
-        #unify the ensemble MSD curve dictionary with disp
-        ensemble_disp = dic_union_two(ensemble_disp,disp)
+            tracks_displacements[key] = disp
+            track_msd_temp = msd_avgerage_utility(disp)
+            track_msds[key] = track_msd_temp[0]
+            track_msds_error[key] = track_msd_temp[1]
+            #unify the ensemble MSD curve dictionary with disp
+            ensemble_disp = dic_union_two(ensemble_disp,disp)
 
     #update the ensemble MSD curve dictionary
     ensemble_msd,errors_ensemble_msd = msd_avgerage_utility(ensemble_disp)
@@ -1892,7 +1888,7 @@ def centered_pairCorrelation_2D(x, y, center, rMax, dr, **kwargs):
     for p in range(1):
         d = sqrt((center[0] - x)**2 + (center[1] - y)**2)
 
-        (result, _) = histogram(d, bins=edges, normed=False)
+        (result, _) = histogram(d, bins=edges)
         g[p, :] = result/numberDensity
     g_average = zeros(num_increments)
     for i in range(num_increments):
