@@ -32,7 +32,7 @@ Classes:
 Author: Baljyot Singh Parmar
 '''
 import glob
-
+import pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io as sio
@@ -137,6 +137,7 @@ class run_analysis:
 		#cutoff for track length
 		self.t_len_l = 0 #change manual #people use 5
 		self.t_len_u = 0 #change manual #100 #use 20
+		self.blob_t_len_l = 0
 		self.MSD_avg_threshold = 0
 		#upper and lower "bound proportion" threshold for determining if in_out track or out only.
 		self.upper_bp = 0
@@ -951,25 +952,28 @@ class run_analysis:
 			for kk in range(len(sorted_tracks[0])):#go over all sorted tracks subframes
 				if int(ii[0]) == kk: #make sure tracks are of the same subframe ID as the drop we are looping over
 					for l in range(len(sorted_tracks[0][kk])): #running over the tracks in frame k
-						#find the distance of track from the drop center
-						n_dist=dist(np.array(sorted_tracks[1][kk][l]),np.array(sorted_tracks[2][kk][l]),j[0],j[1]) 
-						percent_drop_in = float(np.sum(n_dist <= j[2]))/len(n_dist) #find percentage of track loc inside
-						if percent_drop_in >= self.minimum_percent_per_drop_in: #if condition holds
-							key = str(kk)+","+str(l)
-							checks_low = 0
-							checks_none = 0 #need len(seg frames) to go forward and use this track
-							for list_drop in range(len(list_drop_track)): #loop over all the drops
-								if key in list_drop_track[list_drop]: #is this track already in a drop? 
-									#is the value of the percent drop in larger that the one we find in the database?
-									if list_drop_track[list_drop][key] < percent_drop_in:
-										del list_drop_track[list_drop][key] #delete that mapping from the database
-										checks_low = 1 #tells us to store this track in a drop later
-								else:
-									checks_none+=1 #if its not found in that drop, add 1 for all such drops
-							#if we deleted the track fromt he database in the check or if it doesnt exist in any drop
-							if (checks_low == 1) or (checks_none == len(list_drop_track)):
-								list_drop_track[len(drop_ID_list)-1][key] = percent_drop_in
-		
+						# make this only run over the tracks that are a minimum length and let the user define the minimum length #fixed
+						#right now we let this variable be the self.t_len_l
+						if len(sorted_tracks[0][kk][l]) >= self.blob_t_len_l:
+							#find the distance of track from the drop center
+							n_dist=dist(np.array(sorted_tracks[1][kk][l]),np.array(sorted_tracks[2][kk][l]),j[0],j[1]) 
+							percent_drop_in = float(np.sum(n_dist <= j[2]))/len(n_dist) #find percentage of track loc inside
+							if percent_drop_in >= self.minimum_percent_per_drop_in: #if condition holds
+								key = str(kk)+","+str(l)
+								checks_low = 0
+								checks_none = 0 #need len(seg frames) to go forward and use this track
+								for list_drop in range(len(list_drop_track)): #loop over all the drops
+									if key in list_drop_track[list_drop]: #is this track already in a drop? 
+										#is the value of the percent drop in larger that the one we find in the database?
+										if list_drop_track[list_drop][key] < percent_drop_in:
+											del list_drop_track[list_drop][key] #delete that mapping from the database
+											checks_low = 1 #tells us to store this track in a drop later
+									else:
+										checks_none+=1 #if its not found in that drop, add 1 for all such drops
+								#if we deleted the track fromt he database in the check or if it doesnt exist in any drop
+								if (checks_low == 1) or (checks_none == len(list_drop_track)):
+									list_drop_track[len(drop_ID_list)-1][key] = percent_drop_in
+			
 		return list_drop_track,drop_ID_list
 	def _make_TrueDrop(self,i,k,drop_ID_list,list_drop_track,sorted_tracks):
 		true_drop_per_frame = [[] for kk in range(len(sorted_tracks[0]))] #holder to true drops per frame
@@ -1211,7 +1215,7 @@ class run_analysis:
 
 	def read_parameters(self,frame_step = 1000,frame_total = 5000,t_len_l = 10,t_len_u = 1000,
 						MSD_avg_threshold  = 0.0001,upper_bp = 0.99 ,lower_bp = 0.50,max_track_decomp = 1.0,
-						conversion_p_nm = 130,minimum_tracks_per_drop = 3, minimum_percent_per_drop_in = 1.0):
+						conversion_p_nm = 130,minimum_tracks_per_drop = 3, minimum_percent_per_drop_in = 1.0,cluster_t_len_l=7):
 		'''
 		Reads in the parameters needed for the analysis
 
@@ -1239,6 +1243,8 @@ class run_analysis:
 			Minimum number of tracks per drop to be considered a valid drop
 		minimum_percent_per_drop_in : float
 			Minimum percentage of tracks per drop that are in tracks to be considered a valid drop
+		cluster_t_len_l : int
+			Minimum length of track to be used in defining the cluster
 
 		Notes:
 		-----
@@ -1251,6 +1257,8 @@ class run_analysis:
 		#cutoff for track length
 		self.t_len_l = t_len_l #change manual #people use 5
 		self.t_len_u = t_len_u #change manual #100 #use 20
+		self.blob_t_len_l = cluster_t_len_l #change manual #people use 5
+		#MSD threshold for track
 		self.MSD_avg_threshold = MSD_avg_threshold
 		#upper and lower "bound proportion" threshold for determining if in_out track or out only.
 		self.upper_bp = upper_bp
@@ -1348,7 +1356,7 @@ class run_analysis:
 		Returns:
 		--------
 		track_dict: dictionary
-			dictionary of tracks with keys "IN","OUT","IO" and values being a dictionary of tracks with keys being the track number and values being the track [(x,y,T),...,(x,y,T)]
+			dictionary of tracks with keys "IN","OUT","IO","ALL" and values being a dictionary of tracks with keys being the track number and values being the track [(x,y,T),...,(x,y,T)]
 		'''
 		if Movie is None:
 			Movie = self.Movie
@@ -1603,7 +1611,20 @@ class run_analysis:
 						track_lengths[m.Classification].append(len(m.X))
 						track_vals[m.Classification].append(m)
 		return [track_lengths,track_vals]
+	def _pickle_this_object(self)->None:
+		#pickle this object in the wd directory with the name self.my_name
+		#check if my_name is not an empty string
+		if self.my_name == "":
+			raise ValueError("my_name is not defined")
 		
+		#make a path to the pickle file
+		pickle_path = os.path.join(self.wd,self.my_name + ".pkl")
+		#check if the pickle file exists, if it does delete it
+		if os.path.exists(pickle_path):
+			os.remove(pickle_path)
+		#pickle this object
+		pickle.dump(self,open(pickle_path,"wb"))
+		return		
 	@property
 	def type_of_blob(self):
 		return self._type_of_blob
@@ -1660,7 +1681,6 @@ class run_analysis:
 			"a_file_style": self.a_file_style
 		}
 		return self._parameter_storage
-
 
 class Movie_frame:
 	'''
@@ -2035,8 +2055,11 @@ class boundary_analysis:
 		ax_2 = fig.add_subplot(212)
 		a = ax_1.scatter(x,y,c = z, s = 50)
 
-
-		b = ax_2.scatter(*rt_to_xy(np.array(dist_center),angles),s = 0.1)
+		coords = map(rt_to_xy,np.array(dist_center),angles)
+		coords = np.array(list(coords))
+		x = coords[:,0]
+		y = coords[:,1]
+		b = ax_2.scatter(x,y,s = 0.1)
 		cir = plt.Circle( (0,0) ,1,fill = False )
 		ax_2.plot(0,0,'bo',markersize = 2)
 		plt.colorbar(b,ax = ax_2)
