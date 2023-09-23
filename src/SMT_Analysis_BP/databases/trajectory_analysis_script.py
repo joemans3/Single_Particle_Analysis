@@ -33,9 +33,12 @@ Author: Baljyot Singh Parmar
 '''
 import glob
 import pickle
+from matplotlib import patches
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.io as sio
+from skimage import io
+import pandas as pd
 from scipy.stats import gaussian_kde
 from shapely.geometry import Point, Polygon
 from src.SMT_Analysis_BP.helpers.SMT_converters import IO_run_analysis
@@ -49,6 +52,7 @@ from src.SMT_Analysis_BP.helpers.plotting_functions import *
 from src.SMT_Analysis_BP.helpers.SMT_converters import convert_track_data_SMAUG_format, convert_track_data_NOBIAS_format_global, _convert_track_data_NOBIAS_format_tau
 from src.SMT_Analysis_BP.databases.structure_storage import SEGMENTATION_FOLDER_TYPES, ANALYSIS_FOLDER_TYPES, LOADING_DROP_BLOB_TYPES
 from src.SMT_Analysis_BP.databases.utility_database import Counter_start_stop
+from src.SMT_Analysis_BP.helpers.features_from_mask import extract_mask_properties
 
 TRACK_TYPES = [
 	"IN",
@@ -148,7 +152,6 @@ class run_analysis:
 		self.minimum_percent_per_drop_in = 0.50
 		self.frames = int(self.frame_total/self.frame_step)
 
-		self.segmented_drop_files = []
 		##########################
 		#blob detection parameters
 		self.threshold_blob = 1e-2
@@ -172,6 +175,7 @@ class run_analysis:
 					"log_scale": self.log_scale}
 
 		self.fitting_parameters = {}
+		self.overwrite_cell_localizations = False
 		
 		##########################
 		#condensed analysis data
@@ -182,217 +186,77 @@ class run_analysis:
 
 		####forgot to change scale on some images before trackmate now i need to convert the scale from um to pixel so this all doesn't break
 		self.baljyot_idiot_factor = 1 #only used right now for 12/rpoc_m9, 12/rpoc_m9_2, 15/rp_ez_hex5_2, rpoc_M9/20190515
-	def _Analysis_path_util(self):
-		if self.a_file_style == "old":
-			return os.path.join(self.wd,"Analysis")
-		else:
-			return os.path.join(self.wd,"Analysis_new")
-	def _Segmentation_path_util(self):
-		if self.a_file_style == "new":
-			return os.path.join(self.wd,"Segmented_mean")
-		else:
-			return os.path.join(self.wd,"Segmented")
-	def _reinitalizeVariables(self):
-		self.segmented_drop_files = []
-		##########################
-		#condensed analysis data
-		#Cells in the specific movie being analysed
-		self.Cells = {}
-		self.Movie = {}
-	def _get_movie_path(self,movie_ID,frame):
+
+
+	#------------------Main Functions------------------#
+	def run_flow(self,masked_movies=False):
 		'''
-		Gives the path of the specific time projected frame (0-4) of the movie (reference frame)
-
-		Parameters
-		----------
-		movie_ID : str
-			key identifier for the frame of reference, i.e the movie in this whole dataset
-		frame : int, or array-like of ints
-			the specific time projected subframe of the movie
-		
-		Returns
-		-------
-		string, or array-like of strings
-			if frame is a single integer then returns the path to that specific subframe
-			if frame is a set of integers defining the subframes then array of paths of length frame
-
-		Note
-		----
-		This function only works if the run_flow() method has already been applied to an instance of the run_analysis class
+		Controls the flow of this dataset analysis
 		'''
-		#check to make sure run_flow() has occured by checking the length of self.Movie
-		#check the type of frame
-		if len(self.Movie) != 0:
-			if isinstance(frame, int):
-				return self.Movie[movie_ID].Movie_location[frame]
-			else:
-				return np.asarray(self.Movie[movie_ID].Movie_location)[frame]
+		if masked_movies:
+			tracks, _, _ = self.read_track_data_masked_method(self.wd,self.t_string)
 		else:
-			raise Exception("There are no Movies in this dataset yet.")
-	def _get_frame_cell_mask(self,mask,frame,movie_ID):
-		if len(self.Movie) != 0:
-			if isinstance(frame, int):
-				return mask*self.Movie[movie_ID].Movie_location[frame]
-			else:
-				return mask*np.asarray(self.Movie[movie_ID].Movie_location)[frame] #what does this do?
-		else:
-			raise Exception("There are no Movies in this dataset yet.")
-	def _get_nucleoid_path(self,movie_ID,cell_ID,full_path = False):
-		''' Returns the gfp image location or the image used to nuceloid segmentation'''
-		if len(self.Movie) != 0:
-			if full_path == True:
-				return self.Movie[movie_ID].Movie_nucleoid
-			else:
-				return self.Movie[movie_ID].Cells[cell_ID].Cell_Nucleoid_Mask
-	def _blob_detection_utility(self,seg_files,movie_ID,plot = False,kwargs={}):
-		'''
-		Utility function for the use of blob_dections to find the candidate spots
+			tracks, _, _ = self._read_track_data(self.wd,self.t_string)
+		self.total_experiments = len(tracks)
+		self._analyse_cell_tracks()
+		return
+	def run_flow_sim(self,cd,t_string): #very hacky to get this to work for simulation data. Assumes the whole movie is one cell. 
+		all_files = sorted(glob.glob(os.path.join(cd,"Analysis",t_string+".tif_spots.csv")))
+		print(all_files)
+		#make a matlab folder to store data for SMAUG analysis
+		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
+		if not os.path.exists(self.mat_path_dir):
+			os.makedirs(self.mat_path_dir)
+		blob_total = []
+		tracks = []
+		drops = []
+		segf = []
+		#initialize data structure
+		for pp in range(len(all_files)):
+			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
+			tracks.append(test)
+			seg_files = sorted(glob.glob(os.path.join(cd,"segmented","**.tif")))
+			# seg_files = sorted(glob.glob("{0}/segmented/**.tif".format(cd)))
 
-		Parameteres
-		-----------
-		seg_files : array-like of img locations (str)
-			location of the images
-		plot : bool
-			if true plot the images with the circles ontop
-			else don't plot and don't print the possible drops
-		movie_ID : str
-			key identifier for the frame of reference, i.e the movie in this whole dataset
-		kwarg : dict
-			keyword arguments for the blob_detection function
+			#store seg_files
+			segf.append(seg_files)
+			#blob analysis
+			#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
+			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
+														movie_ID=pp,
+														plot = False,
+														kwargs=self.blob_parameters))
 
+			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
+			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
+			drop_s = blob_total[pp]
 
-		KWARGS:
-		-------
-		threshold : float
-			threshold for the blob detection	
-		overlap : float
-			overlap for the blob detection
-		median : bool
-			if true then apply a median filter to the image
-		min_sigma : float
-			minimum sigma for the blob detection
-		max_sigma : float
-			maximum sigma for the blob detection
-		num_sigma : int
-			number of sigmas for the blob detection
-		detection : str
-			which detection method to use
-		log_scale : bool
-			if true then use a log scale for the blob detection
+			self.Movie[str(pp)].Cells[str(0)] = Cell(Cell_ID = 0, \
+													Cell_Movie_Name = 0, \
+													bounding_box = 0, \
+													r_offset = 0, \
+													cell_area = 0, \
+													cell_center = 0, \
+													cell_long_axis = 0, \
+													cell_short_axis = 0, \
+													cell_axis_lengths = 0, \
+													cell_mask = 0, \
+													Cell_Nucleoid_Mask = 0)
 
 
-		Returns
-		-------
-		array-like 
-			for each seg_file find the possible blobs and return the center coordinates and radius
-			[len(seg_files),# circles identified, 3 ([x,y,r])]
-		'''
-
-		blob_data = []
-		for ff in range(len(seg_files)):
-
-			blob_class = blob_detection(
-				seg_files[ff],
-				threshold = kwargs.get("threshold",1e-4),
-				overlap = kwargs.get("overlap",0.5),
-				median=kwargs.get("median",False),
-				min_sigma=kwargs.get("min_sigma",1),
-				max_sigma=kwargs.get("max_sigma",2),
-				num_sigma=kwargs.get("num_sigma",500),
-				logscale=kwargs.get("log_scale",False),
-				verbose=True)
-
-			blob_class._update_fitting_parameters(kwargs=self.fitting_parameters)
-			#if blob_detection.verbose:
-			#this returns a dictionary of the {Fitted: fitting results, Scale: scale space fit, Fit: Fit object}
-			blob = blob_class.detection(type = kwargs.get("detection",'bp'))
-
-			fitted = blob["Fitted"]
-			scale = blob["Scale"]
-			blob["Fitted"] = reshape_col2d(fitted,[1,0,2,3])
-			blob["Scale"] = reshape_col2d(scale,[1,0,2])
-			blobs = blob
+			self.Movie[str(pp)].Cells[str(0)].raw_tracks=tracks[pp]
 			
-			blob_data.append(blobs)
-		return blob_data
-	def _read_supersegger(self,sorted_cells):
-		'''
-		Reads the structured cell data from supersegger and returns a nested array with the structure
+			for j in range(len(drop_s)):
+				for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
 
-		Parameters
-		----------
-		sorted_cells : array-like of strings of directories paths
-			the directories of the different frames of reference that are segemented
-			
-		Returns
-		-------
-		array-like of structured data for each parameter is read, see below
-		'''
+					#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
+					self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
+					self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
+																							"Scale":drop_s[j]["Scale"][k],\
+																							"Fit":drop_s[j]["Fit"][k]}
 
-		movies = []
-		for i in sorted_cells:
-			cells = []
-			all_files = sorted(glob.glob(os.path.join(i,"cell","cell**.mat")))
-			#all_files = sorted(glob.glob(i +"/cell"+ "/cell**.mat"))
-
-			for j in range(len(all_files)):
-				
-				f = sio.loadmat(all_files[j])
-				bounding_box = f['CellA'][0][0]['coord'][0][0]['box'][0][0]
-				r_offset = f['CellA'][0][0]['r_offset'][0][0][0]
-				cell_area = f['CellA'][0][0]['coord'][0][0]['A'][0][0][0]
-				cell_center = f['CellA'][0][0]['coord'][0][0]['r_center'][0][0]
-				cell_long_axis = f['CellA'][0][0]['coord'][0][0]['e1'][0][0]
-				cell_short_axis = f['CellA'][0][0]['coord'][0][0]['e2'][0][0]
-				cell_mask = f['CellA'][0][0]['mask'][0][0]
-				cell_axis_lengths = f['CellA'][0][0]['length'][0][0][0]
-				cells.append([bounding_box,r_offset,cell_area,cell_center,cell_long_axis,cell_short_axis,cell_axis_lengths,cell_mask])
-
-			movies.append(cells)
-		return movies
-	def _load_segmented_image_locations(self,pp,cd,t_string,max_tag,min_tag,seg_name="TRACKMATE",analysis_name="TRACKMATE"):
-		
-		if self.a_file_style == "old":
-			if len(pp) == max_tag:
-				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
-			else: 
-				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
-		else:
-			if len(pp) == max_tag:
-				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+2]
-			else: 
-				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
-		drop_files = 0
-		seg_files = 0
-		
-		if max_tag != min_tag: 
-			cd_path_seg = os.path.join(cd,SEGMENTATION_FOLDER_TYPES[seg_name])
-			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,ANALYSIS_FOLDER_TYPES[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
-			
-			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
-				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
-			else:
-				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
-		else:
-			cd_path_seg = os.path.join(cd,SEGMENTATION_FOLDER_TYPES[seg_name])
-			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,ANALYSIS_FOLDER_TYPES[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
-			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
-				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
-			else:
-				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
-		return drop_files,seg_files
-
-	
-	def _load_segmented_image_data(self,drop_files,use_cols=(0,1,2),skiprows=0):
-		point_data = []
-
-		for i in drop_files:
-
-			points = np.loadtxt("{0}".format(i),delimiter=",",usecols=use_cols,skiprows=skiprows)
-
-			point_data.append(points)
-		return point_data
-
+		self._analyse_cell_tracks()
+		return [tracks,drops,blob_total]
 	def _read_track_data_nocells(self,wd,t_string,**kwargs):
 		'''Docstring
 		Alternative to _read_track_data for cases when there is no cell segmentation via the supersegger method
@@ -427,16 +291,7 @@ class run_analysis:
 			print(all_files[i])
 		print("")
 
-
-
-		# #make a matlab folder to store data for SMAUG analysis
-		# self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
-		# if not os.path.exists(self.mat_path_dir):
-		# 	os.makedirs(self.mat_path_dir)
-		
-		
 		#tag for segmented images
-
 		max_tag = np.max([len(i) for i in all_files]) 
 		min_tag = np.min([len(i) for i in all_files])
 
@@ -541,10 +396,8 @@ class run_analysis:
 							self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
 																								"Scale":dropss[j][k],\
 																								"Fit":dropss[j][k]}
-		self.segmented_drop_files = segf
 
 		return [tracks,drops,blob_total]
-
 	def _read_track_data(self,wd,t_string,**kwargs):
 		'''
 		TODO: full explination
@@ -604,13 +457,6 @@ class run_analysis:
 			print(all_files[i])
 		print("")
 
-
-		#make a matlab folder to store data for SMAUG analysis
-		# self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
-		# if not os.path.exists(self.mat_path_dir):
-		# 	os.makedirs(self.mat_path_dir)
-		
-		
 		#tag for segmented images
 
 		max_tag = np.max([len(i) for i in all_files]) 
@@ -683,7 +529,9 @@ class run_analysis:
 
 			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
 			self.Movie[str(pp)].Movie_nucleoid = nucleoid_imgs_sorted[pp]
-
+			
+			
+			
 			for i in range(len(movies[pp])):
 				#this needs more work TODO
 				try:
@@ -716,10 +564,12 @@ class run_analysis:
 				poly = Polygon(poly_cord)
 				x_points = tracks[pp][:,2]
 				y_points = tracks[pp][:,3]
+
 				for j in range(len(x_points)):
 					point = Point(x_points[j],y_points[j])
 					if poly.contains(point) or poly.touches(point):
 						self.Movie[str(pp)].Cells[str(i)].raw_tracks.append(tracks[pp][j])
+						total_point_counter += 1
 				#once the raw tracks are added, calculate the points_per_frame
 				if len(self.Movie[str(pp)].Cells[str(i)].raw_tracks) != 0:	
 					self.Movie[str(pp)].Cells[str(i)].points_per_frame = points_per_frame_bulk_sort(x=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,2],
@@ -732,10 +582,7 @@ class run_analysis:
 							point = Point(drop_s[j][self.type_of_blob][k][0],drop_s[j][self.type_of_blob][k][1])
 							if poly.contains(point) or poly.touches(point):
 								#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
-								if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
-									self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k][:-1]
-								if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
-									self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
+								self.Movie[str(pp)].Cells[str(i)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
 								self.Movie[str(pp)].Cells[str(i)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
 																										"Scale":drop_s[j]["Scale"][k],\
 																										"Fit":drop_s[j]["Fit"][k]}
@@ -756,172 +603,216 @@ class run_analysis:
 					
 
 
-		self.segmented_drop_files = segf
+		return [tracks,drops,blob_total]
+	def read_track_data_masked_method(self,wd,t_string,**kwargs):
+		'''
+		This is a repeat of _read_track_data but now with integration of masks for each cell and a new directory structure for determining cell properties
+		The structure needs to be as follows (not counting other files and folders):
+		wd
+			-\gfp
+			-\Movies
+				-\Movie_<movie_ID>
+					-\Cell_<cell_ID>
+						-\mask.tif
+		The analysis or analysis_new folders are as before. 
+		Essentially the movie and cell ID are determined by the folder structure. The mask defines the properties of the cell.
+		After wich we need to determine which spots occur in which cell.
+		Then the rest of the analysis is the same.
+		'''
+		cd = wd
+		#check for the structure and also if this has been done before to save computation time
+		try:
+			check_bool = self._check_directory_structure()
+		except ValueError:
+			print("Directory structure is not correct. \n Look at the other Main function runs for supperSegger and no segmentation read_track_data methods.")
+			return
 
+		#initialize the path_structure_dict property 
+		path_structure_copy = self.path_structure_dict
+
+		##-----Nucleoid Data-----##
+		#use gfp images for nuceloid segmentation
+		nucleoid_path = kwargs.get("nucleoid_path",os.path.join(cd,'gfp'))
+		#check if cd+/gfp exists
+		if not os.path.exists(nucleoid_path):
+			print("No gfp folder found in {0}. Assuming no cell segmentation exists and running analysis without use of segmentation. \n Note this mean the whole frame is a considered one cell".format(cd))
+			return self._read_track_data_nocells(wd,t_string,**kwargs)
+		
+		nucleoid_images = find_image(nucleoid_path,full_path=True)
+		nucleoid_images_sorted = sorted_alphanumeric(nucleoid_images)
+		##-----Nucleoid Data End-----##
+
+
+		#use the self._Analysis_path_util() function to get the path to the analysis folder
+		analysis_path = os.path.join(self._Analysis_path_util(),t_string + "_**.tif_spots.csv")
+		all_files = sorted_alphanumeric(glob.glob(analysis_path))
+		#print all the files in a concise manner for the user
+		print("All files in the dataset:")
+		for i in range(len(all_files)):
+			print(all_files[i])
+		print("")
+		#tag for segmented images
+		max_tag = np.max([len(i) for i in all_files]) 
+		min_tag = np.min([len(i) for i in all_files])
+		print("max_tag: {0}".format(max_tag))
+		print("min_tag: {0}".format(min_tag))
+		
+		#double check if the length of all_files is the same the # of movies in the path_structure_dict
+		if len(all_files) != len(path_structure_copy.keys()):
+			ValueError("The number of movies in the masking directory does not match the number of movies in the analysis folder. \n Please check the directory structure.")
+
+		blob_total = []
+		tracks = []
+		drops = []
+
+		##-----Movies Iteration-----##
+		for i in range(len(path_structure_copy.keys())): #loop over all the movies
+			movie_ID = sorted_alphanumeric(list(path_structure_copy.keys()))[i] 
+
+			##-----Load Track Data-----##
+			if (not check_bool) or (self.overwrite_cell_localizations):
+				tracked_data = self._load_track_data(all_files[i])
+				tracks.append(tracked_data)
+			##-----Load Track Data End-----##
+
+			##-----LOADING SEGMENTED IMAGES-----##
+			drop_files, seg_files = self._load_segmented_image_locations(pp = all_files[i], \
+											cd = cd, \
+											t_string = t_string, \
+											max_tag = max_tag, \
+											min_tag = min_tag,
+											seg_name = self.type_of_blob,
+											analysis_name = self.type_of_blob)
+			#store seg_files
+			# segf.append(seg_files)
+			print("seg_files",seg_files)
+			print("drop_files",drop_files)
+			##-----LOADING SEGMENTED IMAGES END-----##
+
+			##-----LOADING SEGMENTED BLOB DATA-----##
+			if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
+				#blob analysis
+				#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
+				blobs_found = self._blob_detection_utility(seg_files=seg_files,
+															movie_ID=i,
+															plot = False,
+															kwargs=self.blob_parameters)
+				blob_total.append(blobs_found)
+			if LOADING_DROP_BLOB_TYPES[self.type_of_blob]:
+				#blob segmented data
+				dropss = self._load_segmented_image_data(drop_files)
+				drops.append(dropss)
+			##-----LOADING SEGMENTED BLOB DATA END-----##
+
+			##-----Movie Frame Initialization-----##
+			self.Movie[movie_ID] = Movie_frame(i,all_files[i],seg_files)
+			self.Movie[movie_ID].Movie_nucleoid = nucleoid_images_sorted[i]
+			##-----Movie Frame Initialization End-----##
+
+
+			##-----Cell Data + Point and Drop Sorting-----##
+			for jj in range(len(path_structure_copy[movie_ID]['cells'])):
+				cell_ID = sorted_alphanumeric(list(path_structure_copy[movie_ID]['cells'].keys()))[jj]
+				if (check_bool) and (not self.overwrite_cell_localizations):
+					#load the cell data from the directory structure 
+					tracked_data = self._load_track_data(path_structure_copy[movie_ID]['cells'][cell_ID]["localizations_path"],skiprows=1)
+					tracks.append(tracked_data)
+				else:
+					#store the cell filtered localizations to the directory structure
+					#this is only supported for self.a_file_style == "new"
+					if self.a_file_style == "new":
+						self._convert_track_data_for_cell(
+														path = all_files[i],
+														path_structure=path_structure_copy,
+														cell_ID = cell_ID,
+														movie_ID = movie_ID)
+					else:
+						print("Filtering based on cell mask is not allowed for the old trackmate style. \n It is implimented but not tested. \n Please use the new trackmate style.")
+
+
+
+				
+				#load the mask
+				mask = io.imread(path_structure_copy[movie_ID]['cells'][cell_ID]["mask_path"])
+
+				#initiate the extract_mask_properties class
+				emp = extract_mask_properties(mask,invert_axis=True)
+				self.Movie[movie_ID].Cells[cell_ID] = Cell(Cell_ID = cell_ID, \
+														Cell_Movie_Name = all_files[i],
+														bounding_box = emp.bounding_box,
+														r_offset = emp.r_offset,
+														cell_area = emp.area,
+														cell_center = emp.centroid,
+														cell_long_axis = emp.longest_axis,
+														cell_short_axis = emp.shortest_axis,
+														cell_axis_lengths = [emp.longest_axis,emp.shortest_axis],
+														cell_mask = mask, 
+														Cell_Nucleoid_Mask = mask)
+		
+
+				#get the x,y points in a N,2 array
+				x_points = tracked_data[:,2]
+				y_points = tracked_data[:,3]
+
+				###-----Polygon Mask of Cell-----###
+
+				#use the boundingbox to create a polygon
+				poly_cord = [(emp.bounding_box[0][0],emp.bounding_box[0][1]),\
+							(emp.bounding_box[0][0],emp.bounding_box[1][1]),\
+							(emp.bounding_box[1][0],emp.bounding_box[1][1]),\
+							(emp.bounding_box[1][0],emp.bounding_box[0][1])]
+				poly = Polygon(poly_cord)
+				###-----Polygon Mask of Cell End-----###
+
+
+				###-----Point Sorting Using Polygon-----###
+				#loop over the points and check if they are inside the polygon
+				for k_point in range(len(x_points)):
+					#check if the point is inside the polygon
+					point = Point(x_points[k_point],y_points[k_point])
+					if poly.contains(point) or poly.touches(point):
+						self.Movie[movie_ID].Cells[cell_ID].raw_tracks.append(tracked_data[k_point])
+				###-----Point Sorting Using Polygon End-----###
+				
+
+				#once the raw tracks are added, calculate the points_per_frame
+				if len(self.Movie[movie_ID].Cells[cell_ID].raw_tracks) != 0:
+					self.Movie[movie_ID].Cells[cell_ID].points_per_frame = points_per_frame_bulk_sort(x=np.array(self.Movie[movie_ID].Cells[cell_ID].raw_tracks)[:,2],
+																									y=np.array(self.Movie[movie_ID].Cells[cell_ID].raw_tracks)[:,3],
+																									t=np.array(self.Movie[movie_ID].Cells[cell_ID].raw_tracks)[:,1])
+				if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
+					for j in range(len(blobs_found)):
+						for k in range(len(blobs_found[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
+
+							#check if the blob is in the cell
+							blob_point = Point(blobs_found[j][self.type_of_blob][k][0],blobs_found[j][self.type_of_blob][k][1])
+							if poly.contains(blob_point) or poly.touches(blob_point):
+								#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
+								#what the shit is going on here? 
+								self.Movie[movie_ID].Cells[cell_ID].All_Drop_Collection[str(j)+','+str(k)] = blobs_found[j][self.type_of_blob][k]
+								self.Movie[movie_ID].Cells[cell_ID].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":blobs_found[j]["Fitted"][k],\
+																										"Scale":blobs_found[j]["Scale"][k],\
+																										"Fit":blobs_found[j]["Fit"][k]}
+				else:
+					for j in range(len(dropss)):
+						if len(dropss[j]) != 0:
+							if isinstance(dropss[j][0],float|int):
+								#raise a warning that the dropss is not a list of lists
+								print("Warning: Drop data is not in the correct format. Please check the drop data file.")
+								dropss[j] = [dropss[j]]
+							for k in range(len(dropss[j])):
+								#check if the blob is in the cell
+								blob_point = Point(dropss[j][k][0],dropss[j][k][1])
+								if poly.contains(blob_point) or poly.touches(blob_point):
+									self.Movie[movie_ID].Cells[cell_ID].All_Drop_Collection[str(j)+','+str(k)] = dropss[j][k]
+									self.Movie[movie_ID].Cells[cell_ID].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":dropss[j][k],\
+																										"Scale":dropss[j][k],\
+																										"Fit":dropss[j][k]}
+			##-----Cell Data + Point and Drop Sorting End-----##
 		return [tracks,drops,blob_total]
 
-	def _find_nucleoid(self,movie_ID,cell_ID,img=0):
-		'''
-		This function finds the nucleoid for a given cell. This is done by using the
-		segmented image of the nucleoid and finding the largest blob in the image.
 
-		Parameters:
-		-----------
-		movie_ID : int
-			the movie ID number
-		cell_ID : int
-			the cell ID number
-		img : array-like
-			the image to use for nucleoid detection. If not provided, the function will
-			load the image from the Movie object.
-		
-		Returns:
-		--------
-		feature_mask : array-like
-			the mask of the nucleoid with pixel labels = 1
-		regions : regionprops object
-			the regionprops object for the nucleoid detections, see skimage.measure.regionprops and nucleoid_detection.find_nuc
-		'''
-		
-		
-		#find the location of the the nucleoid labeled images
-		#load the image
-		if isinstance(img,int):
-
-			img = import_functions.read_file(self.Movie[movie_ID].Movie_nucleoid)*self.Movie[movie_ID].Cells[cell_ID].Cell_Nucleoid_Mask
-
-		return nucleoid_detection.find_nuc(img,typee=None,given_type="Threshold_12")
-	def _set_nucleoid_area_bulk(self):
-		'''
-		This function sets the nucleoid area for each cell in the movie.
-		'''
-		for movie in self.Movie:
-			for cell in self.Movie[movie].Cells:
-				feature_mask, regions = self._find_nucleoid(movie,cell)
-				self.Movie[movie].Cells[cell].nucleoid_area = float(np.sum(feature_mask[feature_mask == 1]))
-	def _convert_track_frame(self,track_set,**kwargs):
-		'''
-		This function preps the data such that the tracks satisfy a length
-		and segregates the data in respect to the frame step.
-
-		Parameters
-		----------
-		track_set : array-like
-			the set of tracks for one specific frame of reference from TrackMate (unfiltered)
-			This is a 2D array with the following columns: [track_ID,frame_ID,x,y,intensity]
-		**kwargs : dict
-			frame_total : int
-				the total number of frames in the movie
-			frame_step : int
-				the step size for the frame
-			track_len_upper : int
-				the upper limit of the track length
-			track_len_lower : int
-				the lower limit of the track length
-			order : tuple
-				the order of the data in track_set
-			conversion : float
-				the conversion factor for the data in track_set
-
-		
-		Returns
-		-------
-		array-like : [track_n,x_n,y_n,i_n,f_n]
-			track_n : array-like of ints
-				track_IDs from TrackMate
-			x_n : array-like of floats
-				x coordinates of the localization belonging to index of track_ID
-			y_n : array-like of floats
-				y coordinates of the localization belonging to index of track_ID
-			i_n : array-like of floats
-				intensity of the localization belonging to index of track_ID
-			f_n : array-like of floats
-				frame of the movie the localization belonging to index of track_ID
-		'''
-
-		frame_total = kwargs.get("frame_total", self.frame_total)
-		frame_step = kwargs.get("frame_step", self.frame_step)
-		track_len_upper = kwargs.get("t_len_u",self.t_len_u)
-		track_len_lower = kwargs.get("t_len_l",self.t_len_l)
-
-		data_order = kwargs.get("order",(0,1,2,3,4))
-		conversion = kwargs.get("conversion",1)
-		
-		track_ID = track_set[:,data_order[0]]
-		frame_ID = track_set[:,data_order[1]]
-		x_ID = track_set[:,data_order[2]]/conversion
-		y_ID = track_set[:,data_order[3]]/conversion
-		intensity_ID = track_set[:,data_order[4]]
-
-		tp=[]
-		tp_x=[]
-		tp_y=[]
-		tp_intensity=[]
-		fframe_ID = []
-		for i in np.arange(0,frame_total,frame_step):
-			a=(i<frame_ID) & (frame_ID<(i + self.frame_step))
-			fframe_ID.append(frame_ID[a])
-			tp.append(track_ID[a])
-			tp_x.append(x_ID[a])
-			tp_y.append(y_ID[a])
-			tp_intensity.append(intensity_ID[a])
-
-
-		track_n=[]
-		x_n=[]
-		y_n=[]
-		i_n=[]
-		f_n=[]
-
-		track_all=[]
-		x_all=[]
-		y_all=[]
-		i_all=[]
-		f_all=[]
-
-		for i in range(len(tp)):
-			u_track, utrack_ind, utrack_count = np.unique(tp[i],return_index=True,return_counts=True)
-
-			track_t=[]
-			x_t=[]
-			y_t=[]
-			i_t=[]
-			f_t=[]
-			cut = u_track[(utrack_count>=track_len_lower)*(utrack_count<=track_len_upper)]
-
-			for j in range(len(cut)):
-				tind=(tp[i]==cut[j])
-
-				#sorting by frame per track
-				temp = sorted(zip(fframe_ID[i][tind], tp[i][tind], tp_x[i][tind], tp_y[i][tind], tp_intensity[i][tind]))
-				nx = [x for f, t, x, y, it in temp]
-				nt = [t for f, t, x, y, it in temp]
-				ny = [y for f, t, x, y, it in temp]
-				ni = [it for f, t, x, y, it in temp]
-				nf = [f for f, t, x, y, it in temp]
-
-	        
-	        
-				track_t.append(nt)
-				x_t.append(nx)
-				y_t.append(ny)
-				i_t.append(ni)
-				f_t.append(nf)
-
-				track_all.append(nt)
-				x_all.append(nx)
-				y_all.append(ny)
-				i_all.append(ni)
-				f_all.append(nf)
-
-			track_n.append(track_t)
-			x_n.append(x_t)
-			y_n.append(y_t)
-			i_n.append(i_t)
-			f_n.append(f_t)
-
-		return [track_n,x_n,y_n,i_n,f_n]
-
+	#------------------Core Drop Track Analysis------------------#
 	def _analyse_cell_tracks(self):
 		'''
 		Helper function to create mapping of Movie.Cell.Drop.Trajectory
@@ -1145,74 +1036,479 @@ class run_analysis:
 						#update the All_Trajectories dictionary with a unique key if (i,k) and value of a Trajectory() object.
 						self.Movie[i].Cells[k].All_Tracjectories[str(kk)+','+str(l)] = track
 
-	def run_flow(self):
+
+	#------------------Getters------------------#
+	def _blob_detection_utility(self,seg_files,movie_ID,plot = False,kwargs={}):
 		'''
-		Controls the flow of this dataset analysis
+		Utility function for the use of blob_dections to find the candidate spots
+
+		Parameteres
+		-----------
+		seg_files : array-like of img locations (str)
+			location of the images
+		plot : bool
+			if true plot the images with the circles ontop
+			else don't plot and don't print the possible drops
+		movie_ID : str
+			key identifier for the frame of reference, i.e the movie in this whole dataset
+		kwarg : dict
+			keyword arguments for the blob_detection function
+
+
+		KWARGS:
+		-------
+		threshold : float
+			threshold for the blob detection	
+		overlap : float
+			overlap for the blob detection
+		median : bool
+			if true then apply a median filter to the image
+		min_sigma : float
+			minimum sigma for the blob detection
+		max_sigma : float
+			maximum sigma for the blob detection
+		num_sigma : int
+			number of sigmas for the blob detection
+		detection : str
+			which detection method to use
+		log_scale : bool
+			if true then use a log scale for the blob detection
+
+
+		Returns
+		-------
+		array-like 
+			for each seg_file find the possible blobs and return the center coordinates and radius
+			[len(seg_files),# circles identified, 3 ([x,y,r])]
 		'''
-		tracks, _, _ = self._read_track_data(self.wd,self.t_string)
-		self.total_experiments = len(tracks)
-		self._analyse_cell_tracks()
-		return
-	
-	def run_flow_sim(self,cd,t_string): #very hacky to get this to work for simulation data. Assumes the whole movie is one cell. 
-		all_files = sorted(glob.glob(os.path.join(cd,"Analysis",t_string+".tif_spots.csv")))
-		print(all_files)
-		#make a matlab folder to store data for SMAUG analysis
-		self.mat_path_dir = os.path.join(cd,t_string + "_MATLAB_dat")
-		if not os.path.exists(self.mat_path_dir):
-			os.makedirs(self.mat_path_dir)
-		blob_total = []
-		tracks = []
-		drops = []
-		segf = []
-		#initialize data structure
-		for pp in range(len(all_files)):
-			test = np.loadtxt("{0}".format(all_files[pp]),delimiter=",",skiprows=4,usecols=(2,4,5,8,12))
-			tracks.append(test)
-			seg_files = sorted(glob.glob(os.path.join(cd,"segmented","**.tif")))
-			# seg_files = sorted(glob.glob("{0}/segmented/**.tif".format(cd)))
 
-			#store seg_files
-			segf.append(seg_files)
-			#blob analysis
-			#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
-			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
-														movie_ID=pp,
-														plot = False,
-														kwargs=self.blob_parameters))
+		blob_data = []
+		for ff in range(len(seg_files)):
 
-			self.Movie[str(pp)] = Movie_frame(pp,all_files[pp],segf[pp])
-			#depending on the type of blob to use "fitted","scale" use that for the blob mapping.
-			drop_s = blob_total[pp]
+			blob_class = blob_detection(
+				seg_files[ff],
+				threshold = kwargs.get("threshold",1e-4),
+				overlap = kwargs.get("overlap",0.5),
+				median=kwargs.get("median",False),
+				min_sigma=kwargs.get("min_sigma",1),
+				max_sigma=kwargs.get("max_sigma",2),
+				num_sigma=kwargs.get("num_sigma",500),
+				logscale=kwargs.get("log_scale",False),
+				verbose=True)
 
-			self.Movie[str(pp)].Cells[str(0)] = Cell(Cell_ID = 0, \
-													Cell_Movie_Name = 0, \
-													bounding_box = 0, \
-													r_offset = 0, \
-													cell_area = 0, \
-													cell_center = 0, \
-													cell_long_axis = 0, \
-													cell_short_axis = 0, \
-													cell_axis_lengths = 0, \
-													cell_mask = 0, \
-													Cell_Nucleoid_Mask = 0)
+			blob_class._update_fitting_parameters(kwargs=self.fitting_parameters)
+			#if blob_detection.verbose:
+			#this returns a dictionary of the {Fitted: fitting results, Scale: scale space fit, Fit: Fit object}
+			blob = blob_class.detection(type = kwargs.get("detection",'bp'))
 
-
-			self.Movie[str(pp)].Cells[str(0)].raw_tracks=tracks[pp]
+			fitted = blob["Fitted"]
+			scale = blob["Scale"]
+			blob["Fitted"] = reshape_col2d(fitted,[1,0,2,3])
+			blob["Scale"] = reshape_col2d(scale,[1,0,2])
+			blobs = blob
 			
-			for j in range(len(drop_s)):
-				for k in range(len(drop_s[j][self.type_of_blob])): #only use the blob type that is being used for the analysis
+			blob_data.append(blobs)
+		return blob_data
+	def _read_supersegger(self,sorted_cells):
+		'''
+		Reads the structured cell data from supersegger and returns a nested array with the structure
 
-					#name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
-					self.Movie[str(pp)].Cells[str(0)].All_Drop_Collection[str(j)+','+str(k)] = drop_s[j][self.type_of_blob][k]
-					self.Movie[str(pp)].Cells[str(0)].All_Drop_Verbose[str(j)+','+str(k)] = {"Fitted":drop_s[j]["Fitted"][k],\
-																							"Scale":drop_s[j]["Scale"][k],\
-																							"Fit":drop_s[j]["Fit"][k]}
+		Parameters
+		----------
+		sorted_cells : array-like of strings of directories paths
+			the directories of the different frames of reference that are segemented
+			
+		Returns
+		-------
+		array-like of structured data for each parameter is read, see below
+		'''
 
-		self.segmented_drop_files = segf
-		self._analyse_cell_tracks()
-		return [tracks,drops,blob_total]
+		movies = []
+		for i in sorted_cells:
+			cells = []
+			all_files = sorted(glob.glob(os.path.join(i,"cell","cell**.mat")))
+			#all_files = sorted(glob.glob(i +"/cell"+ "/cell**.mat"))
 
+			for j in range(len(all_files)):
+				
+				f = sio.loadmat(all_files[j])
+				bounding_box = f['CellA'][0][0]['coord'][0][0]['box'][0][0]
+				r_offset = f['CellA'][0][0]['r_offset'][0][0][0]
+				cell_area = f['CellA'][0][0]['coord'][0][0]['A'][0][0][0]
+				cell_center = f['CellA'][0][0]['coord'][0][0]['r_center'][0][0]
+				cell_long_axis = f['CellA'][0][0]['coord'][0][0]['e1'][0][0]
+				cell_short_axis = f['CellA'][0][0]['coord'][0][0]['e2'][0][0]
+				cell_mask = f['CellA'][0][0]['mask'][0][0]
+				cell_axis_lengths = f['CellA'][0][0]['length'][0][0][0]
+				cells.append([bounding_box,r_offset,cell_area,cell_center,cell_long_axis,cell_short_axis,cell_axis_lengths,cell_mask])
+
+			movies.append(cells)
+		return movies
+	def _load_segmented_image_locations(self,pp,cd,t_string,max_tag,min_tag,seg_name="TRACKMATE",analysis_name="TRACKMATE"):
+		
+		if self.a_file_style == "old":
+			if len(pp) == max_tag:
+				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+2]
+			else: 
+				tag = pp[len(cd)+len("/Analysis/"+t_string+"_"):len(cd)+len("/Analysis/"+t_string+"_")+1]
+		else:
+			if len(pp) == max_tag:
+				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+2]
+			else: 
+				tag = pp[len(cd)+len("/Analysis_new/"+t_string+"_"):len(cd)+len("/Analysis_new/"+t_string+"_")+1]
+		drop_files = 0
+		seg_files = 0
+		
+		if max_tag != min_tag: 
+			cd_path_seg = os.path.join(cd,SEGMENTATION_FOLDER_TYPES[seg_name])
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,ANALYSIS_FOLDER_TYPES[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[:]))))
+			
+			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))) == 0:
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[:]))))
+			else:
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[:]))))
+		else:
+			cd_path_seg = os.path.join(cd,SEGMENTATION_FOLDER_TYPES[seg_name])
+			drop_files = sorted(glob.glob(os.path.join(cd_path_seg,ANALYSIS_FOLDER_TYPES[analysis_name],"*_"+t_string+"_{0}_seg.tif_spots.csv".format(tag[0]))))
+			if len(sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))) == 0:
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*"+"_{0}_seg.tif".format(tag[0]))))
+			else:
+				seg_files = sorted(glob.glob(os.path.join(cd_path_seg,"*_"+t_string+"_{0}_seg.tif".format(tag[0]))))
+		return drop_files,seg_files
+	def _load_segmented_image_data(self,drop_files,use_cols=(0,1,2),skiprows=0):
+		point_data = []
+
+		for i in drop_files:
+
+			points = np.loadtxt("{0}".format(i),delimiter=",",usecols=use_cols,skiprows=skiprows)
+
+			point_data.append(points)
+		return point_data
+	def _get_movie_path(self,movie_ID,frame):
+		'''
+		Gives the path of the specific time projected frame (0-4) of the movie (reference frame)
+
+		Parameters
+		----------
+		movie_ID : str
+			key identifier for the frame of reference, i.e the movie in this whole dataset
+		frame : int, or array-like of ints
+			the specific time projected subframe of the movie
+		
+		Returns
+		-------
+		string, or array-like of strings
+			if frame is a single integer then returns the path to that specific subframe
+			if frame is a set of integers defining the subframes then array of paths of length frame
+
+		Note
+		----
+		This function only works if the run_flow() method has already been applied to an instance of the run_analysis class
+		'''
+		#check to make sure run_flow() has occured by checking the length of self.Movie
+		#check the type of frame
+		if len(self.Movie) != 0:
+			if isinstance(frame, int):
+				return self.Movie[movie_ID].Movie_location[frame]
+			else:
+				return np.asarray(self.Movie[movie_ID].Movie_location)[frame]
+		else:
+			raise Exception("There are no Movies in this dataset yet.")
+	def _get_frame_cell_mask(self,mask,frame,movie_ID):
+		if len(self.Movie) != 0:
+			if isinstance(frame, int):
+				return mask*self.Movie[movie_ID].Movie_location[frame]
+			else:
+				return mask*np.asarray(self.Movie[movie_ID].Movie_location)[frame] #what does this do?
+		else:
+			raise Exception("There are no Movies in this dataset yet.")
+	def _get_nucleoid_path(self,movie_ID,cell_ID,full_path = False):
+		''' Returns the gfp image location or the image used to nuceloid segmentation'''
+		if len(self.Movie) != 0:
+			if full_path == True:
+				return self.Movie[movie_ID].Movie_nucleoid
+			else:
+				return self.Movie[movie_ID].Cells[cell_ID].Cell_Nucleoid_Mask
+	def _load_track_data(self,track_file,skiprows=4):
+		if self.a_file_style == "new":
+			test_t = np.loadtxt("{0}".format(track_file),delimiter=",",skiprows=skiprows,usecols=(2,4,5,8,12)) #TRACKMATE GUI OUTPUT STYLE
+			#divide the 1,2 columns by the self.baljyot_idiot_factor
+			test_t[:,1] = test_t[:,1]/self.baljyot_idiot_factor
+			test_t[:,2] = test_t[:,2]/self.baljyot_idiot_factor
+
+			test = test_t[:,[0,3,1,2,4]] #reorder the columns to match the old style
+		else:
+			test = np.loadtxt("{0}".format(track_file),delimiter=",") #CUSTOM SCRIPTING TRACKMATE OUTPUT STYLE
+		return test
+	def _load_track_data_as_PD(self,track_file,skiprows=4):
+		track_mate_GUI_columns = 'LABEL,ID,TRACK_ID,QUALITY,POSITION_X,POSITION_Y,POSITION_Z,POSITION_T,FRAME,RADIUS,VISIBILITY,MANUAL_SPOT_COLOR,MEAN_INTENSITY_CH1,MEDIAN_INTENSITY_CH,MIN_INTENSITY_CH1,MAX_INTENSITY_CH1,TOTAL_INTENSITY_CH1,STD_INTENSITY_CH1,CONTRAST_CH1,SNR_CH1'
+		if self.a_file_style == "new":
+			#the headers will be: LABEL	ID,	TRACK_ID,	QUALITY,	POSITION_X,	POSITION_Y,	POSITION_Z,	POSITION_T,	FRAME,	RADIUS,	VISIBILITY,	MANUAL_SPOT_COLOR,	MEAN_INTENSITY_CH1,	MEDIAN_INTENSITY_CH,	MIN_INTENSITY_CH1,	MAX_INTENSITY_CH1,	TOTAL_INTENSITY_CH1,	STD_INTENSITY_CH1,	CONTRAST_CH1,	SNR_CH1
+			#there will be some extra rows between the header and the data (rows: 2,3,4) we dont need these
+			#load the pd dataframe with the correct columns
+			test = pd.read_csv(track_file,skiprows=skiprows,header=0)
+			#convert the dtypes to floats for the columns we need
+			test["POSITION_X"] = test["POSITION_X"].astype(float)
+			test["POSITION_Y"] = test["POSITION_Y"].astype(float)
+			test["FRAME"] = test["FRAME"].astype(int)
+			test["TRACK_ID"] = test["TRACK_ID"].astype(float)
+			test["POSITION_T"] = test["POSITION_T"].astype(float)
+
+			#correct the X,Y coordinates with the baljyot_idiot_factor
+			test["POSITION_X"] = test["POSITION_X"]/self.baljyot_idiot_factor
+			test["POSITION_Y"] = test["POSITION_Y"]/self.baljyot_idiot_factor
+		else:
+			#this one is tricky since it is already missing headers and the columns are not in the correct order
+			#the columns are: [TRACK_ID,FRAME,POSITION_X,POSITION_Y,MEAN_INTENSITY_CH1]
+			#load the pd dataframe with the correct columns
+			test = pd.read_csv(track_file,names=["TRACK_ID","FRAME","POSITION_X","POSITION_Y","MEAN_INTENSITY_CH1"])
+			#convert the dtypes to floats for the columns we need
+			test["POSITION_X"] = test["POSITION_X"].astype(float)
+			test["FRAME"] = test["FRAME"].astype(int)
+
+			#we need to add the missing columns in the correct order as defined by the track_mate_GUI_columns
+			#we will add the columns with empty values since we have no values for all of them
+			#we will add the columns in the correct order
+
+			#add the columns
+			test["LABEL"] = np.nan
+			test["ID"] = np.nan
+			test["QUALITY"] = np.nan
+			test["POSITION_Z"] = np.nan
+			test["POSITION_T"] = np.nan
+			test["RADIUS"] = np.nan
+			test["VISIBILITY"] = np.nan
+			test["MANUAL_SPOT_COLOR"] = np.nan
+			test["MEDIAN_INTENSITY_CH"] = np.nan
+			test["MIN_INTENSITY_CH1"] = np.nan
+			test["MAX_INTENSITY_CH1"] = np.nan
+			test["TOTAL_INTENSITY_CH1"] = np.nan
+			test["STD_INTENSITY_CH1"] = np.nan
+			test["CONTRAST_CH1"] = np.nan
+			test["SNR_CH1"] = np.nan
+
+			#reorder the columns
+			test = test[track_mate_GUI_columns.split(",")]
+
+		return test
+			
+
+	#------------------Path Utilities------------------#
+	def _Analysis_path_util(self):
+		if self.a_file_style == "old":
+			return os.path.join(self.wd,"Analysis")
+		else:
+			return os.path.join(self.wd,"Analysis_new")
+	def _Segmentation_path_util(self):
+		if self.a_file_style == "new":
+			return os.path.join(self.wd,"Segmented_mean")
+		else:
+			return os.path.join(self.wd,"Segmented")
+	def _check_directory_structure(self)->None:
+		'''
+		Returns error if Movies is not in the directory structure
+		Returns True if localizations.csv have been built for all cells
+		Returns False if localizations.csv have not been built for all cells
+		'''
+		return_type = True
+		#check if the directory structure is correct for the masked analysis
+		#check if cd exists
+		if not os.path.isdir(self.wd):
+			raise ValueError("The directory {0} does not exist".format(self.wd))
+		#check if the Movies directory exists
+		if not os.path.isdir(os.path.join(self.wd,"Movies")):
+			raise ValueError("The directory {0} does not exist".format(os.path.join(self.wd,"Movies")))
+		#check if inside the Movies directory there are directories that start with Movie_
+		movie_dirs = glob.glob(os.path.join(self.wd,"Movies","Movie_*"))
+		if len(movie_dirs) != 0:
+			#check if inside the Movie_ directories there are directories that start with Cell_
+			for movie_dir in movie_dirs:
+				cell_dirs = glob.glob(os.path.join(movie_dir,"Cell_*"))
+				if len(cell_dirs) != 0:
+					#check if inside the Cell_ directories there are localizations and mask files
+					for cell_dir in cell_dirs:
+						if (len(glob.glob(os.path.join(cell_dir,"localizations.csv"))) == 0) or (len(glob.glob(os.path.join(cell_dir,"mask.tif"))) == 0):
+							return_type	= False
+				else:
+					return_type = False
+		else:
+			return_type = False
+		return return_type
+						
+
+	#------------------Track Converter------------------#
+	def _convert_track_frame(self,track_set,**kwargs):
+		'''
+		This function preps the data such that the tracks satisfy a length
+		and segregates the data in respect to the frame step.
+
+		Parameters
+		----------
+		track_set : array-like
+			the set of tracks for one specific frame of reference from TrackMate (unfiltered)
+			This is a 2D array with the following columns: [track_ID,frame_ID,x,y,intensity]
+		**kwargs : dict
+			frame_total : int
+				the total number of frames in the movie
+			frame_step : int
+				the step size for the frame
+			track_len_upper : int
+				the upper limit of the track length
+			track_len_lower : int
+				the lower limit of the track length
+			order : tuple
+				the order of the data in track_set
+			conversion : float
+				the conversion factor for the data in track_set
+
+		
+		Returns
+		-------
+		array-like : [track_n,x_n,y_n,i_n,f_n]
+			track_n : array-like of ints
+				track_IDs from TrackMate
+			x_n : array-like of floats
+				x coordinates of the localization belonging to index of track_ID
+			y_n : array-like of floats
+				y coordinates of the localization belonging to index of track_ID
+			i_n : array-like of floats
+				intensity of the localization belonging to index of track_ID
+			f_n : array-like of floats
+				frame of the movie the localization belonging to index of track_ID
+		'''
+
+		frame_total = kwargs.get("frame_total", self.frame_total)
+		frame_step = kwargs.get("frame_step", self.frame_step)
+		track_len_upper = kwargs.get("t_len_u",self.t_len_u)
+		track_len_lower = kwargs.get("t_len_l",self.t_len_l)
+
+		data_order = kwargs.get("order",(0,1,2,3,4))
+		conversion = kwargs.get("conversion",1)
+		
+		track_ID = track_set[:,data_order[0]]
+		frame_ID = track_set[:,data_order[1]]
+		x_ID = track_set[:,data_order[2]]/conversion
+		y_ID = track_set[:,data_order[3]]/conversion
+		intensity_ID = track_set[:,data_order[4]]
+
+		tp=[]
+		tp_x=[]
+		tp_y=[]
+		tp_intensity=[]
+		fframe_ID = []
+		for i in np.arange(0,frame_total,frame_step):
+			a=(i<frame_ID) & (frame_ID<(i + self.frame_step))
+			fframe_ID.append(frame_ID[a])
+			tp.append(track_ID[a])
+			tp_x.append(x_ID[a])
+			tp_y.append(y_ID[a])
+			tp_intensity.append(intensity_ID[a])
+
+
+		track_n=[]
+		x_n=[]
+		y_n=[]
+		i_n=[]
+		f_n=[]
+
+		track_all=[]
+		x_all=[]
+		y_all=[]
+		i_all=[]
+		f_all=[]
+
+		for i in range(len(tp)):
+			u_track, utrack_ind, utrack_count = np.unique(tp[i],return_index=True,return_counts=True)
+
+			track_t=[]
+			x_t=[]
+			y_t=[]
+			i_t=[]
+			f_t=[]
+			cut = u_track[(utrack_count>=track_len_lower)*(utrack_count<=track_len_upper)]
+
+			for j in range(len(cut)):
+				tind=(tp[i]==cut[j])
+
+				#sorting by frame per track
+				temp = sorted(zip(fframe_ID[i][tind], tp[i][tind], tp_x[i][tind], tp_y[i][tind], tp_intensity[i][tind]))
+				nx = [x for f, t, x, y, it in temp]
+				nt = [t for f, t, x, y, it in temp]
+				ny = [y for f, t, x, y, it in temp]
+				ni = [it for f, t, x, y, it in temp]
+				nf = [f for f, t, x, y, it in temp]
+
+	        
+	        
+				track_t.append(nt)
+				x_t.append(nx)
+				y_t.append(ny)
+				i_t.append(ni)
+				f_t.append(nf)
+
+				track_all.append(nt)
+				x_all.append(nx)
+				y_all.append(ny)
+				i_all.append(ni)
+				f_all.append(nf)
+
+			track_n.append(track_t)
+			x_n.append(x_t)
+			y_n.append(y_t)
+			i_n.append(i_t)
+			f_n.append(f_t)
+
+		return [track_n,x_n,y_n,i_n,f_n]
+	def _convert_track_data_for_cell(self,path,path_structure,cell_ID,movie_ID)->None:
+		'''
+		Converts the raw data files from TRACKMATE into the same format .csv but now only considering points inside a cell mask
+
+		Parameters:
+		-----------
+		path : str
+			path to the raw data file from TRACKMATE
+		path_structure : dict
+			dictionary of the directory structure (same as self.path_structure, but a copy is passed)
+		cell_ID : str
+			key identifier for the cell of interest
+		movie_ID : str
+			key identifier for the frame of reference, i.e the movie in this whole dataset
+		
+		'''
+		#save it to the cell data structure
+		#we want to keep the same structure as the base file but just add points with are in the cell area
+		#lets reload the track_data but as a pd using _load_track_data_as_pd
+		tracked_data = self._load_track_data_as_PD(path,skiprows=[1,2,3])
+		#make a new list to store the filtered data then we will make it a pd
+		tracked_data_copy = []
+		#now we need to filter the data to only include the points in the cell
+		#load the mask
+		mask = io.imread(path_structure[movie_ID]['cells'][cell_ID]["mask_path"])
+		#initiate the extract_mask_properties class
+		emp = extract_mask_properties(mask,invert_axis=True)
+		#get the x,y points in a N,2 array
+		x_points = tracked_data["POSITION_X"].to_numpy()
+		y_points = tracked_data["POSITION_Y"].to_numpy()
+		#make a polygon
+		poly_cord = [(emp.bounding_box[0][0],emp.bounding_box[0][1]),\
+					(emp.bounding_box[0][0],emp.bounding_box[1][1]),\
+					(emp.bounding_box[1][0],emp.bounding_box[1][1]),\
+					(emp.bounding_box[1][0],emp.bounding_box[0][1])]
+		poly = Polygon(poly_cord)
+		#loop over the points and check if they are inside the polygon
+		for k_point in range(len(x_points)):
+			#check if the point is inside the polygon
+			point = Point(x_points[k_point],y_points[k_point])
+			if poly.contains(point) or poly.touches(point):
+				tracked_data_copy.append(tracked_data.iloc[k_point])
+		#convert to a pd with the same columns as the original
+		tracked_data_copy = pd.DataFrame(tracked_data_copy,columns=tracked_data.columns)
+		#now we have the filtered data, now we need to save it as a csv in the cell directory
+		tracked_data_copy.to_csv(path_structure[movie_ID]['cells'][cell_ID]["localizations_path"],index=False)
+
+	
+
+	#------------------Parameter Functions------------------#
 	def read_parameters(self,frame_step = 1000,frame_total = 5000,t_len_l = 10,t_len_u = 1000,
 						MSD_avg_threshold  = 0.0001,upper_bp = 0.99 ,lower_bp = 0.50,max_track_decomp = 1.0,
 						conversion_p_nm = 130,minimum_tracks_per_drop = 3, minimum_percent_per_drop_in = 1.0,cluster_t_len_l=7):
@@ -1310,7 +1606,6 @@ class run_analysis:
 			"detection": self.detection_name, \
 			"log_scale": self.log_scale}
 		return
-
 	def get_fitting_parameters(self,kwargs={}):
 		'''
 		Updates the fitting_parameters to be used in each iteration of this class object
@@ -1343,7 +1638,9 @@ class run_analysis:
 		to it.
 		'''
 		self.fitting_parameters = kwargs
+	
 
+	#------------------Formating Functions------------------#
 	def _convert_to_track_dict_bulk(self,Movie=None,track_name_original=True):
 		''' Docstring for _convert_to_track_dict_bulk
 		Purpose: convert the Movie object into a dictionary of tracks for the bulk analysis of MSD
@@ -1395,8 +1692,27 @@ class run_analysis:
 							track_dict_io[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
 						elif m.Classification == "OUT":
 							track_dict_out[i+k+n] = np.array([m.X,m.Y,m.Frames]).T
-		return {"IN": track_dict_in, "OUT": track_dict_out, "IO": track_dict_io, "ALL": track_dict_all}
-	
+		return {"IN": track_dict_in, "OUT": track_dict_out, "IO": track_dict_io, "ALL": track_dict_all}	
+	def _track_collection_utility(self)->list:
+		#run over all the movies if they exist and get the track lengths and store the originla tracks another dict. Return both
+		track_lengths = {"IN":[], "OUT":[], "IO":[], "ALL":[], "NONE":[]}
+		track_vals = {"IN":[], "OUT":[], "IO":[], "ALL":[], "NONE":[]}
+		#make sure Movie is not empty
+		if len(self.Movie) == 0:
+			raise ValueError("Movie is empty")
+		for i,j in self.Movie.items():
+			for k,l in j.Cells.items():
+				for n,m in l.All_Tracjectories.items():
+					if m.Classification == None:
+						track_lengths["NONE"].append(len(m.X))
+						track_vals["NONE"].append(m)
+					else:
+						track_lengths[m.Classification].append(len(m.X))
+						track_vals[m.Classification].append(m)
+		return [track_lengths,track_vals]
+
+
+	#------------------Saving Functions------------------#
 	def _store_combined_SMAUG_files(self,combined_dir_name,Movie=None):
 		'''
 		Store the SMAUG style data to a combined directory which will contain data from multiple run_analysis objects
@@ -1437,8 +1753,7 @@ class run_analysis:
 		sio.savemat(os.path.join(smaug_OUT_dir, unique_identifier + "_OUT.mat"), {"trfile": Smaug_OUT})
 		sio.savemat(os.path.join(smaug_IO_dir, unique_identifier + "_IO.mat"), {"trfile": Smaug_IO})
 
-		return
-	
+		return	
 	def _make_SMAUG_files(self,Movie=None,dir_name="SMAUG")->None:
 
 		#make a directory for the SMAUG files using self.mat_path_dir
@@ -1508,7 +1823,6 @@ class run_analysis:
 			sio.savemat(os.path.join(smaug_NONE_dir,unique_identifier + "_NONE.mat"),{"trfile":Smaug_NONE})
 		#print a log message to say the location of the files
 		print("SMAUG files saved to: {0}".format(smaug_dir))
-	
 	def _store_combined_NOBIAS_files(self,combined_dir_name,Movie=None):
 		'''
 		Store the NOBIAS style data to a combined directory which will contain data from multiple run_analysis objects
@@ -1543,7 +1857,6 @@ class run_analysis:
 		sio.savemat(os.path.join(nobias_IO_dir, unique_identifier + "_IO.mat"), NOBIAS_IO)
 
 		return
-	
 	def _make_NOBIAS_files(self,Movie=None,taus=1,dir_name="NOBIAS")->None:
 
 		#we want to use the matlab dir to store the NOBIAS files
@@ -1593,24 +1906,6 @@ class run_analysis:
 
 		#print a log message to say the location of the files
 		print("NOBIAS files saved to: {0}".format(nobias_path_dir))
-	
-	def _track_collection_utility(self)->list:
-		#run over all the movies if they exist and get the track lengths and store the originla tracks another dict. Return both
-		track_lengths = {"IN":[], "OUT":[], "IO":[], "ALL":[], "NONE":[]}
-		track_vals = {"IN":[], "OUT":[], "IO":[], "ALL":[], "NONE":[]}
-		#make sure Movie is not empty
-		if len(self.Movie) == 0:
-			raise ValueError("Movie is empty")
-		for i,j in self.Movie.items():
-			for k,l in j.Cells.items():
-				for n,m in l.All_Tracjectories.items():
-					if m.Classification == None:
-						track_lengths["NONE"].append(len(m.X))
-						track_vals["NONE"].append(m)
-					else:
-						track_lengths[m.Classification].append(len(m.X))
-						track_vals[m.Classification].append(m)
-		return [track_lengths,track_vals]
 	def _pickle_this_object(self)->None:
 		#pickle this object in the wd directory with the name self.my_name
 		#check if my_name is not an empty string
@@ -1625,10 +1920,60 @@ class run_analysis:
 		#pickle this object
 		pickle.dump(self,open(pickle_path,"wb"))
 		return		
+
+
+	#------------------Misc. Setters------------------#
+	def _find_nucleoid(self,movie_ID,cell_ID,img=0):
+		'''
+		This function finds the nucleoid for a given cell. This is done by using the
+		segmented image of the nucleoid and finding the largest blob in the image.
+
+		Parameters:
+		-----------
+		movie_ID : int
+			the movie ID number
+		cell_ID : int
+			the cell ID number
+		img : array-like
+			the image to use for nucleoid detection. If not provided, the function will
+			load the image from the Movie object.
+		
+		Returns:
+		--------
+		feature_mask : array-like
+			the mask of the nucleoid with pixel labels = 1
+		regions : regionprops object
+			the regionprops object for the nucleoid detections, see skimage.measure.regionprops and nucleoid_detection.find_nuc
+		'''
+		
+		
+		#find the location of the the nucleoid labeled images
+		#load the image
+		if isinstance(img,int):
+
+			img = import_functions.read_file(self.Movie[movie_ID].Movie_nucleoid)*self.Movie[movie_ID].Cells[cell_ID].Cell_Nucleoid_Mask
+
+		return nucleoid_detection.find_nuc(img,typee=None,given_type="Threshold_12")
+	def _set_nucleoid_area_bulk(self):
+		'''
+		This function sets the nucleoid area for each cell in the movie.
+		'''
+		for movie in self.Movie:
+			for cell in self.Movie[movie].Cells:
+				feature_mask, regions = self._find_nucleoid(movie,cell)
+				self.Movie[movie].Cells[cell].nucleoid_area = float(np.sum(feature_mask[feature_mask == 1]))
+	def _reinitalizeVariables(self):
+		##########################
+		#condensed analysis data
+		#Cells in the specific movie being analysed
+		self.Cells = {}
+		self.Movie = {}
+
+
+	#------------------Properties------------------#
 	@property
 	def type_of_blob(self):
 		return self._type_of_blob
-
 	@type_of_blob.setter
 	def type_of_blob(self,value):
 		if value not in SEGMENTATION_FOLDER_TYPES.keys():
@@ -1682,6 +2027,68 @@ class run_analysis:
 		}
 		return self._parameter_storage
 
+	@property
+	def path_structure_dict(self):
+		if hasattr(self,"_path_structure_dict"):
+			return self._path_structure_dict
+		else:
+			structured_dict_paths = {}
+			# for each key is the movie ID which has a dict of cell IDs, and path (of the movie ID) as the value
+			#for each cell ID there is a dict of the localizations and mask paths
+
+			#get the movie directories
+			movie_dirs = glob.glob(os.path.join(self.wd,"Movies","Movie_*"))
+			for movie_dir in movie_dirs:
+				#get the movie ID as the * in Movie_*
+				movie_ID = os.path.basename(movie_dir).split("_")[1]
+				#get the cell directories
+				cell_dirs = glob.glob(os.path.join(movie_dir,"Cell_*"))
+				#initialize the dict for the movie ID
+				structured_dict_paths[movie_ID] = {"path":movie_dir,"cells":{}}
+				for cell_dir in cell_dirs:
+					#get the cell ID as the * in Movie_<number>_cell_*
+					cell_ID = os.path.basename(cell_dir).split("_")[-1]
+					#initialize the dict for the cell ID
+					structured_dict_paths[movie_ID]["cells"][cell_ID] = {"path":cell_dir}
+					#get the localizations and mask paths
+					try:
+						localizations_path = glob.glob(os.path.join(cell_dir,"localizations.csv"))[0]
+					except IndexError:
+						#since it doesn't exist we can store a name and path for it to make later
+						localizations_path = os.path.join(cell_dir,"localizations.csv")
+					mask_path = glob.glob(os.path.join(cell_dir,"mask.tif"))[0]
+					#add the localizations and mask paths to the dict
+					structured_dict_paths[movie_ID]["cells"][cell_ID]["localizations_path"] = localizations_path
+					structured_dict_paths[movie_ID]["cells"][cell_ID]["mask_path"] = mask_path
+
+					#now make the new directories and file paths (even though we will not save the files yet)
+					#make the Analysis directory
+					analysis_dir = os.path.join(cell_dir,"Analysis")
+					if not os.path.isdir(analysis_dir):
+						os.mkdir(analysis_dir)
+					#make the new files as shown in the docstring
+					reconstruction_path = os.path.join(cell_dir,"reconstruction.tif")
+					uniform_reconstruction_path = os.path.join(cell_dir,"uniform_reconstruction.tif")
+					normal_scale_projection_path = os.path.join(cell_dir,"normal_scale_projection.tif")
+					reconstruction_parameters_path = os.path.join(cell_dir,"reconstruction_parameters.json")
+					scale_space_plus_blob_fitted_path = os.path.join(analysis_dir,"scale_space_plus_blob_fitted.csv")
+					scale_space_plus_blob_scale_path = os.path.join(analysis_dir,"scale_space_plus_blob_scale.csv")
+					DBSCAN_clusters_path = os.path.join(analysis_dir,"DBSCAN_clusters.csv")
+					analysis_parameters_path = os.path.join(analysis_dir,"analysis_parameters.json")
+					#add the new file paths to the dict in the proper place with the name as the key and the full path as the value
+					structured_dict_paths[movie_ID]["cells"][cell_ID]["reconstruction_path"] = reconstruction_path
+					structured_dict_paths[movie_ID]["cells"][cell_ID]["uniform_reconstruction_path"] = uniform_reconstruction_path
+					structured_dict_paths[movie_ID]["cells"][cell_ID]["normal_scale_projection_path"] = normal_scale_projection_path
+					structured_dict_paths[movie_ID]["cells"][cell_ID]["reconstruction_parameters_path"] = reconstruction_parameters_path
+					structured_dict_paths[movie_ID]["cells"][cell_ID]["Analysis"] = {"scale_space_plus_blob_fitted_path":scale_space_plus_blob_fitted_path,
+																	"scale_space_plus_blob_scale_path":scale_space_plus_blob_scale_path,
+																	"DBSCAN_clusters_path":DBSCAN_clusters_path,
+																	"analysis_parameters_path":analysis_parameters_path}
+			self._path_structure_dict = structured_dict_paths
+			return self._path_structure_dict
+		
+
+#------------------DATABASE CLASSES------------------#
 class Movie_frame:
 	'''
 	Frame of reference for one movie
@@ -1710,7 +2117,6 @@ class Movie_frame:
 		self.Movie_nucleoid = nucleoid_location
 
 		self.Cells = {}
-
 class Cell:
 	'''
 	each cell class is built of two main things:
@@ -1843,7 +2249,6 @@ class Cell:
 		if not isinstance(nucleoid_area,(float,int)):
 			raise TypeError("nucleoid_area must be a float or an int")
 		self._nucleoid_area = nucleoid_area
-	
 class Trajectory_Drop_Mapping:
 	'''
 	create a mapping for each viable drop to store all the Trajectory instances that belong to it in terms of Classification
@@ -1880,7 +2285,6 @@ class Trajectory_Drop_Mapping:
 		self.IN_Trajectory_Collection = {}
 		self.OUT_Trajectory_Collection = {}
 		self.IO_Trajectory_Collection = {}
-
 class Trajectory:
 	'''
 	Trajectory attribute class
@@ -1927,8 +2331,8 @@ class Trajectory:
 		self.MSD_total_um = MSD_total_um
 		self.distance_from_drop = kwargs.get("distance_from_drop",0)
 
-#define a custom class for boundary analysis
 
+#define a custom class for boundary analysis
 class boundary_analysis:
 	'''
 	TODO - make this better

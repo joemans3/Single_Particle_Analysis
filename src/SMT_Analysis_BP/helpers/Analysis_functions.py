@@ -19,6 +19,7 @@ from scipy.spatial import ConvexHull
 from sklearn.mixture import GaussianMixture
 from src.SMT_Analysis_BP.helpers.decorators import deprecated
 
+
 #curve fitting utility functions
 def non_linear_curvefit(func,xdata,ydata,p0=None,method='lm',bounds=None):
     '''
