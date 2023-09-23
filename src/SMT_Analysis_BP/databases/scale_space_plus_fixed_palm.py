@@ -46,6 +46,7 @@ import pandas as pd
 import os
 import json
 import glob
+from abc import ABC, abstractmethod
 if __name__ == '__main__':
     import sys
     sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts')
@@ -58,9 +59,7 @@ CORRECTION_FACTOR=1.
 
 LOCALIZATION_UNIQUE_TYPE = "first" #or "mean" is the other option
 
-
-
-class Reconstruct_Live_PALM_DATASETS:
+class Reconstruct_Masked_PALM_DATASETS(ABC):
     def __init__(self,
                  cd,
                  blob_parameters,
@@ -79,9 +78,10 @@ class Reconstruct_Live_PALM_DATASETS:
         self.loc_error = loc_error
         self.include_all = include_all
         self._check_directory_structure()
-        self._store_parameters()
-
-
+        self._store_parameters()   
+    @abstractmethod
+    def _load_localizations(self):
+        raise NotImplementedError("This is an abstract method and needs to be implemented in the child class")
     def _print_message(self):
         #print a welcome message with the parameters
         message = '''
@@ -119,7 +119,7 @@ class Reconstruct_Live_PALM_DATASETS:
                 localizations_path = path_structure_dict[movie_ID]["cells"][cell_ID]["localizations_path"]
                 mask_path = path_structure_dict[movie_ID]["cells"][cell_ID]["mask_path"]
                 #load the localizations
-                localizations_df = load_localizations(localizations_path)
+                localizations_df = self._load_localizations(localizations_path=localizations_path)
                 #get the unique localizations if include_all is False
                 if self.include_all == False:
                     unique_localizations = get_unique_localizations(localizations_df,unique_loc_type=LOCALIZATION_UNIQUE_TYPE)
@@ -156,6 +156,10 @@ class Reconstruct_Live_PALM_DATASETS:
                 reconstruction_obj.saving_image(img=normal_scale_projection,
                                                 full_path=path_structure_dict[movie_ID]["cells"][cell_ID]["normal_scale_projection_path"])
                 
+                print("#"*100)
+                print("Reconstruction complete for {0}".format(path_structure_dict[movie_ID]["cells"][cell_ID]["localizations_path"]))
+                print("#"*100)
+
                 #now do the scale space blob detection
                 print("#"*100)
                 blobs = scale_space_plus_blob_detection(reconstruction,self.blob_parameters,self.fitting_parameters,show=True)
@@ -189,8 +193,6 @@ class Reconstruct_Live_PALM_DATASETS:
         print("#"*100)
         print("Reconstruction and analysis complete. Come again soon! \n ill be waiting for you (ill be sad until then)! :) ")
         print("#"*100)
-                
-
     def _store_parameters(self):
         try:
             fitting_parameters = self.fitting_parameters.copy()
@@ -215,15 +217,12 @@ class Reconstruct_Live_PALM_DATASETS:
             "path_structure_dict":self.path_structure_dict
         }
         self._state_parameters = params
-
-    
     def _save_reconstruction_parameters(self,full_path:str)->None:
 
         params = self.state_parameters
 
         with open(full_path,"w") as f:
-            json.dump(params,f,indent=4)
-    
+            json.dump(params,f,indent=4)   
     def _check_directory_structure(self)->None:
         #check if the directory structure is correct for this analysis
         #check if cd exists
@@ -328,12 +327,40 @@ class Reconstruct_Live_PALM_DATASETS:
     @property
     def state_parameters(self):
         return self._state_parameters
-def load_localizations(localizations_path):
+
+class Reconstruct_Fixed_PALM_DATASETS(Reconstruct_Masked_PALM_DATASETS):
+    def __init__(self, cd, blob_parameters, fitting_parameters, rescale_pixel_size=10, pixel_size=130, loc_error=30, include_all=True):
+        super().__init__(cd, blob_parameters, fitting_parameters, rescale_pixel_size, pixel_size, loc_error, include_all)
+
+    def _load_localizations(self,**kwargs):
+        #if skiprows is not in kwargs then set it to 4
+        if "skiprows" not in kwargs.keys():
+            kwargs["skiprows"] = 4
+        df = load_localizations(**kwargs)
+        return df
+
+class Reconstruct_Tracked_PALM_DATASETS_with_mask(Reconstruct_Masked_PALM_DATASETS):
+    '''
+    For the masked version of the tracked PALM data, this is different from scale_space_plus_database_tracked.segmentation_scale_space \n
+    since it inforces a cell mask for each cell in a movie and also expects a different file structure. (Cellpose mask or other)
+    File structure is the same as the Fixed cell PALM data.
+    '''
+    def __init__(self, cd, blob_parameters, fitting_parameters, rescale_pixel_size=10, pixel_size=130, loc_error=30, include_all=True):
+        super().__init__(cd, blob_parameters, fitting_parameters, rescale_pixel_size, pixel_size, loc_error, include_all)
+    
+    def _load_localizations(self,**kwargs):
+        #if skiprows is not in kwargs then set it to 1
+        if "skiprows" not in kwargs.keys():
+            kwargs["skiprows"] = 1
+        df = load_localizations(**kwargs)
+        return df
+
+def load_localizations(localizations_path,skiprows=4):
     '''
     Load the localizations from the localizations.csv file
     '''
     colnames = ['track_ID','x','y','frame','intensity']
-    df = pd.read_csv(localizations_path,usecols=(2,4,5,8,12),delimiter=',',skiprows=4,names=colnames) #this can be changed depending on the format of the localizations.csv file
+    df = pd.read_csv(localizations_path,usecols=(2,4,5,8,12),delimiter=',',skiprows=skiprows,names=colnames) #this can be changed depending on the format of the localizations.csv file
     return df
 
 def get_unique_localizations(localizations_df:pd.DataFrame,unique_loc_type:str="first")->pd.DataFrame:
@@ -357,22 +384,17 @@ def get_unique_localizations(localizations_df:pd.DataFrame,unique_loc_type:str="
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 ####testing
 
 if __name__ == '__main__':
-    global_path = '/Users/baljyot/Documents/SMT_Movies/testing_SM_recon'
+    global_path = [
+    #"/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/12/rpoc_m9"
+    #"/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/12/rpoc_m9_2"
+    #"/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/rpoc_M9/20190515"
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/new_days/20190527/ll_ez"
+    ]
+
+
 
 
 
@@ -397,12 +419,14 @@ if __name__ == '__main__':
         "height_range":1
         }
 
-    sm_rec = Reconstruct_Live_PALM_DATASETS(cd = global_path,
-                                            blob_parameters = blob_parameters,
-                                            fitting_parameters = fitting_parameters,
-                                            rescale_pixel_size = 10,
-                                            pixel_size = 130,
-                                            loc_error = 30,
-                                            include_all = False
-                                            )
-    sm_rec.reconstruct()
+    for i in range(len(global_path)):
+        sm_rec = Reconstruct_Tracked_PALM_DATASETS_with_mask(cd = global_path[i],
+                                                blob_parameters = blob_parameters,
+                                                fitting_parameters = fitting_parameters,
+                                                rescale_pixel_size = 10,
+                                                pixel_size = 130,
+                                                loc_error = 30,
+                                                include_all = False
+                                                )
+        
+        sm_rec.reconstruct()

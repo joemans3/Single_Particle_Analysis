@@ -245,7 +245,13 @@ class SM_reconstruction_masked(ScaleSpacePlus):
         #len of the localizations
         num_localizations = len(localizations)
         if num_localizations == 0:
-            raise ValueError('There are no localizations to make a reconstruction from')
+            try:
+                raise ValueError('There are no localizations to make a reconstruction from')
+            except ValueError:
+                print('There are no localizations to make a reconstruction from, so using an empty image space')
+                #return an empty image space
+                return np.zeros([int((self.bounding_box[1,0]-self.bounding_box[0,0])*self.pixel_size_normal/self.rescale_pixel_size),
+                                    int((self.bounding_box[1,1]-self.bounding_box[0,1])*self.pixel_size_normal/self.rescale_pixel_size)])
         #correct the localization error
         if np.isscalar(localization_error):
             localization_error = np.ones(num_localizations)*localization_error
@@ -463,32 +469,32 @@ class SM_reconstruction_masked(ScaleSpacePlus):
 #testing
 ############################################
 
-if __name__=="__main__":
-    cell_1_mask = "/Users/baljyot/Documents/SMT_Movies/testing_SM_recon/Movie_1/Cell_2/Mask_Cell_2.tif"
-    cell_1_loc = "/Users/baljyot/Documents/SMT_Movies/testing_SM_recon/Movie_1/Cell_2/randomMovie_1.tif_spots.csv"
+# if __name__=="__main__":
+#     cell_1_mask = "/Users/baljyot/Documents/SMT_Movies/testing_SM_recon/Movie_1/Cell_2/Mask_Cell_2.tif"
+#     cell_1_loc = "/Users/baljyot/Documents/SMT_Movies/testing_SM_recon/Movie_1/Cell_2/randomMovie_1.tif_spots.csv"
 
-    #load the masked image
-    masked_img = skimage.io.imread(cell_1_mask)
-    #load the localizations
-    colnames = ['track_ID','x','y','frame','intensity']
-    df_localizations = pd.read_csv(cell_1_loc,usecols=(2,4,5,8,12),delimiter=',',skiprows=4,names=colnames)
-    #initialize the reconstruction class
-    recon = SM_reconstruction_masked(img_dims_normal=masked_img.shape,pixel_size_normal=130,rescale_pixel_size=130)
-    #make the reconstruction
-    recon_img = recon.make_reconstruction(localizations=df_localizations[['x','y']].values,localization_error=130,masked_img=masked_img)
-    #plot the reconstruction
-    plt.imshow(recon_img)
-    plt.show()
-    #make the uniform reconstruction
-    recon_img_uniform = recon.make_uniform_reconstruction(localizations=df_localizations[['x','y']].values,localization_error=130,masked_img=masked_img)
-    #plot the reconstruction
-    plt.imshow(recon_img_uniform)
-    plt.show()
-    #find the CM of the localizations in the original image space
-    cm = np.mean(df_localizations[['x','y']].values,axis=0)
-    #convert the CM to the reconstruction image space
-    cm_converted = recon.coordinate_conversion(spatial_dim=cm,radius=0,conversion_type='original_to_RC')
-    print(cm_converted,cm)
-    #save the image
-    #skimage.io.imsave("/Users/baljyot/Documents/SMT_Movies/testing_SM_recon/Movie_1/Cell_1/Reconstruction_Cell_1.tif",recon_img)
+#     #load the masked image
+#     masked_img = skimage.io.imread(cell_1_mask)
+#     #load the localizations
+#     colnames = ['track_ID','x','y','frame','intensity']
+#     df_localizations = pd.read_csv(cell_1_loc,usecols=(2,4,5,8,12),delimiter=',',skiprows=4,names=colnames)
+#     #initialize the reconstruction class
+#     recon = SM_reconstruction_masked(img_dims_normal=masked_img.shape,pixel_size_normal=130,rescale_pixel_size=130)
+#     #make the reconstruction
+#     recon_img = recon.make_reconstruction(localizations=df_localizations[['x','y']].values,localization_error=130,masked_img=masked_img)
+#     #plot the reconstruction
+#     plt.imshow(recon_img)
+#     plt.show()
+#     #make the uniform reconstruction
+#     recon_img_uniform = recon.make_uniform_reconstruction(localizations=df_localizations[['x','y']].values,localization_error=130,masked_img=masked_img)
+#     #plot the reconstruction
+#     plt.imshow(recon_img_uniform)
+#     plt.show()
+#     #find the CM of the localizations in the original image space
+#     cm = np.mean(df_localizations[['x','y']].values,axis=0)
+#     #convert the CM to the reconstruction image space
+#     cm_converted = recon.coordinate_conversion(spatial_dim=cm,radius=0,conversion_type='original_to_RC')
+#     print(cm_converted,cm)
+#     #save the image
+#     #skimage.io.imsave("/Users/baljyot/Documents/SMT_Movies/testing_SM_recon/Movie_1/Cell_1/Reconstruction_Cell_1.tif",recon_img)
 
