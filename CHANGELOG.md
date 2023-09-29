@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning].
 
 - / We also need to create test cases for general testing on the script.
 - / We need to create an executable script that pip installs the requirements.txt and also creates a conda env. Although the second part can be left for the end user to do.
+- / We need to fix the simulate cells module to properly confine trajectories inside the cell boundaries.
 
 ## [0.0.3] - 2023-08-26
 
