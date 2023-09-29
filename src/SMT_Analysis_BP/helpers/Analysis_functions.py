@@ -735,7 +735,7 @@ def MSD_tau(x,y,permutation=True):
     #return the displacements
     return displacements
 
-def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_factor=None,min_track_length=1,**kwargs):#return_type="msd_curves",verbose=False,conversion_factor=None):
+def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_factor=None,min_track_length=1,max_track_length=10,**kwargs):#return_type="msd_curves",verbose=False,conversion_factor=None):
     '''Documentation for MSD_Tracks
 
     Parameters:
@@ -759,6 +759,8 @@ def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_fac
         units are for [0->n] (int) -> seconds (1 = 0.02 seconds)
     min_track_length : int (default = 1)
         the minimum length of a track to be included in the MSD calculation
+    max_track_length : int (default = 10)
+        the maximum length of a track to be included in the MSD calculation
     
     Returns:
     --------
@@ -787,7 +789,7 @@ def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_fac
             if conversion_factor != None:
                 value *= conversion_factor
             #calculate the displacements for each track
-            disp = MSD_tau(value[:,0],value[:,1],permutation)
+            disp = MSD_tau(value[:,0][:max_track_length],value[:,1][:max_track_length],permutation)
             #lets convert the taus (in the keys of disp) to the desired units
             if tau_conversion_factor != None:
                 disp = {key*tau_conversion_factor:value for key,value in disp.items()}

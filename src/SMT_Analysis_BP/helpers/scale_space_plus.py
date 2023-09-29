@@ -43,7 +43,6 @@ class ScaleSpacePlus(ABC):
     @abstractmethod
     def print_state(self):
         NotImplementedError('The print_state method must be implemented in the child class')
-
 class SM_reconstruction_image(ScaleSpacePlus):
 
     def __init__(self,img_dims_normal:tuple|list,
@@ -169,8 +168,6 @@ class SM_reconstruction_image(ScaleSpacePlus):
     @property
     def total_localizations(self):
         return len(self.df_localizations)
-    
-
 class SM_reconstruction_masked(ScaleSpacePlus):
     def __init__(self,img_dims_normal:tuple|list,
                  pixel_size_normal:int|float=130,

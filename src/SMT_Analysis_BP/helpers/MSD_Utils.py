@@ -3,50 +3,6 @@ from abc import ABC, abstractmethod
 from src.SMT_Analysis_BP.helpers import Analysis_functions as af
 from src.SMT_Analysis_BP.databases import trajectory_analysis_script as tas
 
-#radius of confinment fucntion
-def radius_of_confinement(t,r_sqr,D,loc_msd):
-    return (r_sqr**2)*(1.-np.exp(-4*D*t/(r_sqr**2))) + 4*(loc_msd**2)
-
-#radius of confinment fucntion
-def radius_of_confinement_xy(t,r_sqr,D,loc_msd_x,loc_msd_y):
-    return (r_sqr**2)*(1.-np.exp(-4*D*t/(r_sqr**2))) + 4*(loc_msd_x**2) + 4*(loc_msd_y**2)
-
-#power law function with independent x and y
-def power_law_xy(t,alpha,D,loc_msd_x,loc_msd_y):
-    return 4*(loc_msd_x**2) + 4*(loc_msd_y**2) + 4.*D*t**(alpha)
-
-#power law function with r_sqr
-def power_law(t,alpha,D,loc_msd):
-    return 4*(loc_msd**2) + 4.*D*t**(alpha)
-
-def linear_MSD_fit(t,a,b):
-    '''
-    linear fit function
-    expects t to be scaled with log10, and returns msd output in log10
-    b = log10(4*D)
-    a = alpha
-    t = log10(tau)
-    '''
-    return b + a*t
-
-
-def combine_track_dicts(dicts):
-    '''each dict is going to contain 4 dicts of name "IN","IO","OUT","ALL"
-    we need to keep this strucutre for the final combined dict'''
-    combined_dict = {"IN":{},"IO":{},"OUT":{},"ALL":{}}
-    #iterate over the dicts
-    track_counter = 1
-    for i in dicts:
-        #iterate over the keys of the dicts
-        for j in i.keys():
-            #iterate over the keys of the dicts
-            for k in i[j].keys():
-                #change the key of the dict
-                combined_dict[j][str(track_counter)] = i[j][k]
-                track_counter += 1
-    return combined_dict
-
-
 class MSD_Calculation_abc(ABC):
     '''
     Abstract base class for MSD Calculations
@@ -100,14 +56,12 @@ class MSD_Calculation_abc(ABC):
     def individual_store(self):
         raise NotImplementedError("This is an abstract method and needs to be implemented in the child class")
 
-
-
 class MsdDatabaseUtil:
     '''
     lets create a generic MSD analysis class which will store all the MSD analysis for a single dataset or multiple datasets
     using encapsulation we will utilize smaller functions to do the analysis
     '''
-    def __init__(self,data_set_RA:list|None=None,pixel_to_um:float=0.13,frame_to_seconds:float=0.02):
+    def __init__(self,data_set_RA:list|None=None,pixel_to_um:float=0.13,frame_to_seconds:float=0.02,**kwargs):
         '''
         Parameters:
         -----------
@@ -298,14 +252,12 @@ class MSD_storage:
             return self._ensemble_displacement_r
 
 class MSD_Calculations(MSD_Calculation_abc):
-    def __init__(self,data_set_RA:list,**kwargs) -> None:
+    def __init__(self,data_set_RA:list,pixel_to_um:float=0.13,frame_to_seconds:float=0.02,frame_units:str="s",pixel_units:str="um",**kwargs) -> None:
         '''
         Parameters:
         -----------
         data_set_RA: list
             list of tas.run_analysis objects
-        KWARGS:
-        -------
         pixel_to_um: float
             pixel to um conversion
         frame_to_seconds: float
@@ -314,18 +266,24 @@ class MSD_Calculations(MSD_Calculation_abc):
             frame units
         pixel_units: str
             pixel units
+        
+        KWARGS:
+        -------
+        min_track_length: int, Default = 1
+            minimum track length to be considered. 
+            This is passed on to the af.MSD_Tracks() function
         '''
         #initialize the MSD_Calculation_abc class
-        super().__init__(pixel_size=kwargs.get("pixel_to_um",0.13),
-                        frame_length=kwargs.get("frame_to_seconds",0.02),
-                        pixel_unit=kwargs.get("pixel_units","um"),
-                        frame_unit=kwargs.get("frame_units","s")
+        super().__init__(pixel_size=pixel_to_um,
+                        frame_length=frame_to_seconds,
+                        pixel_unit=pixel_units,
+                        frame_unit=frame_units
                         )
         
         #list has to be made up of objects of type tas.run_analysis
-        self.MSD_dataset = MsdDatabaseUtil(data_set_RA=data_set_RA,**kwargs)
+        self.MSD_dataset = MsdDatabaseUtil(data_set_RA=data_set_RA,pixel_to_um=pixel_to_um,frame_to_seconds=frame_to_seconds)
         #build the MSD_Tracks
-        self._build_MSD_Tracks()
+        self._build_MSD_Tracks(**kwargs)
 
     def _build_MSD_Tracks_combined(self,**kwargs):
         self._combined_store = {}
@@ -501,6 +459,47 @@ class MSD_Calculations_Track_Dict(MSD_Calculation_abc):
         raise ValueError("individual_store cannot be set")
 
 
+#radius of confinment fucntion
+def radius_of_confinement(t,r_sqr,D,loc_msd):
+    return (r_sqr**2)*(1.-np.exp(-4*D*t/(r_sqr**2))) + 4*(loc_msd**2)
+
+#radius of confinment fucntion
+def radius_of_confinement_xy(t,r_sqr,D,loc_msd_x,loc_msd_y):
+    return (r_sqr**2)*(1.-np.exp(-4*D*t/(r_sqr**2))) + 4*(loc_msd_x**2) + 4*(loc_msd_y**2)
+
+#power law function with independent x and y
+def power_law_xy(t,alpha,D,loc_msd_x,loc_msd_y):
+    return 4*(loc_msd_x**2) + 4*(loc_msd_y**2) + 4.*D*t**(alpha)
+
+#power law function with r_sqr
+def power_law(t,alpha,D,loc_msd):
+    return 4*(loc_msd**2) + 4.*D*t**(alpha)
+
+def linear_MSD_fit(t,a,b):
+    '''
+    linear fit function
+    expects t to be scaled with log10, and returns msd output in log10
+    b = log10(4*D)
+    a = alpha
+    t = log10(tau)
+    '''
+    return b + a*t
+
+def combine_track_dicts(dicts):
+    '''each dict is going to contain 4 dicts of name "IN","IO","OUT","ALL"
+    we need to keep this strucutre for the final combined dict'''
+    combined_dict = {"IN":{},"IO":{},"OUT":{},"ALL":{}}
+    #iterate over the dicts
+    track_counter = 1
+    for i in dicts:
+        #iterate over the keys of the dicts
+        for j in i.keys():
+            #iterate over the keys of the dicts
+            for k in i[j].keys():
+                #change the key of the dict
+                combined_dict[j][str(track_counter)] = i[j][k]
+                track_counter += 1
+    return combined_dict
 
 
         

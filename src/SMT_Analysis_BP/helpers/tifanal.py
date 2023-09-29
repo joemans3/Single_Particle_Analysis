@@ -18,7 +18,8 @@ SEGMENT_TYPE = {
 }
 STACK_STEP = 5
 CONVERT_NAME = 1
-DIR_PATH = "/Volumes/Baljyot_HD/SMT_Olympus/Baljyot_temp/15/ll_m9" 
+DIR_PATH = "/Volumes/Baljyot_HD/SMT_Olympus/MG16655_Controls/MG16655_AutoFluo_Controls/Live/20230926/MG16655_hex5_5min_Live/Movie"
+
 
 #check if the directory exists
 if not os.path.exists(DIR_PATH):
