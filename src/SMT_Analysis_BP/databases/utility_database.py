@@ -1,6 +1,3 @@
-import os
-import sys
-import numpy as np
 
 #allowed types for the start values in Counter_start_stop
 ALLOWED_START_TYPES = [int,float]

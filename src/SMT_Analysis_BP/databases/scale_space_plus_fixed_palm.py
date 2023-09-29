@@ -53,7 +53,7 @@ if __name__ == '__main__':
     import matplotlib.pyplot as plt
 from src.SMT_Analysis_BP.helpers.scale_space_plus import SM_reconstruction_masked,MASK_VALUE,BOUNDING_BOX_PADDING,CONVERSION_TYPES,RANDOM_SEED
 from src.SMT_Analysis_BP.helpers.blob_detection import residuals_gaus2d
-from src.SMT_Analysis_BP.helpers.clustering_methods import perfrom_DBSCAN_Cluster,scale_space_plus_blob_detection,rescale_scale_space_blob_detection
+from src.SMT_Analysis_BP.helpers.clustering_methods import perfrom_DBSCAN_Cluster,scale_space_plus_blob_detection
 
 CORRECTION_FACTOR=1.
 
@@ -335,7 +335,7 @@ class Reconstruct_Fixed_PALM_DATASETS(Reconstruct_Masked_PALM_DATASETS):
     def _load_localizations(self,**kwargs):
         #if skiprows is not in kwargs then set it to 4
         if "skiprows" not in kwargs.keys():
-            kwargs["skiprows"] = 4
+            kwargs["skiprows"] = 1
         df = load_localizations(**kwargs)
         return df
 
@@ -382,16 +382,50 @@ def get_unique_localizations(localizations_df:pd.DataFrame,unique_loc_type:str="
         raise ValueError("The unique_loc_type can be either first or mean")
     return unique_localizations
 
+def rescale_scale_space_blob_detection(blobs,rescaling_func:callable,**kwargs):
+    #get the fitted blobs
+    fitted_blobs = blobs["Fitted"]
+    #get the scale-space blobs
+    scale_space_blobs = blobs["Scale"]
+    type_of_convertion = kwargs.get("type_of_convertion")
+
+    #now we need to rescale the fitted blobs using the rescaling function
+    fitted_holder = np.zeros_like(fitted_blobs)
+    scale_holder = np.zeros_like(scale_space_blobs)
+    for i in range(len(fitted_blobs)):
+        #get the radius
+        radius_fitted = np.mean(fitted_blobs[i][2:4])
+        #get the center
+        center_fitted = fitted_blobs[i][0:2]
+        #get the radius for scale
+        radius_scale = np.mean(scale_space_blobs[i][2])
+        #get the center for scale
+        center_scale = scale_space_blobs[i][0:2]
+        #rescale the fitted blobs
+        #the function should take in the centers,radius, and a string which is supplied by the kwargs
+
+        center_fitted_scaled,radius_fitted_scaled = rescaling_func(center_fitted,radius_fitted,type_of_convertion)
+        center_scale_scaled,radius_scale_scaled = rescaling_func(center_scale,radius_scale,type_of_convertion)
+
+        #now we need to put the scaled values into the holder
+        fitted_holder[i][0:2] = center_fitted_scaled
+        fitted_holder[i][2:4] = radius_fitted_scaled
+        scale_holder[i][0:2] = center_scale_scaled
+        scale_holder[i][2] = radius_scale_scaled
+    
+    #now we need to put the fitted blobs back into the blobs dictionary
+    blobs["Fitted"] = fitted_holder
+    blobs["Scale"] = scale_holder
+    return blobs
 
 
 ####testing
 
 if __name__ == '__main__':
     global_path = [
-    #"/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/12/rpoc_m9"
-    #"/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/12/rpoc_m9_2"
-    #"/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/rpoc_M9/20190515"
-    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/new_days/20190527/ll_ez"
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Rifampacin_Data/20230528/rpoc_ez_rif_100ugml_5min",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Rifampacin_Data/20230617/rpoc_rif_100ugml",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Rifampacin_Data/20230617/rpoc_rif_100ugml_2"
     ]
 
 

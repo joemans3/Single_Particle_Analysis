@@ -35,6 +35,7 @@ import glob
 import pickle
 from matplotlib import patches
 import matplotlib.pyplot as plt
+from abc import ABC, abstractmethod
 import numpy as np
 import scipy.io as sio
 from skimage import io
@@ -60,7 +61,6 @@ TRACK_TYPES = [
 	"OUT",
 	"ALL"
 ]
-
 
 class run_analysis:
 	'''
@@ -569,7 +569,6 @@ class run_analysis:
 					point = Point(x_points[j],y_points[j])
 					if poly.contains(point) or poly.touches(point):
 						self.Movie[str(pp)].Cells[str(i)].raw_tracks.append(tracks[pp][j])
-						total_point_counter += 1
 				#once the raw tracks are added, calculate the points_per_frame
 				if len(self.Movie[str(pp)].Cells[str(i)].raw_tracks) != 0:	
 					self.Movie[str(pp)].Cells[str(i)].points_per_frame = points_per_frame_bulk_sort(x=np.array(self.Movie[str(pp)].Cells[str(i)].raw_tracks)[:,2],
@@ -624,7 +623,9 @@ class run_analysis:
 		try:
 			check_bool = self._check_directory_structure()
 		except ValueError:
+			raise ValueError
 			print("Directory structure is not correct. \n Look at the other Main function runs for supperSegger and no segmentation read_track_data methods.")
+			#print the underlying error
 			return
 
 		#initialize the path_structure_dict property 
@@ -715,21 +716,18 @@ class run_analysis:
 				cell_ID = sorted_alphanumeric(list(path_structure_copy[movie_ID]['cells'].keys()))[jj]
 				if (check_bool) and (not self.overwrite_cell_localizations):
 					#load the cell data from the directory structure 
-					tracked_data = self._load_track_data(path_structure_copy[movie_ID]['cells'][cell_ID]["localizations_path"],skiprows=1)
-					tracks.append(tracked_data)
+					try:
+						tracked_data = self._load_track_data(path_structure_copy[movie_ID]['cells'][cell_ID]["localizations_path"],skiprows=1)
+						tracks.append(tracked_data)
+					except:
+						ValueError("Movie_ID: {0}, cell_ID {1}, does not have a localizations file. \n Please check the directory structure.".format(movie_ID,cell_ID))
 				else:
 					#store the cell filtered localizations to the directory structure
-					#this is only supported for self.a_file_style == "new"
-					if self.a_file_style == "new":
-						self._convert_track_data_for_cell(
-														path = all_files[i],
-														path_structure=path_structure_copy,
-														cell_ID = cell_ID,
-														movie_ID = movie_ID)
-					else:
-						print("Filtering based on cell mask is not allowed for the old trackmate style. \n It is implimented but not tested. \n Please use the new trackmate style.")
-
-
+					self._convert_track_data_for_cell(
+													path = all_files[i],
+													path_structure=path_structure_copy,
+													cell_ID = cell_ID,
+													movie_ID = movie_ID)
 
 				
 				#load the mask

@@ -49,6 +49,14 @@ class movie_mask_directory_structure_manager:
         #determine if the directory exists
         if not os.path.isdir(self.full_path_to_mask_dir):
             raise ValueError('The directory does not exist')
+        base_files = sorted_alphanumeric(glob.glob(os.path.join(self.full_path_to_mask_dir,'*.tif')))
+        if len(base_files) != 0:
+            _reorder_file_names(base_files)
+        self._base_files = sorted_alphanumeric(glob.glob(os.path.join(self.full_path_to_mask_dir,'*.tif')))
+        mask_files = sorted_alphanumeric(glob.glob(os.path.join(self.full_path_to_mask_dir,'*.npy')))
+        #check if there are any mask files
+        if len(mask_files) != 0:
+            _reorder_file_names(mask_files,end_string='_seg')
         self._mask_files = sorted_alphanumeric(glob.glob(os.path.join(self.full_path_to_mask_dir,'*.npy')))
         print(self.mask_files)
         if len(self.mask_files) == 0:
@@ -104,7 +112,6 @@ class movie_mask_directory_structure_manager:
             io.save_rois(read_npy_file(self.mask_files[movie])['masks'],os.path.join(path_structure['movie_dir']['movies'][movie+1]["path"],"Movie_{}".format(movie+1)))
         self._directory_structure_paths = path_structure
 
-
     @property
     def full_path_to_mask_dir(self):
         return self._full_path_to_mask_dir
@@ -114,7 +121,9 @@ class movie_mask_directory_structure_manager:
     @property
     def directory_structure_paths(self):
         return self._directory_structure_paths
-
+    @property
+    def base_files(self):
+        return self._base_files
 def read_npy_file(path,correct_dtype=True):
     '''
     Reads the npy file from the path
@@ -140,7 +149,37 @@ def obtain_masks_npy(npy_output_file)->dict:
         cell_masks[cell] = cell_masks[cell].astype(np.uint8)
     return cell_masks
 
+def _reorder_file_names(file_paths,end_string=None)->None:
+    '''Reorders the names of the files to start from 1->end.
+    Given a set of files in the directory, it will reorder them to start from 1->end
+    so <name>_20.tif will be <name>_1.tif, <name>_21.tif will be <name>_2.tif and so on
+    This is to rename the file 
+    '''
+    #sort the file paths
+    file_paths = sorted_alphanumeric(file_paths)
+    #get the string common to all the files for the base name
+    base_name = os.path.basename(file_paths[0])
+    if end_string is not None:
+        base_name = base_name[:base_name.rfind(end_string)]
+    #find the text before the last "_"
+    base_name = base_name[:base_name.rfind("_")]
 
+    #rename the files
+    for i,file_path in enumerate(file_paths):
+        #get the file name
+        file_name = os.path.basename(file_path)
+        #get the file extension
+        file_extension = os.path.splitext(file_name)[1]
+        #rename the file
+        if end_string is None:
+            os.rename(file_path,os.path.join(os.path.dirname(file_path),base_name+"_"+str(i+1)+file_extension))
+        else:
+            os.rename(file_path,os.path.join(os.path.dirname(file_path),base_name+"_"+str(i+1)+end_string+file_extension))
+
+
+
+
+    
 
 
 if __name__ == '__main__':
@@ -151,37 +190,18 @@ if __name__ == '__main__':
     # mask = read_npy_file(path)
     # mask = mask['masks']
 
-    path = [
-        '/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/new_days/20190527/ll_ez/gfp',
-        
-        '/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/new_days/20190527/rpoc_ez/gfp',
-        '/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Other_RPOC/_gfp',
-        '/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/RPOC_new/_gfp',
-
-        '/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/rpoc_M9/20190515/gfp',
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/12/rpoc_m9_2/gfp",
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/12/rpoc_m9/gfp",
-
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/15/rp_ez_hex5/gfp",
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/15/rp_ez_hex5_2/gfp",
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/16/rp_ez_hex5/gfp",
-
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/20200215/ll_m9/gfp",
-        
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/16/ll_hex5/gfp"
-
-    ]
-
     # path = [
-    #     "/Volumes/Baljyot_HD/SMT_Olympus/Fixed/20230920/MG16655_1_P_PFA_30_min/Sorted/BF",
-    #     "/Volumes/Baljyot_HD/SMT_Olympus/Fixed/20230920/MG16655_3_P_glyaxol_30_min/Sorted/BF",
-    #     "/Volumes/Baljyot_HD/SMT_Olympus/Fixed/20230920/MG16655_24_04_PFA_Glu_30_min/Sorted/BF",
-    #     "/Volumes/Baljyot_HD/SMT_Olympus/Fixed/20230920/MG16655_Live/Sorted/BF"
-    # ]
+    #     "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/16/ll_m9/gfp"
 
+
+    # ]
+    # for path in path:
+    #     mask_dir = movie_mask_directory_structure_manager(path)
+
+
+    path = [
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/MG16655_Controls/Fixation/20230926/MG16655_24_04_PFA_Glu_30_min/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/MG16655_Controls/Fixation/20230926/MG16655_3_P_glyaxol_30_min/gfp"
+    ]
     for path in path:
         mask_dir = movie_mask_directory_structure_manager(path)
-
-
-
-

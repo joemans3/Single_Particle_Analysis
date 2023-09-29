@@ -1,8 +1,6 @@
 '''
 Collection of structured data for utility. Mainly used within trajectory_analysis_script.py and scale_scale_plus_database.py
 '''
-import os
-import sys
 
 ####### FOLDER STRUCTURES ########
 SEGMENTATION_FOLDER_TYPES = {
@@ -30,4 +28,8 @@ LOADING_DROP_BLOB_TYPES = {
 }
     
 ####### FOLDER STRUCTURES END########
+
+
+
+
 

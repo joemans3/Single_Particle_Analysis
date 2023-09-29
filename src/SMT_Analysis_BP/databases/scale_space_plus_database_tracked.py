@@ -86,6 +86,7 @@ cd
 |   |   |---5_t_string_2_seg.tif_spots.csv
 '''
 
+@DeprecationWarning("This is deprecated. Use the scale_space_plus_fixed_palm.py script instead")
 class segmentation_scale_space:
     def __init__(self,
                  cd,
