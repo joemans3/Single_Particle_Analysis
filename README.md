@@ -1,10 +1,10 @@
 
 
-#This is a short doc for the SMT project.
+# This is a short doc for the SMT project.
 -----------------------------------------
 
-Author: Baljyot Singh Parmar
-Affiliation at the time of writing: McGill University, Canada. Weber Lab
+- Author: Baljyot Singh Parmar
+- Affiliation at the time of writing: McGill University, Canada. Weber Lab
 
 
 
