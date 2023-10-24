@@ -17,7 +17,7 @@ import copy
 from scipy.spatial import ConvexHull
 #import gmm
 from sklearn.mixture import GaussianMixture
-from src.SMT_Analysis_BP.helpers.decorators import deprecated
+from SMT_Analysis_BP.helpers.misc.decorators import deprecated
 
 
 def photon_conversion_from_AUD(AUD:float|np.ndarray,photon_conversion_factor:float|int,quantum_efficiency:float|int,dark_offset:float|int):

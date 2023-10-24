@@ -12,9 +12,9 @@ import pandas as pd
 import skimage as skimage
 import os
 from abc import ABC, abstractmethod
-from src.SMT_Analysis_BP.helpers.pickle_util import PickleUtil
-from src.SMT_Analysis_BP.helpers.simulate_foci import get_gaussian
-from src.SMT_Analysis_BP.helpers.Analysis_functions import rescale_range
+from SMT_Analysis_BP.helpers.ioModule.pickle_util import PickleUtil
+from SMT_Analysis_BP.helpers.simulations.simulate_foci import get_gaussian
+from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import rescale_range
 import matplotlib.pyplot as plt
 KEY_IMAGE = {
     'png':skimage.io.imsave,

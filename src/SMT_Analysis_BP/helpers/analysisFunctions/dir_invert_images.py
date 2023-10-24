@@ -22,7 +22,7 @@ if __name__ == "__main__":
         if not isinstance(dir_path,str):
             dir_path = str(dir_path)
 
-import src.SMT_Analysis_BP.helpers.import_functions as import_functions
+import SMT_Analysis_BP.helpers.ioModule.import_functions as import_functions
 
 
 def save_invert_images(path,**kwargs):

@@ -1,6 +1,6 @@
 import numpy as np
 from abc import ABC, abstractmethod
-from src.SMT_Analysis_BP.helpers import Analysis_functions as af
+from SMT_Analysis_BP.helpers.analysisFunctions import Analysis_functions as af
 from src.SMT_Analysis_BP.databases import trajectory_analysis_script as tas
 
 class MSD_Calculation_abc(ABC):

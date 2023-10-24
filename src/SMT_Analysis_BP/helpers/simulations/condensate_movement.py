@@ -19,9 +19,9 @@ Usage:
 '''
 
 import numpy as np
-import src.SMT_Analysis_BP.helpers.fbm_utility as fbm
+import SMT_Analysis_BP.helpers.simulations.fbm_utility as fbm
 import matplotlib.pyplot as plt
-from src.SMT_Analysis_BP.helpers.decorators import cache
+from SMT_Analysis_BP.helpers.misc.decorators import cache
 
 class Condensate:
     ''' Condensate class for storing condensate data.

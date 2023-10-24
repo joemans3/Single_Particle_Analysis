@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import glob as glob
-from src.SMT_Analysis_BP.helpers import Analysis_functions as af
+from SMT_Analysis_BP.helpers.analysisFunctions import Analysis_functions as af
 
 #make a function to take track data in a dict format dict = {track_id:[[x0,y0,frame0],[x1,y1,frame,1],...],...} and convert it to the format required for SMAUG analysis
 #format for SMAUG analysis is [track_id,time_step_number,placeholder,x,y] see https://github.com/BiteenMatlab/SMAUG

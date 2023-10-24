@@ -42,17 +42,17 @@ from skimage import io
 import pandas as pd
 from scipy.stats import gaussian_kde
 from shapely.geometry import Point, Polygon
-from src.SMT_Analysis_BP.helpers.SMT_converters import IO_run_analysis
+from SMT_Analysis_BP.helpers.ioModule.SMT_converters import IO_run_analysis
 
-import src.SMT_Analysis_BP.helpers.import_functions as import_functions
-import src.SMT_Analysis_BP.helpers.nucleoid_detection as nucleoid_detection
-from src.SMT_Analysis_BP.helpers.Analysis_functions import *
-from src.SMT_Analysis_BP.helpers.blob_detection import *
-from src.SMT_Analysis_BP.helpers.plotting_functions import *
-from src.SMT_Analysis_BP.helpers.SMT_converters import convert_track_data_SMAUG_format, convert_track_data_NOBIAS_format_global, _convert_track_data_NOBIAS_format_tau
+import SMT_Analysis_BP.helpers.ioModule.import_functions as import_functions
+import SMT_Analysis_BP.helpers.analysisFunctions.nucleoid_detection as nucleoid_detection
+from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import *
+from SMT_Analysis_BP.helpers.clusterMethods.blob_detection import *
+from SMT_Analysis_BP.helpers.ioModule.plotting_functions import *
+from SMT_Analysis_BP.helpers.ioModule.SMT_converters import convert_track_data_SMAUG_format, convert_track_data_NOBIAS_format_global, _convert_track_data_NOBIAS_format_tau
 from src.SMT_Analysis_BP.databases.structure_storage import SEGMENTATION_FOLDER_TYPES, ANALYSIS_FOLDER_TYPES, LOADING_DROP_BLOB_TYPES
-from src.SMT_Analysis_BP.databases.utility_database import Counter_start_stop
-from src.SMT_Analysis_BP.helpers.features_from_mask import extract_mask_properties
+from SMT_Analysis_BP.databases.utilities.utility_database import Counter_start_stop
+from SMT_Analysis_BP.helpers.analysisFunctions.features_from_mask import extract_mask_properties
 
 TRACK_TYPES = [
 	"IN",

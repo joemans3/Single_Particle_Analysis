@@ -2,12 +2,12 @@ import json
 import numpy as np
 import os
 import random
-import src.SMT_Analysis_BP.helpers.simulate_foci as sf
+import SMT_Analysis_BP.helpers.simulations.simulate_foci as sf
 import skimage as skimage
 from PIL import Image
 import pickle
-import src.SMT_Analysis_BP.helpers.decorators as decorators
-import src.SMT_Analysis_BP.helpers.probability_functions as pf
+import SMT_Analysis_BP.helpers.misc.decorators as decorators
+import SMT_Analysis_BP.helpers.simulations.probability_functions as pf
 
 class Simulate_cells(sf.Track_generator):
     ''' MRO is used to inherit from the Track_generator class in simulate_foci.py'''

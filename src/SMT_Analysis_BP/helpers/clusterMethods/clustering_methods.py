@@ -1,8 +1,8 @@
 import numpy as np
 from scipy.spatial import ConvexHull
 from sklearn.cluster import DBSCAN
-from src.SMT_Analysis_BP.helpers.Analysis_functions import reshape_col2d
-from src.SMT_Analysis_BP.helpers.blob_detection import blob_detection
+from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import reshape_col2d
+from SMT_Analysis_BP.helpers.clusterMethods.blob_detection import blob_detection
 import matplotlib.pyplot as plt
 
 

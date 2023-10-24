@@ -31,7 +31,7 @@ from skimage import measure
 import skimage.io as ioski
 import cv2
 from cellpose import utils,io
-from src.SMT_Analysis_BP.helpers.Analysis_functions import sorted_alphanumeric
+from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import sorted_alphanumeric
 #remove warnings
 import warnings
 warnings.filterwarnings("ignore")

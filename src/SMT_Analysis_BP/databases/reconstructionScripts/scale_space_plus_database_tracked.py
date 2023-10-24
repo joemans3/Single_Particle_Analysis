@@ -7,10 +7,10 @@ if __name__ == '__main__':
     import sys
     sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts')
     import matplotlib.pyplot as plt
-from src.SMT_Analysis_BP.helpers.scale_space_plus import SM_reconstruction_image
-from src.SMT_Analysis_BP.helpers.blob_detection import residuals_gaus2d
-from src.SMT_Analysis_BP.helpers.clustering_methods import perfrom_DBSCAN_Cluster,scale_space_plus_blob_detection
-from src.SMT_Analysis_BP.databases.scale_space_plus_fixed_palm import get_unique_localizations
+from SMT_Analysis_BP.helpers.analysisFunctions.scale_space_plus import SM_reconstruction_image
+from SMT_Analysis_BP.helpers.clusterMethods.blob_detection import residuals_gaus2d
+from SMT_Analysis_BP.helpers.clusterMethods.clustering_methods import perfrom_DBSCAN_Cluster,scale_space_plus_blob_detection
+from SMT_Analysis_BP.databases.reconstructionScripts.scale_space_plus_fixed_palm import get_unique_localizations
 #import DBSCAN
 #import convex hull
 CORRECTION_FACTOR=1.

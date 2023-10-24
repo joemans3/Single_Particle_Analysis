@@ -30,10 +30,10 @@ from matplotlib.patches import Circle
 if __name__=="__main__":
 	import sys
 	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts')
-import src.SMT_Analysis_BP.helpers.blob_detection as blob_detection
-import src.SMT_Analysis_BP.helpers.Analysis_functions as Analysis_functions
-import src.SMT_Analysis_BP.helpers.fbm_utility as fbm
-import src.SMT_Analysis_BP.helpers.condensate_movement as condensate_movement
+import SMT_Analysis_BP.helpers.clusterMethods.blob_detection as blob_detection
+import SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions as Analysis_functions
+import SMT_Analysis_BP.helpers.simulations.fbm_utility as fbm
+import SMT_Analysis_BP.helpers.simulations.condensate_movement as condensate_movement
 
 class sim_foci():
 	''' 
