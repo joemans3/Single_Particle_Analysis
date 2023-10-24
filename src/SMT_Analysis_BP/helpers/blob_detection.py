@@ -734,17 +734,3 @@ def residuals_gaus2d(p,x,y,z,**kwargs):
 def gaussian2D(x, y, cen_x, cen_y, sig_x, sig_y, offset,height,kwargs ={}):
 	''' 2d gaussian anistropic '''
 	return (height)*np.exp(-(((cen_x-x)/sig_x)**2 + ((cen_y-y)/sig_y)**2)/2.0) + offset
-if __name__ == "__main__":
-	os.chdir('..')
-	path = 'DATA/new_days/20190527/rpoc_ez/gfp/rpoc_ez_2.tif'
-	a = blob_detection(path,threshold=5e-2)
-	b = a.detection(type = 'skimage')
-	fig = plt.figure()
-	ax = fig.add_subplot()
-	ax.imshow(a.open_file())
-	for i in b:
-		cir = Circle((i[1],i[0]),i[2],fill = False)
-		ax.add_artist(cir)
-	plt.show()
-
-	print(b)

@@ -1,11 +1,7 @@
 import json
 import numpy as np
-import matplotlib.pyplot as plt
-import sys
 import os
 import random
-import src.SMT_Analysis_BP.helpers.Analysis_functions as af
-import src.SMT_Analysis_BP.helpers.fbm_utility as fbm
 import src.SMT_Analysis_BP.helpers.simulate_foci as sf
 import skimage as skimage
 from PIL import Image

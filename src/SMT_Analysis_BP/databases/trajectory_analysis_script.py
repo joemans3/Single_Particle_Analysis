@@ -48,7 +48,6 @@ import src.SMT_Analysis_BP.helpers.import_functions as import_functions
 import src.SMT_Analysis_BP.helpers.nucleoid_detection as nucleoid_detection
 from src.SMT_Analysis_BP.helpers.Analysis_functions import *
 from src.SMT_Analysis_BP.helpers.blob_detection import *
-from src.SMT_Analysis_BP.Random.Convert_csv_mat import *
 from src.SMT_Analysis_BP.helpers.plotting_functions import *
 from src.SMT_Analysis_BP.helpers.SMT_converters import convert_track_data_SMAUG_format, convert_track_data_NOBIAS_format_global, _convert_track_data_NOBIAS_format_tau
 from src.SMT_Analysis_BP.databases.structure_storage import SEGMENTATION_FOLDER_TYPES, ANALYSIS_FOLDER_TYPES, LOADING_DROP_BLOB_TYPES
@@ -619,14 +618,8 @@ class run_analysis:
 		Then the rest of the analysis is the same.
 		'''
 		cd = wd
-		#check for the structure and also if this has been done before to save computation time
-		try:
-			check_bool = self._check_directory_structure()
-		except ValueError:
-			raise ValueError
-			print("Directory structure is not correct. \n Look at the other Main function runs for supperSegger and no segmentation read_track_data methods.")
-			#print the underlying error
-			return
+		#check for the structure and also if this has been done before to save computation time (true = done before)
+		check_bool = self._check_directory_structure()
 
 		#initialize the path_structure_dict property 
 		path_structure_copy = self.path_structure_dict
@@ -1707,6 +1700,8 @@ class run_analysis:
 					else:
 						track_lengths[m.Classification].append(len(m.X))
 						track_vals[m.Classification].append(m)
+					track_lengths["ALL"].append(len(m.X))
+					track_vals["ALL"].append(m)
 		return [track_lengths,track_vals]
 
 

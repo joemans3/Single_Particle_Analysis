@@ -20,6 +20,57 @@ from sklearn.mixture import GaussianMixture
 from src.SMT_Analysis_BP.helpers.decorators import deprecated
 
 
+def photon_conversion_from_AUD(AUD:float|np.ndarray,photon_conversion_factor:float|int,quantum_efficiency:float|int,dark_offset:float|int):
+    '''
+    Converting from AUD to photons for a CMOS camera using the formula:
+    photons = (AUD - dark_offset)*photon_conversion_factor/quantum_efficiency
+    
+    Parameters:
+    -----------
+    AUD : float or numpy array
+        The AUD values
+    photon_conversion_factor : float or int
+        The photon conversion factor
+    quantum_efficiency : float or int
+        The quantum efficiency at a wavelength for the detector (from 0-1, ie 0% - 100%)
+    '''
+    return (AUD - dark_offset)*photon_conversion_factor/quantum_efficiency
+
+def Thompson_localization_precision(psf_sigma:float,pixel_size:float,num_photons:float|np.ndarray,background_photons:float):
+    '''
+    Theory from Thompson et al. 2002 (Precise Nanometer Localization Analysis for Individual Fluorescent Probes)
+    For a gaussian PSF, the localization precision is given by:
+    sigma_loc^2 = (psf_sigma^2 + pixel_size^2 /12)/num_photons + (8*pi*psf_sigma^4*background_photons^2)/(num_photons^2 * pixel_size^2)
+    
+    This is assuming that the fit of the single molecule localization is done using a least squares fit
+
+    Parameters: ( all units for the parameters need to be the same)
+    -----------
+    psf_sigma : float
+        The sigma of the PSF
+    pixel_size : float
+        The size of a pixel
+    num_photons : float or numpy array
+        The number of photons
+    background_photons : float
+        The number of background photons
+    
+    Returns:
+    --------
+    float or numpy array
+        The localization precision
+    '''
+    return np.sqrt(((psf_sigma**2 + ((pixel_size**2) /12))/num_photons) + ((4*np.sqrt(np.pi)*(psf_sigma**3)*background_photons**2)/(pixel_size*(num_photons**2))))
+
+def rayleigh_corr(x,corr,sigma,A):
+    return A*((x/(2*sigma**2))*np.exp(-x**2/(4*sigma**2))) + corr
+
+def nnd_correction_rayleigh(x,sigma,xc,w,a1,a2,a3):
+    a = a1*((x/(2*sigma**2))*np.exp(-x**2/(4*sigma**2)))
+    b = a2*((1/(np.sqrt(2*np.pi*(w**2))))*np.exp(-(x-xc)**2/(2*(w**2))))
+    c = a3*x
+    return a+b+c
+
 #curve fitting utility functions
 def non_linear_curvefit(func,xdata,ydata,p0=None,method='lm',bounds=None):
     '''

@@ -72,6 +72,8 @@ def perfrom_DBSCAN_Cluster(localizations,D,minP,show=False):
         Numpy array of the cluster centers in the form [[x,y],...]
     cluster_radii: np.ndarray
         Numpy array of the cluster radii in the form [r1,r2,...]
+    loc_per_cluster: np.ndarray
+        Numpy array of the number of localizations per cluster in the form [n1,n2,...]
     '''
     #get the DBSCAN object
     db = DBSCAN(eps=D,min_samples=minP)
@@ -85,6 +87,8 @@ def perfrom_DBSCAN_Cluster(localizations,D,minP,show=False):
     cluster_centers = np.zeros((len(unique_labels),2))
     #get the cluster radii
     cluster_radii = np.zeros(len(unique_labels))
+    #get the number of localizations per cluster
+    loc_per_cluster = np.zeros(len(unique_labels))
     #loop over the unique labels
     for i in range(len(unique_labels)):
         #get the cluster label
@@ -97,6 +101,9 @@ def perfrom_DBSCAN_Cluster(localizations,D,minP,show=False):
         cluster_centers[i] = np.mean(cluster[hull.vertices],axis=0)
         #get the cluster radius
         cluster_radii[i] = np.mean(np.linalg.norm(cluster[hull.vertices]-cluster_centers[i],axis=1))
+        #get the number of localizations per cluster
+        loc_per_cluster[i] = len(cluster)
+
     if show:
         fig,ax = plt.subplots()
         ax.scatter(localizations[:,0],localizations[:,1],c=cluster_labels,marker='o',s=10)
@@ -111,6 +118,7 @@ def perfrom_DBSCAN_Cluster(localizations,D,minP,show=False):
     print("DBSCAN found {0} clusters".format(len(unique_labels)))
     print("Cluster centers (x,y): \n",cluster_centers)
     print("Cluster radii: \n",cluster_radii)
-    return cluster_labels,cluster_centers,cluster_radii
+    print("Number of localizations per cluster: \n",loc_per_cluster)
+    return cluster_labels,cluster_centers,cluster_radii,loc_per_cluster
 
 

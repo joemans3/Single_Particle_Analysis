@@ -10,9 +10,11 @@ if __name__ == '__main__':
 from src.SMT_Analysis_BP.helpers.scale_space_plus import SM_reconstruction_image
 from src.SMT_Analysis_BP.helpers.blob_detection import residuals_gaus2d
 from src.SMT_Analysis_BP.helpers.clustering_methods import perfrom_DBSCAN_Cluster,scale_space_plus_blob_detection
+from src.SMT_Analysis_BP.databases.scale_space_plus_fixed_palm import get_unique_localizations
 #import DBSCAN
 #import convex hull
 CORRECTION_FACTOR=1.
+LOCALIZATION_UNIQUE_TYPE = "mean" #also first, see Include variable
 '''
 Helper script to create a new folder in the directory with the name segmented_scale_space_plus. Not meant to be imported as a module.
 This assumes an Analysis or Analysis_new folder exists in the directory that contains the raw SMT data for each movie
@@ -159,14 +161,9 @@ class segmentation_scale_space:
                 df_sub = df[(df['frame'] >= frame_numbers_lower) & (df['frame'] < frame_numbers_upper)]
 
                 if self.include_all == False:
-                    #we need to only take the first x,y for each unique track_ID
-                    #get the unique track_ID
-                    unique_track_ID = df_sub['track_ID'].unique()
-                    #get the first x,y for each unique track_ID
-                    df_sub = df_sub[df_sub['track_ID'].isin(unique_track_ID)]
-                    #get the first x,y for each unique track_ID
-                    df_sub = df_sub.groupby('track_ID').head(1)
-                
+                    unique_localizations = get_unique_localizations(localizations,unique_loc_type=LOCALIZATION_UNIQUE_TYPE)
+                    localizations = unique_localizations
+                        
 
                 #get the localizations
                 localizations = df_sub[['x','y']].to_numpy()/CORRECTION_FACTOR

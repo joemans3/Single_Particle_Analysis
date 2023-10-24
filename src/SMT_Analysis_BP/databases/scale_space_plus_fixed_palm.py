@@ -57,7 +57,7 @@ from src.SMT_Analysis_BP.helpers.clustering_methods import perfrom_DBSCAN_Cluste
 
 CORRECTION_FACTOR=1.
 
-LOCALIZATION_UNIQUE_TYPE = "first" #or "mean" is the other option
+LOCALIZATION_UNIQUE_TYPE = "mean" #or "mean" is the other option
 
 class Reconstruct_Masked_PALM_DATASETS(ABC):
     def __init__(self,
@@ -124,6 +124,16 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
                 if self.include_all == False:
                     unique_localizations = get_unique_localizations(localizations_df,unique_loc_type=LOCALIZATION_UNIQUE_TYPE)
                     localizations_df = unique_localizations
+                #save the localizations as a csv file with molecule_loc.csv as the name with the last column being the area of the mask
+                mask_img11 = plt.imread(mask_path)
+                mask_img1 = np.copy(mask_img11)
+                #find all pixels not 0 
+                mask_img1[mask_img1!=0] = 1
+                #get the area of the mask
+                area = np.sum(mask_img1)
+                #add the area to the localizations df
+                localizations_df["area"] = area*(0.13**2)
+                localizations_df.to_csv(path_structure_dict[movie_ID]["cells"][cell_ID]["Analysis"]["molecule_loc_path"],index=False)
                 #get the dims of the mask image
                 mask_img = plt.imread(mask_path)
                 mask_img_dim = mask_img.shape
@@ -163,29 +173,45 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
                 #now do the scale space blob detection
                 print("#"*100)
                 blobs = scale_space_plus_blob_detection(reconstruction,self.blob_parameters,self.fitting_parameters,show=True)
+
+
                 #we need to rescale the blobs to the original image space
                 blobs_rescaled = rescale_scale_space_blob_detection(blobs=blobs,
                                                                     rescaling_func=reconstruction_obj.coordinate_conversion,
                                                                     type_of_convertion='RC_to_Original')
+                #find the number of localizations in each blob 
+                blobs_rescaled["num_localizations"] = np.zeros(len(blobs_rescaled["Scale"]))
+                for i in range(len(blobs_rescaled["Scale"])):
+                    blobs_rescaled["num_localizations"][i] = 0
+                    for j in range(len(localizations_corrected)):
+                        #check if it inside the circular blob
+                        if np.sqrt((localizations_corrected[j][0]-blobs_rescaled["Fitted"][i][0])**2 + (localizations_corrected[j][1]-blobs_rescaled["Fitted"][i][1])**2) <= blobs_rescaled["Scale"][i][2]:
+                            blobs_rescaled["num_localizations"][i] += 1
                 #now we need to save the blobs
+                #add the number of localizations to the blobs_rescaled dict
+                #add the loc column to the blobs_rescaled dict for the fitted blobs and scale blobs
+                blobs_rescaled["Fitted"] = np.hstack((blobs_rescaled["Fitted"],blobs_rescaled["num_localizations"].reshape(-1,1))) 
+                blobs_rescaled["Scale"] = np.hstack((blobs_rescaled["Scale"],blobs_rescaled["num_localizations"].reshape(-1,1)))
                 np.savetxt(path_structure_dict[movie_ID]["cells"][cell_ID]["Analysis"]["scale_space_plus_blob_fitted_path"],blobs_rescaled["Fitted"],delimiter=',')
                 np.savetxt(path_structure_dict[movie_ID]["cells"][cell_ID]["Analysis"]["scale_space_plus_blob_scale_path"],blobs_rescaled["Scale"],delimiter=',')
                 print("#"*100)
                 #now we need to do the DBSCAN clustering
                 print("#"*100)
                 try:
-                    cluster_labels,cluster_centers,cluster_radii = perfrom_DBSCAN_Cluster(localizations=localizations_corrected,
-                                                                                        D=2*self.loc_error/self.pixel_size,
+                    cluster_labels,cluster_centers,cluster_radii,loc_in_cluster = perfrom_DBSCAN_Cluster(localizations=localizations_corrected,
+                                                                                        D=2*(self.loc_error)/self.pixel_size,
                                                                                         minP=5,
                                                                                         show=True)
+
                 except:
                     cluster_labels = np.zeros(len(localizations_corrected))
                     cluster_centers = np.zeros((1,2))
                     cluster_radii = np.zeros(1)
+                    loc_in_cluster = np.zeros(1)
                     print("DBSCAN clustering failed for {0}".format(path_structure_dict[movie_ID]["cells"][cell_ID]["localizations_path"]))
                 print("#"*100)
                 #now we need to save the DBSCAN clusters
-                np.savetxt(path_structure_dict[movie_ID]["cells"][cell_ID]["Analysis"]["DBSCAN_clusters_path"],np.hstack((cluster_centers,cluster_radii.reshape(-1,1))),delimiter=',')
+                np.savetxt(path_structure_dict[movie_ID]["cells"][cell_ID]["Analysis"]["DBSCAN_clusters_path"],np.hstack((cluster_centers,cluster_radii.reshape(-1,1),loc_in_cluster.reshape(-1,1))),delimiter=',')
                 #now we need to save the analysis parameters(this is the same as the reconstruction parameters)
                 self._save_reconstruction_parameters(full_path=path_structure_dict[movie_ID]["cells"][cell_ID]["Analysis"]["analysis_parameters_path"])
                 #save the reconstruction parameters
@@ -305,6 +331,7 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
                     if not os.path.isdir(analysis_dir):
                         os.mkdir(analysis_dir)
                     #make the new files as shown in the docstring
+                    molecule_loc_path = os.path.join(cell_dir,"molecule_loc.csv")
                     reconstruction_path = os.path.join(cell_dir,"reconstruction.tif")
                     uniform_reconstruction_path = os.path.join(cell_dir,"uniform_reconstruction.tif")
                     normal_scale_projection_path = os.path.join(cell_dir,"normal_scale_projection.tif")
@@ -322,6 +349,7 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
                                                                                     "scale_space_plus_blob_scale_path":scale_space_plus_blob_scale_path,
                                                                                     "DBSCAN_clusters_path":DBSCAN_clusters_path,
                                                                                     "analysis_parameters_path":analysis_parameters_path}
+                    structured_dict_paths[movie_ID]["cells"][cell_ID]["Analysis"]["molecule_loc_path"] = molecule_loc_path
             self._path_structure_dict = structured_dict_paths
             return self._path_structure_dict
     @property
@@ -423,9 +451,7 @@ def rescale_scale_space_blob_detection(blobs,rescaling_func:callable,**kwargs):
 
 if __name__ == '__main__':
     global_path = [
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Rifampacin_Data/20230528/rpoc_ez_rif_100ugml_5min",
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Rifampacin_Data/20230617/rpoc_rif_100ugml",
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Rifampacin_Data/20230617/rpoc_rif_100ugml_2"
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_m9_fixed"
     ]
 
 
@@ -433,10 +459,10 @@ if __name__ == '__main__':
 
 
     blob_parameters = {
-        "threshold": 3e-2, \
+        "threshold": 2e-1, \
         "overlap": 0, \
         "median": False, \
-        "min_sigma": 4/np.sqrt(2), \
+        "min_sigma": 3/np.sqrt(2), \
         "max_sigma": 20/np.sqrt(2), \
         "num_sigma": 30, \
         "detection": 'bp', \
@@ -459,7 +485,7 @@ if __name__ == '__main__':
                                                 fitting_parameters = fitting_parameters,
                                                 rescale_pixel_size = 10,
                                                 pixel_size = 130,
-                                                loc_error = 30,
+                                                loc_error = 15,
                                                 include_all = False
                                                 )
         

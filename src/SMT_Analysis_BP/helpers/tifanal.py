@@ -18,7 +18,7 @@ SEGMENT_TYPE = {
 }
 STACK_STEP = 5
 CONVERT_NAME = 1
-DIR_PATH = "/Volumes/Baljyot_HD/SMT_Olympus/MG16655_Controls/MG16655_AutoFluo_Controls/Live/20230926/MG16655_hex5_5min_Live/Movie"
+DIR_PATH = "/Volumes/Baljyot_HD/SMT_Olympus/20231017/rp_m9_fixed/Movie"
 
 
 #check if the directory exists

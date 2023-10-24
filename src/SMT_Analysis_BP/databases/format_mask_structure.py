@@ -200,8 +200,9 @@ if __name__ == '__main__':
 
 
     path = [
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/MG16655_Controls/Fixation/20230926/MG16655_24_04_PFA_Glu_30_min/gfp",
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/MG16655_Controls/Fixation/20230926/MG16655_3_P_glyaxol_30_min/gfp"
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_hex5_fixed_2/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_m9_fixed/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_rif_fixed/gfp"
     ]
     for path in path:
         mask_dir = movie_mask_directory_structure_manager(path)
