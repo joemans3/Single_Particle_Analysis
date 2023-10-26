@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.spatial import ConvexHull
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import DBSCAN, HDBSCAN
 from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import reshape_col2d
 from SMT_Analysis_BP.helpers.clusterMethods.blob_detection import blob_detection
 import matplotlib.pyplot as plt
@@ -122,3 +122,67 @@ def perfrom_DBSCAN_Cluster(localizations,D,minP,show=False):
     return cluster_labels,cluster_centers,cluster_radii,loc_per_cluster
 
 
+#function for performing hdbscan clustering in a similar way to the DBSCAN clustering
+def perform_HDBSCAN_Cluster(localizations, min_cluster_size, min_samples, show=False):
+    '''
+    Parameters:
+    -----------
+    localizations: np.ndarray
+        Numpy array of the localizations in the form [[x,y],...]
+    min_cluster_size: int
+        The minimum size of clusters
+    min_samples: int
+        The number of samples in a neighborhood for a point to be considered as a core point.
+    show: bool
+        Whether or not to display a plot of the clusters
+
+    Returns:
+    --------
+    cluster_labels: np.ndarray
+        Numpy array of the cluster labels in the form [0,0,1,1,2,2,...]
+    cluster_centers: np.ndarray
+        Numpy array of the cluster centers in the form [[x,y],...]
+    cluster_radii: np.ndarray
+        Numpy array of the cluster radii in the form [r1,r2,...]
+    loc_per_cluster: np.ndarray
+        Numpy array of the number of localizations per cluster in the form [n1,n2,...]
+    '''
+    #get the HDBSCAN object
+    hdbscan_clusterer = HDBSCAN(min_cluster_size=min_cluster_size, min_samples=min_samples)
+    #fit the data
+    hdbscan_clusterer.fit(localizations)
+    #get the labels
+    cluster_labels = hdbscan_clusterer.labels_
+    #get the unique labels without -1
+    unique_labels = np.unique(cluster_labels[cluster_labels != -1])
+    #get the cluster centers
+    cluster_centers = []
+    cluster_radii = []
+    loc_per_cluster = []
+    for label in unique_labels:
+        #get the indices of the localizations in the cluster
+        indices = np.where(cluster_labels == label)[0]
+        #get the localizations in the cluster
+        cluster_localizations = localizations[indices]
+        #get the center of the cluster
+        center = np.mean(cluster_localizations, axis=0)
+        cluster_centers.append(center)
+        #get the radius of the cluster
+        radius = np.max(np.linalg.norm(cluster_localizations - center, axis=1))
+        cluster_radii.append(radius)
+        #get the number of localizations in the cluster
+        loc_per_cluster.append(len(indices))
+    cluster_centers = np.array(cluster_centers)
+    cluster_radii = np.array(cluster_radii)
+    loc_per_cluster = np.array(loc_per_cluster)
+    #plot the clusters if show is True
+    if show:
+        plt.scatter(localizations[:,0], localizations[:,1], c=cluster_labels, cmap='viridis')
+        plt.axis('equal')
+        plt.show()
+    print("HDBSCAN found {0} clusters".format(len(unique_labels)))
+    print("Cluster centers (x,y): \n",cluster_centers)
+    print("Cluster radii: \n",cluster_radii)
+    print("Number of localizations per cluster: \n",loc_per_cluster)
+
+    return cluster_labels, cluster_centers, cluster_radii, loc_per_cluster
