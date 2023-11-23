@@ -19,57 +19,9 @@ from scipy.spatial import ConvexHull
 from sklearn.mixture import GaussianMixture
 from SMT_Analysis_BP.helpers.misc.decorators import deprecated
 
-
-def photon_conversion_from_AUD(AUD:float|np.ndarray,photon_conversion_factor:float|int,quantum_efficiency:float|int,dark_offset:float|int):
-    '''
-    Converting from AUD to photons for a CMOS camera using the formula:
-    photons = (AUD - dark_offset)*photon_conversion_factor/quantum_efficiency
-    
-    Parameters:
-    -----------
-    AUD : float or numpy array
-        The AUD values
-    photon_conversion_factor : float or int
-        The photon conversion factor
-    quantum_efficiency : float or int
-        The quantum efficiency at a wavelength for the detector (from 0-1, ie 0% - 100%)
-    '''
-    return (AUD - dark_offset)*photon_conversion_factor/quantum_efficiency
-
-def Thompson_localization_precision(psf_sigma:float,pixel_size:float,num_photons:float|np.ndarray,background_photons:float):
-    '''
-    Theory from Thompson et al. 2002 (Precise Nanometer Localization Analysis for Individual Fluorescent Probes)
-    For a gaussian PSF, the localization precision is given by:
-    sigma_loc^2 = (psf_sigma^2 + pixel_size^2 /12)/num_photons + (8*pi*psf_sigma^4*background_photons^2)/(num_photons^2 * pixel_size^2)
-    
-    This is assuming that the fit of the single molecule localization is done using a least squares fit
-
-    Parameters: ( all units for the parameters need to be the same)
-    -----------
-    psf_sigma : float
-        The sigma of the PSF
-    pixel_size : float
-        The size of a pixel
-    num_photons : float or numpy array
-        The number of photons
-    background_photons : float
-        The number of background photons
-    
-    Returns:
-    --------
-    float or numpy array
-        The localization precision
-    '''
-    return np.sqrt(((psf_sigma**2 + ((pixel_size**2) /12))/num_photons) + ((4*np.sqrt(np.pi)*(psf_sigma**3)*background_photons**2)/(pixel_size*(num_photons**2))))
-
-def rayleigh_corr(x,corr,sigma,A):
-    return A*((x/(2*sigma**2))*np.exp(-x**2/(4*sigma**2))) + corr
-
-def nnd_correction_rayleigh(x,sigma,xc,w,a1,a2,a3):
-    a = a1*((x/(2*sigma**2))*np.exp(-x**2/(4*sigma**2)))
-    b = a2*((1/(np.sqrt(2*np.pi*(w**2))))*np.exp(-(x-xc)**2/(2*(w**2))))
-    c = a3*x
-    return a+b+c
+############################################################################################################
+###############################  RANDOM FITTING FUNCTIONS ##################################################
+############################################################################################################
 
 #curve fitting utility functions
 def non_linear_curvefit(func,xdata,ydata,p0=None,method='lm',bounds=None):
@@ -157,80 +109,171 @@ def linear_fitting(xdata,ydata,deg=1):
     popt,pcov = np.polyfit(xdata,ydata,deg,cov=True,full=False)
     return np.array([popt,pcov])
 
+#fit for one gaussian for displacements
+def gaus1D(x,a,b,c):
+    return a*np.exp(-(x-b)/(2.*(c**2)))
 
-#find the diffusion coefficient given a time and distance
-def find_diffusion_coefficient(time,distance,dim):
+def gaus2D(x,a,b,c,a1,b1,c1):
+    return a*np.exp(-(x-b)/(2.*(c**2))) + a1*np.exp(-(x-b1)/(2.*(c1**2)))
+
+def gaussian_fit(x,p0,p1,p2):
+    return ((np.sqrt(2.*np.pi*p0))**-1)*np.exp(-((x-p1)**2)/(2*p0)) + p2
+
+def Thompson_localization_precision(psf_sigma:float,pixel_size:float,num_photons:float|np.ndarray,background_photons:float):
     '''
-    Docstring for find_diffusion_coefficient
-    This function finds the diffusion coefficient given a time and distance, this is just a simple calculation:
-    D = (1/(2*dim))*(distance)^2/time
+    Theory from Thompson et al. 2002 (Precise Nanometer Localization Analysis for Individual Fluorescent Probes)
+    For a gaussian PSF, the localization precision is given by:
+    sigma_loc^2 = (psf_sigma^2 + pixel_size^2 /12)/num_photons + (8*pi*psf_sigma^4*background_photons^2)/(num_photons^2 * pixel_size^2)
+    
+    This is assuming that the fit of the single molecule localization is done using a least squares fit
 
-    Parameters:
+    Parameters: ( all units for the parameters need to be the same)
     -----------
-    time : array-like or int or float
-        The time
-    distance : array-like or int or float
-        The distance
-    dim : int
-        The dimensionality of the system
+    psf_sigma : float
+        The sigma of the PSF
+    pixel_size : float
+        The size of a pixel
+    num_photons : float or numpy array
+        The number of photons
+    background_photons : float
+        The number of background photons
     
     Returns:
     --------
     float or numpy array
-        The diffusion coefficient, units are based on the units of the input parameters (time and distance, ie: um^2/s)
+        The localization precision
     '''
-    #if the time and distances are lists convert to numpy arrays
-    if isinstance(time,list):
-        time = np.array(time)
-    if isinstance(distance,list):
-        distance = np.array(distance)
+    return np.sqrt(((psf_sigma**2 + ((pixel_size**2) /12))/num_photons) + ((4*np.sqrt(np.pi)*(psf_sigma**3)*background_photons**2)/(pixel_size*(num_photons**2))))
 
-    #check if time and distance are arrays or numbers
-    if not isinstance(time,(int,float,np.ndarray)) or not isinstance(distance,(int,float,np.ndarray)):
-        raise ValueError("time and distance must be arrays or numbers.")
-    #if they are arrays, check if they are the same shape
-    if isinstance(time,np.ndarray) and isinstance(distance,np.ndarray):
-        if not np.shape(time) == np.shape(distance):
-            raise ValueError("time and distance are not the same shape.")
-    #if the dim is a number but time and distance are arrays, convert dim to an array of the same shape as time and distance
-    if isinstance(dim,(int,float)) and isinstance(time,np.ndarray) and isinstance(distance,np.ndarray):
-        dim = np.ones(np.shape(time))*dim
-    
-    #calculate the diffusion coefficient
-    D = (distance**2)/(time*2*dim) 
-    return D
+def rayleigh_corr(x,corr,sigma,A):
+    return A*((x/(2*sigma**2))*np.exp(-x**2/(4*sigma**2))) + corr
 
-def find_static_localization_error_MSD(sigma,dim):
-    '''Docstring for find_static_localization_error_MSD
-    Given the isotropic gaussian scale (sigma), this function finds the static localization error (sigma_loc) using the equation:
-    sigma_loc = 2n*(sigma)^2
+def nnd_correction_rayleigh(x,sigma,xc,w,a1,a2,a3):
+    a = a1*((x/(2*sigma**2))*np.exp(-x**2/(4*sigma**2)))
+    b = a2*((1/(np.sqrt(2*np.pi*(w**2))))*np.exp(-(x-xc)**2/(2*(w**2))))
+    c = a3*x
+    return a+b+c
+
+############################################################################################################
+###############################  RANDOM UTILITY FUNCTIONS ##################################################
+############################################################################################################
+
+# displacemnt cum distribution
+
+def cum_sum(data,binz = 10):
+  count, bins = np.histogram(data,bins = binz)
+  pdf = count/sum(count)
+  cdf = np.cumsum(pdf)
+  return [cdf,bins]
+
+def rescale(x,a,b):
+
+    x = np.array(x)
+    max_x = np.max(x)
+    min_x = np.min(x)
+    a = np.float(a)  # type: ignore
+    b = np.float(b)  # type: ignore
+    if min_x == max_x:
+        if min_x == 0:
+            return np.array([a] * len(x))
+        else:
+            return np.array([a] * len(x)) + np.array([b-a] * len(x)) * x
+    else:
+        return np.array((((b-a)*(x-min_x)))/np.array((max_x - min_x))) + a
+
+def dif_dis(x,y):
+    c = np.sqrt(np.diff(x)**2 + np.diff(y)**2)
+    return c
+
+def dist(x,y,c1,c2):
+    '''Distance(s) x,y away from a point c1,c2 in 2D'''
+    try:
+        tx=np.abs(c1-np.array(x))
+        ty=np.abs(c2-np.array(y))
+
+        temp=np.sqrt((tx)**2 + (ty)**2)
+        return temp
+    except:
+        return np.nan
+
+#convert degrees to rad
+def d_to_rad(deg_):
+    return np.array(deg_)*np.pi/180.0
+
+#convert rad to deg
+def rad_to_d(rad_):
+    return np.array(rad_)*180.0/np.pi
+
+def cm_normal(x,y):
+    mean_x = np.mean(x)
+    mean_y = np.mean(y)
+    return np.array([mean_x,mean_y])
+
+def con_pix_si(data, con_nm = 0.130,con_ms = 20.,which = 0):
+
+    if which == 0:
+        return data
+
+    if which == 'msd':
+        return (1000./con_ms)*(con_nm**2)*np.array(data)
+
+    if which == 'um':
+        return (con_nm)*np.array(data)
+
+def radius_of_gyration(*args)->float:
+    '''Determine the radius of gyration of a particle given its x,y coordinates.
+    If only one argument is given, it is assumed to be a 2D array of x,y coordinates.
+    If two arguments are given, they are assumed to be x,y coordinates.
 
     Parameters:
     -----------
-    sigma : array-like or int or float
-        The isotropic gaussian scale
-    dim : int
-        The dimensionality of the system
-    
+    *args : array-like
+        if one argument is given, it is assumed to be a 2D array of x,y coordinates. (N,2)
+        if two arguments are given, they are assumed to be x,y coordinates. (N,),(N,)
+
     Returns:
     --------
-    float or numpy array
-        The static localization error
+    r_g: float
+        radius of gyration of particles
+    
+    Raises:
+    -------
+    ValueError
+        if the number of arguments is not 1 or 2
+    
     '''
-    #if sigma is a list convert to numpy array
-    if isinstance(sigma,list):
-        sigma = np.array(sigma)
-    #check if sigma is an array or number
-    if not isinstance(sigma,(int,float,np.ndarray)):
-        raise ValueError("sigma must be an array or number.")
-    #calculate the static localization error
-    sigma_loc = 2*dim*(sigma**2)
-    return sigma_loc
+    if len(args) == 1:
+        x = args[0][:,0]
+        y = args[0][:,1]
+    elif len(args) == 2:
+        x = np.array(args[0])
+        y = np.array(args[1])
+    else:
+        raise ValueError('Input should be (N,2) array of x,y coordinates or two arrays of x,y coordinates (N,), (N,)')
 
-#function to assign a random starting point in a range
-def _random_starting_point(start,end):
-    return np.random.randint(start,end)
+    #find center of mass
+    cm_x,cm_y = cm_normal(x,y)
+    r_m = np.sqrt(cm_x**2 + cm_y**2)
+    #convert to radial units
+    r = np.sqrt(x**2 + y**2)
 
+    return np.mean(np.sqrt((r-r_m)**2))
+
+def photon_conversion_from_AUD(AUD:float|np.ndarray,photon_conversion_factor:float|int,quantum_efficiency:float|int,dark_offset:float|int):
+    '''
+    Converting from AUD to photons for a CMOS camera using the formula:
+    photons = (AUD - dark_offset)*photon_conversion_factor/quantum_efficiency
+    
+    Parameters:
+    -----------
+    AUD : float or numpy array
+        The AUD values
+    photon_conversion_factor : float or int
+        The photon conversion factor
+    quantum_efficiency : float or int
+        The quantum efficiency at a wavelength for the detector (from 0-1, ie 0% - 100%)
+    '''
+    return (AUD - dark_offset)*photon_conversion_factor/quantum_efficiency
 
 def bin_ndarray(ndarray, new_shape, operation='sum'):
     '''
@@ -317,29 +360,6 @@ def convert_3d_to_2d(a):
     b[:,1] = a[:,1]
     return b
 
-def squared_mean_difference(a):
-    # check if the input is empty
-    if a is None:
-        return 0
-    # check if the input is a numpy array
-    if not isinstance(a, np.ndarray):
-        return 0
-    # check if the input is of length 0
-    if len(a) == 0:
-        return 0
-    # check if the input is of length 1
-    if len(a) == 1:
-        return a[0]
-    # check if the input contains any nan
-    if np.any(np.isnan(a)):
-        return np.nan
-    # check if the input contains any inf
-    if np.any(np.isinf(a)):
-        return np.inf
-    # calculate the square root of the sum of the squares of the input divided by the length of the input
-    return np.sqrt(np.sum(a**2))/len(a)
-
-
 # is a point inside a circle
 def point_inside_circle2D(circle,point):
     '''Check if a point is inside a circle
@@ -399,7 +419,6 @@ def point_inside_circle2D(circle,point):
     else:
         return False
 
-
 def reshape_col2d(arr,permutations):
     '''
     Docstring for reshape_col2d
@@ -458,7 +477,6 @@ def range_distance(a,b):
     #return the distance
     return distance
 
-
 def rt_to_xy(r,theta):
     '''
     Docstring for rt_to_xy
@@ -487,7 +505,6 @@ def rt_to_xy(r,theta):
     y = r*np.sin(theta)
     # Return the coordinates as an array
     return np.array([x,y])
-
 
 def pad_array(subarray, shape, top_left_coord, pad = 0):
     '''
@@ -521,6 +538,7 @@ def pad_array(subarray, shape, top_left_coord, pad = 0):
     full_array[top_left_coord[1]-1:top_left_coord[1]+shape_sub[0]-1,top_left_coord[0]-1:top_left_coord[0]+shape_sub[1]-1] = subarray
 
     return full_array
+
 def sorted_alphanumeric(data):
     # Function to convert text to int if text is a digit, else convert to lowercase
     convert = lambda text: int(text) if text.isdigit() else text.lower()
@@ -608,288 +626,9 @@ def rescale_range(x,min_x,max_x,a,b):
         raise ValueError("a={} is not less than b={}".format(a,b))
     return ((b-a)*(x - min_x)/(max_x - min_x)) + a
 
-# displacemnt cum distribution
 
-def cum_sum(data,binz = 10):
-  count, bins = np.histogram(data,bins = binz)
-  pdf = count/sum(count)
-  cdf = np.cumsum(pdf)
-  return [cdf,bins]
-
-
-def rescale(x,a,b):
-
-    x = np.array(x)
-    max_x = np.max(x)
-    min_x = np.min(x)
-    a = np.float(a)  # type: ignore
-    b = np.float(b)  # type: ignore
-    if min_x == max_x:
-        if min_x == 0:
-            return np.array([a] * len(x))
-        else:
-            return np.array([a] * len(x)) + np.array([b-a] * len(x)) * x
-    else:
-        return np.array((((b-a)*(x-min_x)))/np.array((max_x - min_x))) + a
-
-
-
-
-#fit for one gaussian for displacements
-def gaus1D(x,a,b,c):
-    return a*np.exp(-(x-b)/(2.*(c**2)))
-
-def gaus2D(x,a,b,c,a1,b1,c1):
-    return a*np.exp(-(x-b)/(2.*(c**2))) + a1*np.exp(-(x-b1)/(2.*(c1**2)))
-
-
-def dif_dis(x,y):
-    c = np.sqrt(np.diff(x)**2 + np.diff(y)**2)
-    return c
-
-def dist(x,y,c1,c2):
-    '''Distance(s) x,y away from a point c1,c2 in 2D'''
-    try:
-        tx=np.abs(c1-np.array(x))
-        ty=np.abs(c2-np.array(y))
-
-        temp=np.sqrt((tx)**2 + (ty)**2)
-        return temp
-    except:
-        return np.nan
-
-
-def unit_vector(vector):
-    """ Returns the unit vector of the vector.  """
-    return vector / np.linalg.norm(vector)
-
-def angle_between(v1, v2 = (1,0)):
-    """ Returns the angle in radians between vectors 'v1' and 'v2': over 0-2pi
-    """
-    v1_u = unit_vector(v1)
-    v2_u = unit_vector(v2)
-    return math.atan2(np.linalg.det([v1_u,v2_u]),np.dot(v1_u,v2_u))
-
-def angle_multi(v1):
-    angles = []
-    for i in v1:
-        angles.append(angle_between(i))
-    return angles
-
-
-
-
-#######MSD calculations for sim data format of dict ###
-
-def MSD_tau_utility(x,y,tau=1,permutation=True):
-    '''Documentation for MSD_tau_utility
-
-    Parameters:
-    -----------
-    x : array
-        x positions of the data
-    y : array
-        y positions of the data
-    tau : int
-        time lag for the MSD calculation
-    permutation : bool
-        if permutation == True then the MSD is calculated for all possible permutations of the data
-        if permutation == False then the MSD is calculated for the data in the order it is given
-    
-    Returns:
-    --------
-    displacements : array, shape (n,2)
-        array of displacements 
-    
-    
-    '''
-
-    #if permutation == True then the MSD is calculated for all possible permutations of the data
-    #if permutation == False then the MSD is calculated for the data in the order it is given
-    if permutation == True:
-        displacements = _msd_tau_utility_all(x,y,tau)
-    else:
-        #dont use this condition, its wrong
-        displacements = _msd_tau_utility_single(x,y,tau)
-
-    return displacements
-    
-def _msd_tau_utility_all(x,y,tau):
-    ''' Documentation for _msd_tau_utility_all
-
-    Parameters:
-    -----------
-    x : array
-        x positions of the data
-    y : array
-        y positions of the data
-    tau : int
-        time lag for the MSD calculation
-
-    Returns:
-    --------
-    displacements : array, shape (n,2)
-        array of displacements for all possible permutations of the data
-    
-    Notes:
-    ------
-    For the theory behind this see https://web.mit.edu/savin/Public/.Tutorial_v1.2/Concepts.html#A1
-    '''
-    #find the total displacements possible, from https://web.mit.edu/savin/Public/.Tutorial_v1.2/Concepts.html#A1
-    total_displacements = len(x) - tau
-    #create an array to store the displacements
-    displacements = np.zeros((total_displacements,2))
-    #loop through the displacements
-    for i in range(total_displacements):
-        #calculate the displacements
-        #make sure that i+tau is less than the length of the data
-        if i+tau < len(x):
-            displacements[i] = np.array([x[i+tau]-x[i],y[i+tau]-y[i]])
-    #return the displacements as (x,y) pairs
-    return displacements
-
-def _msd_tau_utility_single(x,y,tau): 
-    #dont use this, its just to show this doesn't work as well as the permutation method
-    x_dis = np.diff(x[::tau])
-    y_dis = np.diff(y[::tau])
-    #return the displacements as (x,y) pairs
-    return np.array([x_dis,y_dis]).T
-
-def MSD_tau(x,y,permutation=True):
-    '''Documentation for MSD_tau
-
-    Parameters:
-    -----------
-    x : array
-        x positions of the data
-    y : array
-        y positions of the data
-    permutation : bool
-        if permutation == True then the MSD is calculated for all possible permutations of the data
-        if permutation == False then the MSD is calculated for the data in the order it is given
-    
-    Returns:
-    --------
-    displacements : dict
-        dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,2)
-    
-    '''
-
-    #find the maximum time lag possible
-    max_tau = len(x)-1
-    #create a dictionary to store the displacements for each time lag
-    displacements = {}
-    #loop through the time lags
-    for tau in range(1,max_tau+1):
-        #calculate the displacements for each time lag
-        displacements[tau] = MSD_tau_utility(x,y,tau,permutation)
-    #return the displacements
-    return displacements
-
-def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_factor=None,min_track_length=1,max_track_length=10,**kwargs):#return_type="msd_curves",verbose=False,conversion_factor=None):
-    '''Documentation for MSD_Tracks
-
-    Parameters:
-    -----------
-    tracks : dict
-        dictionary of tracks, key = track ID, value = [[x,y],...] of coordinates
-    permutation : bool (default = True, don't change this)
-        if permutation == True then the MSD is calculated for all possible permutations of the data
-        if permutation == False then the MSD is calculated for the data in the order it is given
-    return_type : str (default = "msd_curves")
-        if return_type == "msd_curves" then the function returns the MSD curves for each track (ensemble MSD curve)
-        if return_type == "displacements" then the function returns the displacements for each track
-        if return_type == "both" then the function returns both the MSD curves and the displacements for each track
-    verbose : bool (default = False)
-        if verbose == True then returns the raw ensemble MSD displacement for each tau aswell as the MSD curves noted above
-        TODO: this is annoying and should be separated into a different function but is not yet
-    conversion_factor : float (default = None)
-        if conversion_factor != None then the coordinates are converted to the desired units before the MSD is calculated
-    tau_conversion_factor : float (default = None)
-        if tau_conversion_factor != None then the time lags are converted to the desired units before the MSD is calculated
-        units are for [0->n] (int) -> seconds (1 = 0.02 seconds)
-    min_track_length : int (default = 1)
-        the minimum length of a track to be included in the MSD calculation
-    max_track_length : int (default = 10)
-        the maximum length of a track to be included in the MSD calculation
-    
-    Returns:
-    --------
-    return_dict : dict
-        dictionary of MSD curves for each track, key = track ID, value = dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,2)
-    
-    Notes:
-    ------
-    1. Only implimented sequential tau. If trajectories are missing coordinate values (ex. if using gap linking in TRACKMATE) then this is not accounted for.
-    
-    '''
-    #create a dictionary to store the ensemble disp for each track
-
-    track_copy = copy.deepcopy(tracks) #so that the original tracks are not modified since python is pass by reference
-
-    ensemble_disp = {}
-    #create a dictionary to store the displacements for each track
-    tracks_displacements = {}
-    track_msds = {}
-    track_msds_error = {}
-    #loop through the tracks
-    for key,value in track_copy.items():
-        #check if the track is long enough to calculate the MSD
-        if len(value) >= min_track_length:
-            #convert the coordinates based on the conversion factor
-            if conversion_factor != None:
-                value *= conversion_factor
-            #calculate the displacements for each track
-            disp = MSD_tau(value[:,0][:max_track_length],value[:,1][:max_track_length],permutation)
-            #lets convert the taus (in the keys of disp) to the desired units
-            if tau_conversion_factor != None:
-                disp = {key*tau_conversion_factor:value for key,value in disp.items()}
-
-            tracks_displacements[key] = disp
-            track_msd_temp = msd_avgerage_utility(disp)
-            track_msds[key] = track_msd_temp[0]
-            track_msds_error[key] = track_msd_temp[1]
-            #unify the ensemble MSD curve dictionary with disp
-            ensemble_disp = dic_union_two(ensemble_disp,disp)
-
-    #update the ensemble MSD curve dictionary
-    ensemble_msd,errors_ensemble_msd = msd_avgerage_utility(ensemble_disp)
-    return_dict = {"msd_curves":[ensemble_msd,errors_ensemble_msd,track_msds,track_msds_error],"displacements":[ensemble_disp,tracks_displacements]}
-    #keeping the code below for backwards compatibility, but is useless now
-    return return_dict,ensemble_disp
-
-def msd_avgerage_utility(displacements):
-    '''Documentation for _msd_avgerage_utility
-
-    Parameters: 
-    -----------
-    displacements : dict
-        dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,D), D is the dimension of the data
-    
-    Returns:
-    --------
-    msd : dict
-        dictionary of the MSD for each time lag, key = time lag, value = array of MSD values, shape (n,)
-    error_msd : dict (this is the standard error of the mean of the MSD)
-        dictionary of the error in the MSD for each time lag, key = time lag, value = array of error in the MSD values, shape (n,) 
-    
-    '''
-    #create a dictionary to store the MSD for each time lag
-    msd = {}
-    error_msd = {}
-    #loop through the time lags
-    for key,value in displacements.items():
-        #calculate the MSD for each time lag
-        #the MSD is the average of the squared displacements
-        #the squared displacements are the sum of the squared components of the displacements
-        #divide by the number of dimensions to get the average of the squared displacements
-        msd[key] = np.mean(np.sum(np.array(value)**2,axis=1))
-        #calculate the error in the MSD for each time lag
-        #the error in the MSD is the standard deviation of the standard error of the mean of the squared displacements
-        #the standard error of the mean of the squared displacements is the standard deviation of the squared displacements divided by the square root of the number of displacements
-        error_msd[key] = np.std(np.sum(np.array(value)**2,axis=1))/np.sqrt(len(value))
-    #return the MSD
-    return [msd,error_msd]
+############################################################################################################
+###############################  MSD calculations for sim data format of dict ##############################
 
 def dic_union_two(dic_1,dic_2):
     '''Documentation for dic_union_two
@@ -936,8 +675,160 @@ def dic_union_two(dic_1,dic_2):
     #return the union
     return dic_union
 
+#extras (soon to be deprecated)
+def MSD_tavg1(x,y,f,f_inc = False):
+    if f_inc == True:
+        return np.mean((np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0])/np.diff(f)))**2)/4.
+    else:
+        return np.mean(np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0]))**2)/4.
 
-######Track percent identity functions######
+def MSD_tavg(x,y,f,f_inc = False):
+    
+    dists = np.zeros(len(x)-1)
+    for i in range(len(x)-1):
+        dists[i] = dist(x[i],y[i],x[i+1],y[i+1])
+    if f_inc == True:
+        return np.mean((np.diff(dists/np.diff(f)))**2)/4.
+    else:
+        return np.mean((np.diff(dists))**2)/4.
+    
+def MSD_tavg_single(x,f,f_inc = False):
+    if f_inc == True:
+        return np.mean((np.diff(x/f))**2)/4.
+    else:
+        return np.mean((np.diff(x))**2)/4.
+    
+def track_decomp(x,y,f,max_track_decomp):
+    #takes tracks and finds MSD for various timestep conditions.
+    
+    #return array-like: 
+    #msd = msd values at all tau values considered
+    #popt = fitted parameters on MSD equation
+    #pcov = covariance matrix of fit
+    
+    max_decomp = np.floor(len(x)/max_track_decomp)
+    tau = list(range(1,int(max_decomp+1.0)))
+    msd = []
+    for i in tau:
+        if i < len(x):
+            n_x = np.array(x)[::i]
+            n_y = np.array(y)[::i]
+            n_f = np.array(f)[::i]
+            msd.append(MSD_tavg(n_x,n_y,n_f))
+        
+    #popt , pcov = curve_fit(fit_MSD,tau,np.array(msd),p0=[1,1],maxfev=10000)
+    
+    
+    return np.array(msd)
+
+def fit_MSD_loc_err(t,p_0,p_1,p_2):
+    return p_0 * (t**(p_1)) + p_2
+
+def fit_MSD(t,p_0,p_1,p_2):
+    return p_0 * (t**(p_1)) 
+
+def fit_MSD_Linear(t,p_0,p_1):
+    return t*p_1 + p_0
+
+#utilities
+#find the diffusion coefficient given a time and distance
+def find_diffusion_coefficient(time,distance,dim):
+    '''
+    Docstring for find_diffusion_coefficient
+    This function finds the diffusion coefficient given a time and distance, this is just a simple calculation:
+    D = (1/(2*dim))*(distance)^2/time
+
+    Parameters:
+    -----------
+    time : array-like or int or float
+        The time
+    distance : array-like or int or float
+        The distance
+    dim : int
+        The dimensionality of the system
+    
+    Returns:
+    --------
+    float or numpy array
+        The diffusion coefficient, units are based on the units of the input parameters (time and distance, ie: um^2/s)
+    '''
+    #if the time and distances are lists convert to numpy arrays
+    if isinstance(time,list):
+        time = np.array(time)
+    if isinstance(distance,list):
+        distance = np.array(distance)
+
+    #check if time and distance are arrays or numbers
+    if not isinstance(time,(int,float,np.ndarray)) or not isinstance(distance,(int,float,np.ndarray)):
+        raise ValueError("time and distance must be arrays or numbers.")
+    #if they are arrays, check if they are the same shape
+    if isinstance(time,np.ndarray) and isinstance(distance,np.ndarray):
+        if not np.shape(time) == np.shape(distance):
+            raise ValueError("time and distance are not the same shape.")
+    #if the dim is a number but time and distance are arrays, convert dim to an array of the same shape as time and distance
+    if isinstance(dim,(int,float)) and isinstance(time,np.ndarray) and isinstance(distance,np.ndarray):
+        dim = np.ones(np.shape(time))*dim
+    
+    #calculate the diffusion coefficient
+    D = (distance**2)/(time*2*dim) 
+    return D
+
+def find_static_localization_error_MSD(sigma,dim):
+    '''Docstring for find_static_localization_error_MSD
+    Given the isotropic gaussian scale (sigma), this function finds the static localization error (sigma_loc) using the equation:
+    sigma_loc = 2n*(sigma)^2
+
+    Parameters:
+    -----------
+    sigma : array-like or int or float
+        The isotropic gaussian scale
+    dim : int
+        The dimensionality of the system
+    
+    Returns:
+    --------
+    float or numpy array
+        The static localization error
+    '''
+    #if sigma is a list convert to numpy array
+    if isinstance(sigma,list):
+        sigma = np.array(sigma)
+    #check if sigma is an array or number
+    if not isinstance(sigma,(int,float,np.ndarray)):
+        raise ValueError("sigma must be an array or number.")
+    #calculate the static localization error
+    sigma_loc = 2*dim*(sigma**2)
+    return sigma_loc
+
+#function to assign a random starting point in a range
+def _random_starting_point(start,end):
+    return np.random.randint(start,end)
+
+def squared_mean_difference(a):
+    # check if the input is empty
+    if a is None:
+        return 0
+    # check if the input is a numpy array
+    if not isinstance(a, np.ndarray):
+        return 0
+    # check if the input is of length 0
+    if len(a) == 0:
+        return 0
+    # check if the input is of length 1
+    if len(a) == 1:
+        return a[0]
+    # check if the input contains any nan
+    if np.any(np.isnan(a)):
+        return np.nan
+    # check if the input contains any inf
+    if np.any(np.isinf(a)):
+        return np.inf
+    # calculate the square root of the sum of the squares of the input divided by the length of the input
+    return np.sqrt(np.sum(a**2))/len(a)
+
+############################################################################################################
+###############################  Track percent identity functions ##########################################
+############################################################################################################
 
 def point_per_frame_difference(true_points_per_frame,extracted_points_per_frame):
     ''' Documentation for point_per_frame_difference
@@ -1361,76 +1252,6 @@ def point_pair_error_detection(true_point_pairs,extracted_point_pairs,threshold=
     #return the percent of point pairs detected
     return 100*detected_point_pairs/total_point_pairs, 100*np.abs(total_extracted_point_pairs-detected_point_pairs)/total_extracted_point_pairs
 
-
-#density calculations 
-
-def cm_periodic(x,y,sizeN = 1):
-    #transform x,y to -pi <-> pi
-    xpi=x*2.*np.pi/sizeN
-    ypi=y*2.*np.pi/sizeN
-    #find the geometric mean (all points have weighting factor of 1)
-    xpi_meanc=np.mean(np.cos(xpi))
-    xpi_means=np.mean(np.sin(xpi))
-    
-    ypi_meanc=np.mean(np.cos(ypi))
-    ypi_means=np.mean(np.sin(ypi))
-    
-    
-    
-    #transform back to x,y space
-    thetax=np.arctan2(-xpi_means,-xpi_meanc) + np.pi
-        
-    thetay=np.arctan2(-ypi_means,-ypi_meanc) + np.pi
-
-    xcm=sizeN*thetax/(2.*np.pi)
-    ycm=sizeN*thetay/(2.*np.pi)
-    
-    return np.array([xcm,ycm])
-
-def cm_normal(x,y):
-    mean_x = np.mean(x)
-    mean_y = np.mean(y)
-    return np.array([mean_x,mean_y])
-
-def radius_of_gyration(*args)->float:
-    '''Determine the radius of gyration of a particle given its x,y coordinates.
-    If only one argument is given, it is assumed to be a 2D array of x,y coordinates.
-    If two arguments are given, they are assumed to be x,y coordinates.
-
-    Parameters:
-    -----------
-    *args : array-like
-        if one argument is given, it is assumed to be a 2D array of x,y coordinates. (N,2)
-        if two arguments are given, they are assumed to be x,y coordinates. (N,),(N,)
-
-    Returns:
-    --------
-    r_g: float
-        radius of gyration of particles
-    
-    Raises:
-    -------
-    ValueError
-        if the number of arguments is not 1 or 2
-    
-    '''
-    if len(args) == 1:
-        x = args[0][:,0]
-        y = args[0][:,1]
-    elif len(args) == 2:
-        x = np.array(args[0])
-        y = np.array(args[1])
-    else:
-        raise ValueError('Input should be (N,2) array of x,y coordinates or two arrays of x,y coordinates (N,), (N,)')
-
-    #find center of mass
-    cm_x,cm_y = cm_normal(x,y)
-    r_m = np.sqrt(cm_x**2 + cm_y**2)
-    #convert to radial units
-    r = np.sqrt(x**2 + y**2)
-
-    return np.mean(np.sqrt((r-r_m)**2))
-
 def area_points_per_frame(points_per_frame:dict,area_func:callable = radius_of_gyration)->dict:
     '''
     Parameters:
@@ -1477,34 +1298,11 @@ def convex_hull_area(points):
     return hull.volume
 
 
-
-
-def MSD_tavg1(x,y,f,f_inc = False):
-    if f_inc == True:
-        return np.mean((np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0])/np.diff(f)))**2)/4.
-    else:
-        return np.mean(np.diff(dist(np.array(x)[1:],np.array(y)[1:],np.array(x)[0],np.array(y)[0]))**2)/4.
-
-def MSD_tavg(x,y,f,f_inc = False):
-    
-    dists = np.zeros(len(x)-1)
-    for i in range(len(x)-1):
-        dists[i] = dist(x[i],y[i],x[i+1],y[i+1])
-    if f_inc == True:
-        return np.mean((np.diff(dists/np.diff(f)))**2)/4.
-    else:
-        return np.mean((np.diff(dists))**2)/4.
-    
-def MSD_tavg_single(x,f,f_inc = False):
-    if f_inc == True:
-        return np.mean((np.diff(x/f))**2)/4.
-    else:
-        return np.mean((np.diff(x))**2)/4.
-    
-def gaussian_fit(x,p0,p1,p2):
-    return ((np.sqrt(2.*np.pi*p0))**-1)*np.exp(-((x-p1)**2)/(2*p0)) + p2
-
 ##################################################################################################################################
+#################################### Randoms (Check for Deprications) ############################################################
+##################################################################################################################################
+
+""" ##################################################################################################################################
 #implimenting MLE method for detecting diffusion coeff/ velocity change in single tracks as outlined in: Detection of Velocity and Diffusion Coefficient Change Points in Single-Particle Trajectories, Yin et al. 2018
 
 def prop_vel(x,frame_rate,n):
@@ -1545,38 +1343,6 @@ def end_distance(x,y):
     y = np.array(y)
 
     return np.sqrt((x[-1] - x[0])**2 + (y[-1] - y[0])**2)
-
-def track_decomp(x,y,f,max_track_decomp):
-    #takes tracks and finds MSD for various timestep conditions.
-    
-    #return array-like: 
-    #msd = msd values at all tau values considered
-    #popt = fitted parameters on MSD equation
-    #pcov = covariance matrix of fit
-    
-    max_decomp = np.floor(len(x)/max_track_decomp)
-    tau = list(range(1,int(max_decomp+1.0)))
-    msd = []
-    for i in tau:
-        if i < len(x):
-            n_x = np.array(x)[::i]
-            n_y = np.array(y)[::i]
-            n_f = np.array(f)[::i]
-            msd.append(MSD_tavg(n_x,n_y,n_f))
-        
-    #popt , pcov = curve_fit(fit_MSD,tau,np.array(msd),p0=[1,1],maxfev=10000)
-    
-    
-    return np.array(msd)
-
-def fit_MSD_loc_err(t,p_0,p_1,p_2):
-    return p_0 * (t**(p_1)) + p_2
-
-def fit_MSD(t,p_0,p_1,p_2):
-    return p_0 * (t**(p_1)) 
-
-def fit_MSD_Linear(t,p_0,p_1):
-    return t*p_1 + p_0
 
 #fill list of lists with nan to get symmetic array
 def boolean_indexing(v, fillval=np.nan):
@@ -1929,6 +1695,23 @@ def cumsum(x,y):
 def dot(a,b):
     return a[0]*b[0] + a[1]*b[1]
 
+def unit_vector(vector):
+    ''' Returns the unit vector of the vector.'''
+    return vector / np.linalg.norm(vector)
+
+def angle_between(v1, v2 = (1,0)):
+    ''' Returns the angle in radians between vectors 'v1' and 'v2': over 0-2pi'''
+    v1_u = unit_vector(v1)
+    v2_u = unit_vector(v2)
+    return math.atan2(np.linalg.det([v1_u,v2_u]),np.dot(v1_u,v2_u))
+
+def angle_multi(v1):
+    angles = []
+    for i in v1:
+        angles.append(angle_between(i))
+    return angles
+
+
 from numpy import arange, histogram, mean, pi, sqrt, zeros
 def centered_pairCorrelation_2D(x, y, center, rMax, dr, **kwargs):
     edges = arange(0., rMax + 1.1 * dr, dr)
@@ -1951,8 +1734,8 @@ def centered_pairCorrelation_2D(x, y, center, rMax, dr, **kwargs):
         rInner = edges[i]
         g_average[i] = mean(g[:, i]) / (pi * (rOuter**2 - rInner**2))
     return (g_average, radii, center)
-
-#define a function to calculate the angle between 3 points in 2D
+ """
+""" #define a function to calculate the angle between 3 points in 2D
 
 def angle2D(X,Y):
     
@@ -1998,9 +1781,33 @@ def trajectory_angle(X,Y):
 
             angles.append(angle2D(x,y))
         return np.array(angles)
+ #density calculations 
 
+def cm_periodic(x,y,sizeN = 1):
+    #transform x,y to -pi <-> pi
+    xpi=x*2.*np.pi/sizeN
+    ypi=y*2.*np.pi/sizeN
+    #find the geometric mean (all points have weighting factor of 1)
+    xpi_meanc=np.mean(np.cos(xpi))
+    xpi_means=np.mean(np.sin(xpi))
+    
+    ypi_meanc=np.mean(np.cos(ypi))
+    ypi_means=np.mean(np.sin(ypi))
+    
+    
+    
+    #transform back to x,y space
+    thetax=np.arctan2(-xpi_means,-xpi_meanc) + np.pi
+        
+    thetay=np.arctan2(-ypi_means,-ypi_meanc) + np.pi
 
-###########################
+    xcm=sizeN*thetax/(2.*np.pi)
+    ycm=sizeN*thetay/(2.*np.pi)
+    
+    return np.array([xcm,ycm])
+ """
+
+""" ###########################
 #utility functions for GMM calculations
 ###########################
 def GMM_1D(data:np.ndarray|list, n_components:int, **kwargs)->tuple:
@@ -2032,59 +1839,31 @@ def GMM_1D(data:np.ndarray|list, n_components:int, **kwargs)->tuple:
     covariances = gmm.covariances_
     weights = gmm.weights_
     #return tuple
-    return (means, covariances, weights, gmm)
+    return (means, covariances, weights, gmm) """
 
+""" def ang(a,b):
 
+    ''' takes input as tuple of tuples of X,Y.'''
 
+    la = [(a[0][0]-a[1][0]), (a[0][1]-a[1][1])]
+    lb = [(b[0][0]-b[1][0]), (b[0][1]-b[1][1])]
 
+    dot_ab = dot(la,lb)
 
+    ma = dot(la,la)**0.5
+    mb = dot(lb,lb)**0.5
 
+    a_cos = dot_ab/(ma*mb)
+    try:
+        angle = math.acos(dot_ab/(mb*ma))
+    except:
+        angle = 0
+    ang_deg = math.degrees(angle)%360
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def ang(a,b):
-
-#     ''' takes input as tuple of tuples of X,Y.'''
-
-#     la = [(a[0][0]-a[1][0]), (a[0][1]-a[1][1])]
-#     lb = [(b[0][0]-b[1][0]), (b[0][1]-b[1][1])]
-
-#     dot_ab = dot(la,lb)
-
-#     ma = dot(la,la)**0.5
-#     mb = dot(lb,lb)**0.5
-
-#     a_cos = dot_ab/(ma*mb)
-#     try:
-#         angle = math.acos(dot_ab/(mb*ma))
-#     except:
-#         angle = 0
-#     ang_deg = math.degrees(angle)%360
-
-#     if ang_deg-180>=0:
-#         return 360 - ang_deg
-#     else:
-#         return ang_deg
-
-
-
+    if ang_deg-180>=0:
+        return 360 - ang_deg
+    else:
+        return ang_deg
 
 # #get the angle between a series of connected lines (trajectories); N lines = N-1
 
@@ -2146,36 +1925,9 @@ def GMM_1D(data:np.ndarray|list, n_components:int, **kwargs)->tuple:
 #     else:
 #         return [ang(((x[i],y[i],z[i]),(x[i+1],y[i+1],z[i+1])),((x[i+1],y[i+1],z[i+1]),(x[i+2],y[i+2],z[i+2]))) for i in range(len(x)-2)]
 
+"""
 
-
-
-#convert degrees to rad
-def d_to_rad(deg_):
-    return np.array(deg_)*np.pi/180.0
-
-#convert rad to deg
-def rad_to_d(rad_):
-    return np.array(rad_)*180.0/np.pi
-
-
-def con_pix_si(data, con_nm = 0.130,con_ms = 20.,which = 0):
-
-    if which == 0:
-        return data
-
-    if which == 'msd':
-        return (1000./con_ms)*(con_nm**2)*np.array(data)
-
-    if which == 'um':
-        return (con_nm)*np.array(data)
-
-
-
-
-
-
-
-def GMM_utility2(data, n, biners=50, inclusion_thresh = [0,100], verbose=True, title_1d="", title_2d="", x_label="", y_label_2d="", log=True, x_limit = (),ax = 0):
+""" def GMM_utility2(data, n, biners=50, inclusion_thresh = [0,100], verbose=True, title_1d="", title_2d="", x_label="", y_label_2d="", log=True, x_limit = (),ax = 0):
     
     data = np.array(data)
     weights_1 = np.ones_like(data)/float(len(data))
@@ -2222,32 +1974,28 @@ def GMM_utility2(data, n, biners=50, inclusion_thresh = [0,100], verbose=True, t
         print("Warning: x_limit is invalid")
     
     return 
+ """
 
-
-# def create_box_plot(box_data,tick_list,y_label = "",x_label = "",y_lim = (),title = ""):
-#     ticks = tick_list
-#     plt.boxplot(box_data,positions = range(1,len(tick_list)+1))
-#     for i in range(1,len(tick_list)+1):
-#         y = box_data[i-1]
-#         x = np.random.normal(i, 0.04, size=len(y))
-#         plt.plot(x, y, 'r.', alpha=0.2)
-#     try:
-#         plt.ylim(y_lim) 
-#     except:
-#         print("Warning: y_lim not valid")
-#     plt.xticks(xrange(1, len(ticks) * 1 + 1, 1), ticks)
-#     plt.ylabel(y_label)
-#     plt.xlabel(x_label)
-#     plt.title(title)
-#     plt.show()
+""" def create_box_plot(box_data,tick_list,y_label = "",x_label = "",y_lim = (),title = ""):
+    ticks = tick_list
+    plt.boxplot(box_data,positions = range(1,len(tick_list)+1))
+    for i in range(1,len(tick_list)+1):
+        y = box_data[i-1]
+        x = np.random.normal(i, 0.04, size=len(y))
+        plt.plot(x, y, 'r.', alpha=0.2)
+    try:
+        plt.ylim(y_lim) 
+    except:
+        print("Warning: y_lim not valid")
+    plt.xticks(xrange(1, len(ticks) * 1 + 1, 1), ticks)
+    plt.ylabel(y_label)
+    plt.xlabel(x_label)
+    plt.title(title)
+    plt.show()
         
-#     return
+    return """
 
-
-
-
-
-
+"""
 def GMM_utility(data, n, biners=50, inclusion_thresh = [0,100], verbose=True, title_1d="", title_2d="", x_label="", y_label_2d="", log=True, x_limit = ()):
     import matplotlib.pyplot as plt
 
@@ -2328,8 +2076,9 @@ def run_gmm_all(which,n):
 def nor(which):
   print([np.mean(which),np.std(which)])
   return 
+"""
 
-
+"""
 ####For out tajectories, calculate the average or minimum distance away from the drops
 
 def distance_from_drop_OUT(data_set,cm_distance = False, minimum_distance = True, plot_it = True):
@@ -2377,11 +2126,11 @@ def distance_from_drop_OUT(data_set,cm_distance = False, minimum_distance = True
         total_dist_away.append(droplet_distance_away)
         all_msd_total.append(msd_total)
     return [total_dist_away, all_msd_total]
+"""
 
-
-
+"""
 def pairCorrelationFunction_2D(x, y, S, rMax, dr):
-    """Compute the two-dimensional pair correlation function, also known
+    '''Compute the two-dimensional pair correlation function, also known
     as the radial distribution function, for a set of circular particles
     contained in a square region of a plane.  This simple function finds
     reference particles such that a circle of radius rMax drawn around the
@@ -2408,7 +2157,7 @@ def pairCorrelationFunction_2D(x, y, S, rMax, dr):
     Notes
     -----
     Implimentation taken from: https://github.com/cfinch/Shocksolution_Examples/blob/master/PairCorrelation/paircorrelation.py
-    """
+    '''
     from numpy import arange, histogram, mean, pi, sqrt, where, zeros
 
     # Number of particles in ring/area of ring/number of reference particles/number density
@@ -2451,3 +2200,4 @@ def pairCorrelationFunction_2D(x, y, S, rMax, dr):
         g_average[i] = mean(g[:, i]) / (pi * (rOuter**2 - rInner**2))
 
     return (g_average, radii, interior_indices)
+"""

@@ -11,8 +11,8 @@ from matplotlib.patches import Circle
 from skimage import io
 from sklearn import mixture
 
-from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import *
-from SMT_Analysis_BP.helpers.ioModule.import_functions import *
+from src.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import *
+from src.SMT_Analysis_BP.helpers.ioModule.import_functions import *
 
 
 class run_analysis_plotting:
@@ -569,48 +569,88 @@ def animate(i,ax):
 #             plt.show()
 #     return
 
+#https://stackoverflow.com/questions/22562364/circular-polar-histogram-in-python
+def circular_hist(ax, x, bins=16, density=True, offset=0, gaps=True,**kwargs):
+    """
+    Produce a circular histogram of angles on ax.
 
+    Parameters
+    ----------
+    ax : matplotlib.axes._subplots.PolarAxesSubplot
+        axis instance created with subplot_kw=dict(projection='polar').
 
+    x : array
+        Angles to plot, expected in units of radians.
 
+    bins : int, optional
+        Defines the number of equal-width bins in the range. The default is 16.
 
+    density : bool, optional
+        If True plot frequency proportional to area. If False plot frequency
+        proportional to radius. The default is True.
 
-#plot a histogram of angles in polar coordinates for each fraction
-def hist_polar(data, fig = False, ax_n = False, bin_n = 10, show = True, include_ = True, align = 'edge'): #align can also be 'center'
-    '''Helper function to plot histogram of angles in deg on polar coordinates.'''
+    offset : float, optional
+        Sets the offset for the location of the 0 direction in units of
+        radians. The default is 0.
 
-    bins = np.linspace(0.0, 2.0 * np.pi, bin_n + 1)
+    gaps : bool, optional
+        Whether to allow gaps between bins. When gaps = False the bins are
+        forced to partition the entire [-pi, pi] range. The default is True.
+    
+    **kwargs : type
+        Other arguments are passed directly to `matplotlib.axes.Axes.bar`.
 
-    #convert to radians
-    temp = d_to_rad(data)
-    if include_:
-        angle_rad = temp
+    Returns
+    -------
+    n : array or list of arrays
+        The number of values in each bin.
+
+    bins : array
+        The edges of the bins.
+
+    patches : `.BarContainer` or list of a single `.Polygon`
+        Container of individual artists used to create the histogram
+        or list of such containers if there are multiple input datasets.
+    """
+    # Wrap angles to [-pi, pi)
+    x = (x+np.pi) % (2*np.pi) - np.pi
+
+    # Force bins to partition entire circle
+    if not gaps:
+        bins = np.linspace(-np.pi, np.pi, num=bins+1)
+
+    # Bin data and record counts
+    n, bins = np.histogram(x, bins=bins)
+
+    # Compute width of each bin
+    widths = np.diff(bins)
+
+    # By default plot frequency proportional to area
+    if density:
+        # Area to assign each bin
+        area = n / x.size
+        # Calculate corresponding bin radius
+        radius = (area/np.pi) ** .5
+    # Otherwise plot frequency proportional to radius
     else:
-        angle_rad = temp[temp<3.14]
+        radius = n
 
-    print(angle_rad)
-    n, _ = np.histogram(angle_rad, bins)
-
-    width = 2.0 * np.pi / bin_n
-
-    if fig == False:
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='polar')
-
+    # Plot data on ax
+    if 'color' not in kwargs and "label" not in kwargs:
+        patches = ax.bar(bins[:-1], radius, zorder=1, align='edge', width=widths,
+                        edgecolor='C0', fill=False, linewidth=1)
     else:
-        ax = fig.add_subplot(ax_n)
+        patches = ax.bar(bins[:-1], radius, zorder=1, align='edge', width=widths, edgecolor='C0',
+                        fill=True, linewidth=1, color = kwargs['color'],label = kwargs['label'],alpha = kwargs['alpha'])
 
+    # Set the direction of the zero angle
+    ax.set_theta_offset(offset)
 
-    bars = ax.bar(bins[:bin_n], n, width=width, bottom=0.0,align = align)
+    # Remove ylabels for area plots (they are mostly obstructive)
+    if density:
+        ax.set_yticks([])
 
-    for bar in bars:
-        bar.set_alpha(0.5)
-
-    if show:
-        plt.show()
-
-    return angle_rad
-
-
+    return n, bins, patches
 
 
 def create_circular_mask(h, w, center=None, radius=None):
@@ -697,79 +737,3 @@ def plot_stacked_bar(data, series_labels, category_labels=None,
 
     return 
 
-
-#https://stackoverflow.com/questions/22562364/circular-polar-histogram-in-python
-def circular_hist(ax, x, bins=16, density=True, offset=0, gaps=True,color = "blue"):
-    """
-    Produce a circular histogram of angles on ax.
-
-    Parameters
-    ----------
-    ax : matplotlib.axes._subplots.PolarAxesSubplot
-        axis instance created with subplot_kw=dict(projection='polar').
-
-    x : array
-        Angles to plot, expected in units of radians.
-
-    bins : int, optional
-        Defines the number of equal-width bins in the range. The default is 16.
-
-    density : bool, optional
-        If True plot frequency proportional to area. If False plot frequency
-        proportional to radius. The default is True.
-
-    offset : float, optional
-        Sets the offset for the location of the 0 direction in units of
-        radians. The default is 0.
-
-    gaps : bool, optional
-        Whether to allow gaps between bins. When gaps = False the bins are
-        forced to partition the entire [-pi, pi] range. The default is True.
-
-    Returns
-    -------
-    n : array or list of arrays
-        The number of values in each bin.
-
-    bins : array
-        The edges of the bins.
-
-    patches : `.BarContainer` or list of a single `.Polygon`
-        Container of individual artists used to create the histogram
-        or list of such containers if there are multiple input datasets.
-    """
-    # Wrap angles to [-pi, pi)
-    x = (x+np.pi) % (2*np.pi) - np.pi
-
-    # Force bins to partition entire circle
-    if not gaps:
-        bins = np.linspace(-np.pi, np.pi, num=bins+1)
-
-    # Bin data and record counts
-    n, bins = np.histogram(x, bins=bins)
-
-    # Compute width of each bin
-    widths = np.diff(bins)
-
-    # By default plot frequency proportional to area
-    if density:
-        # Area to assign each bin
-        area = n / x.size
-        # Calculate corresponding bin radius
-        radius = (area/np.pi) ** .5
-    # Otherwise plot frequency proportional to radius
-    else:
-        radius = n
-
-    # Plot data on ax
-    patches = ax.bar(bins[:-1], radius, zorder=1, align='edge', width=widths,
-                     edgecolor=color, fill=False, linewidth=1)
-
-    # Set the direction of the zero angle
-    ax.set_theta_offset(offset)
-
-    # Remove ylabels for area plots (they are mostly obstructive)
-    if density:
-        ax.set_yticks([])
-
-    return n, bins, patches

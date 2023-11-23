@@ -20,7 +20,7 @@ The IMAGEJ_ROI.zip file is the ROI file that works for input into ImageJ for fur
 
 if __name__ == '__main__':
     import sys
-    sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts')
+    sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src')
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -200,9 +200,14 @@ if __name__ == '__main__':
 
 
     path = [
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_hex5_fixed_2/gfp",
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_m9_fixed/gfp",
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_rif_fixed/gfp"
-    ]
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231015/ll_ez/TS/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/ll_hex5_fixed/TS/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_ez_fixed/TS/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_ez_fixed_2/TS/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_hex5_fixed/TS/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_hex5_fixed_2/TS/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_m9_fixed/TS/gfp",
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_rif_fixed/TS/gfp"
+        ]
     for path in path:
         mask_dir = movie_mask_directory_structure_manager(path)

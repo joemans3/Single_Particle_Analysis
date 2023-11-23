@@ -25,7 +25,7 @@ KEY_IMAGE = {
 MASK_VALUE = 255
 BOUNDING_BOX_PADDING = 5
 CONVERSION_TYPES = {'RC_to_Original':0,'original_to_RC':1}
-RANDOM_SEED = 666 #for reproducibility, also praise the devil (I joke, I joke)
+RANDOM_SEED = 666 #for reproducibility, also praise the devil (joking)
 
 #define a ABC class for the scale space plus procedure
 class ScaleSpacePlus(ABC):
@@ -242,13 +242,10 @@ class SM_reconstruction_masked(ScaleSpacePlus):
         #len of the localizations
         num_localizations = len(localizations)
         if num_localizations == 0:
-            try:
-                raise ValueError('There are no localizations to make a reconstruction from')
-            except ValueError:
-                print('There are no localizations to make a reconstruction from, so using an empty image space')
-                #return an empty image space
-                return np.zeros([int((self.bounding_box[1,0]-self.bounding_box[0,0])*self.pixel_size_normal/self.rescale_pixel_size),
-                                    int((self.bounding_box[1,1]-self.bounding_box[0,1])*self.pixel_size_normal/self.rescale_pixel_size)])
+            print('There are no localizations to make a reconstruction from, so using an empty image space')
+            #return an empty image space
+            return np.zeros([int((self.bounding_box[1,0]-self.bounding_box[0,0])*self.pixel_size_normal/self.rescale_pixel_size),
+                                int((self.bounding_box[1,1]-self.bounding_box[0,1])*self.pixel_size_normal/self.rescale_pixel_size)]).T
         #correct the localization error
         if np.isscalar(localization_error):
             localization_error = np.ones(num_localizations)*localization_error

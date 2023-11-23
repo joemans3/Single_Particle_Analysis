@@ -22,30 +22,31 @@ import glob
 import re
 
 #2.0, 100 for 100ms (1.5, 60)
+#smt (4,10)
 #Path for Directory with Movies
-DIRECTORY_MOVIES = "/Volumes/Baljyot_HD/SMT_Olympus/20231017/rp_hex_fixed/Movie"
+DIRECTORY_MOVIES = "/Volumes/Baljyot_HD/SMT_Olympus/RIF_TREATMET_LIVE/20230528/Movie"
 
-MOVIE_BASE_NAME = "rp_hex_fixed"
+MOVIE_BASE_NAME = "nusa_rif"
 
 #Name of subdirectory in DIRECTORY_MOVIES where the results will be saved
 DIRECTORY_SAVE = "Analysis_new"
 
 #define some global variables, this is in the spatial units of the image (pixel)
 LINKING_PARAMETERS = {
-	'LINKING_MAX_DISTANCE': 2.0,
-	'GAP_CLOSING_MAX_DISTANCE': 2.0,	
+	'LINKING_MAX_DISTANCE': 5.0,
+	'GAP_CLOSING_MAX_DISTANCE': 5.0,	
 	'SPLITTING_MAX_DISTANCE': 0.0,
 	'MERGING_MAX_DISTANCE': 0.0,
-	'MAX_FRAME_GAP': 2,
+	'MAX_FRAME_GAP': 0,
 	'ALLOW_TRACK_SPLITTING': False,
 	'ALLOW_TRACK_MERGING': False
 }
 LOCALIZATION_PARAMETERS = {
 	"DETECTOR_FACTORY": LogDetectorFactory(),
 	'DO_SUBPIXEL_LOCALIZATION' : True,
-	'RADIUS' : 1.5,
+	'RADIUS' : 2.0,
 	'TARGET_CHANNEL' : 1,
-	'THRESHOLD' : 60.0,
+	'THRESHOLD' : 10.0,
 	'DO_MEDIAN_FILTERING' : True,
 }
 FILTERING_PARAMETERS = {

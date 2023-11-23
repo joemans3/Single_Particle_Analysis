@@ -88,16 +88,27 @@ def get_fbm_sample(l=1,h=0.5,d=1,n=1):
     return [sample_t[0], samples]
 
 	
-def compute_msd_np(xy, t, t_step):
-    shifts = np.floor(t / t_step).astype(np.int)
-    msds = np.zeros(shifts.size)
-    msds_std = np.zeros(shifts.size)
+def track_gen_util(hurst,track_num,track_length,diffusion_coefficient):
+    # Generate a track with given hurst parameter and track length for each track
+    num_tracks = track_num
+    track_length = track_length
+    hurst = hurst
+    track_dict = {}
+    for i in range(num_tracks):
+        track = get_fbm_sample(1,hurst,2,track_length)
+        _,track_2d = track
+        #remap the 2d track from [[x1,x2,x3...],[y1,y2,y3...]] to [[x1,y1],[x2,y2],[x3,y3]...]
+        track_2d = np.transpose(track_2d)*np.sqrt(2*diffusion_coefficient) + 100 #shift to avoid -ve values
+        track_dict[i+1] = track_2d
+    return track_dict
 
-    for i, shift in enumerate(shifts):
-        diffs = xy[:-shift if shift else None] - xy[shift:]
-        sqdist = np.square(diffs).sum(axis=1)
-        msds[i] = sqdist.mean()
-        msds_std[i] = sqdist.std(ddof=1)
-
-    msds = pd.DataFrame({'msds': msds, 'tau': t, 'msds_std': msds_std})
-    return msds
+def combine_track_dict_util(*dicts):
+    #assume agrs are dictionaries of the tracks
+    track_dict_list = [i for i in dicts]
+    combined_dict = {}
+    track_counter = 1
+    for track_dict in track_dict_list:
+        for track in track_dict.values():
+            combined_dict[track_counter] = track
+            track_counter += 1
+    return combined_dict

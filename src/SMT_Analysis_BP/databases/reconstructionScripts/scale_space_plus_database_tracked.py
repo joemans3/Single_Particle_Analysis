@@ -5,7 +5,7 @@ import json
 import glob
 if __name__ == '__main__':
     import sys
-    sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts')
+    sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src')
     import matplotlib.pyplot as plt
 from SMT_Analysis_BP.helpers.analysisFunctions.scale_space_plus import SM_reconstruction_image
 from SMT_Analysis_BP.helpers.clusterMethods.blob_detection import residuals_gaus2d
@@ -88,7 +88,6 @@ cd
 |   |   |---5_t_string_2_seg.tif_spots.csv
 '''
 
-@DeprecationWarning("This is deprecated. Use the scale_space_plus_fixed_palm.py script instead")
 class segmentation_scale_space:
     def __init__(self,
                  cd,
@@ -161,7 +160,7 @@ class segmentation_scale_space:
                 df_sub = df[(df['frame'] >= frame_numbers_lower) & (df['frame'] < frame_numbers_upper)]
 
                 if self.include_all == False:
-                    unique_localizations = get_unique_localizations(localizations,unique_loc_type=LOCALIZATION_UNIQUE_TYPE)
+                    unique_localizations = get_unique_localizations(df_sub,unique_loc_type=LOCALIZATION_UNIQUE_TYPE)
                     localizations = unique_localizations
                         
 
@@ -176,41 +175,41 @@ class segmentation_scale_space:
                 img.saving_image(segmented_scale_space_plus_path,file_name,'tif')
                 #save the data
                 #df_sub.to_csv(os.path.join(SM_reconstruction_Analysis_path,file_name+'_spots.csv'),index=False)
-                blobs = scale_space_plus_blob_detection(img_space,self.blob_parameters,self.fitting_parameters)
-                #we need to rescale the blobs to the original image space
-                blobs["Fitted"] = blobs["Fitted"]/(self.pixel_size/img.rescale_pixel_size)
-                blobs["Scale"] = blobs["Scale"]/(self.pixel_size/img.rescale_pixel_size)
-                #save the data in the Analysis folder
-                np.savetxt(os.path.join(SM_reconstruction_Analysis_path,file_name+'.tif_spots.csv'),blobs["Scale"],delimiter=',')
+                # blobs = scale_space_plus_blob_detection(img_space,self.blob_parameters,self.fitting_parameters)
+                # #we need to rescale the blobs to the original image space
+                # blobs["Fitted"] = blobs["Fitted"]/(self.pixel_size/img.rescale_pixel_size)
+                # blobs["Scale"] = blobs["Scale"]/(self.pixel_size/img.rescale_pixel_size)
+                # #save the data in the Analysis folder
+                # np.savetxt(os.path.join(SM_reconstruction_Analysis_path,file_name+'.tif_spots.csv'),blobs["Scale"],delimiter=',')
 
                 #perform DBSCAN clustering on the localizations
-                try:
-                    cluster_labels,cluster_centers,cluster_radii = perfrom_DBSCAN_Cluster(localizations,D=2*self.loc_error/self.pixel_size,minP=5)#self.loc_error/self.pixel_size,minP=5)
-                except:
-                    cluster_labels = np.zeros(len(localizations))
-                    cluster_centers = np.zeros((1,2))
-                    cluster_radii = np.zeros(1)
-                    print('DBSCAN failed for '+file_name)
-                print("Determined DBSCAN Clusters (x,y,r): \n",np.hstack((cluster_centers,cluster_radii.reshape(-1,1))))
-                #save the data in the Analysis_DBSCAN folder
-                np.savetxt(os.path.join(self.SM_DBSCAN_Analysis_Path,file_name+'.tif_spots.csv'),np.hstack((cluster_centers,cluster_radii.reshape(-1,1))),delimiter=',')
-                #lets visualize the clusters
-                fig,ax = plt.subplots()
-                ax.imshow(img_space,cmap='gray')
-                #plot the localizations
-                ax.scatter(localizations[:,0]*self.pixel_size/self.rescale_pixel_size,localizations[:,1]*self.pixel_size/self.rescale_pixel_size,s=1,c='b')
+                # try:
+                #     cluster_labels,cluster_centers,cluster_radii = perfrom_DBSCAN_Cluster(localizations,D=self.loc_error/self.pixel_size,minP=5)#self.loc_error/self.pixel_size,minP=5)
+                # except:
+                #     cluster_labels = np.zeros(len(localizations))
+                #     cluster_centers = np.zeros((1,2))
+                #     cluster_radii = np.zeros(1)
+                #     print('DBSCAN failed for '+file_name)
+                # print("Determined DBSCAN Clusters (x,y,r): \n",np.hstack((cluster_centers,cluster_radii.reshape(-1,1))))
+                # #save the data in the Analysis_DBSCAN folder
+                # np.savetxt(os.path.join(self.SM_DBSCAN_Analysis_Path,file_name+'.tif_spots.csv'),np.hstack((cluster_centers,cluster_radii.reshape(-1,1))),delimiter=',')
+                # #lets visualize the clusters
+                # fig,ax = plt.subplots()
+                # ax.imshow(img_space,cmap='gray')
+                # #plot the localizations
+                # ax.scatter(localizations[:,0]*self.pixel_size/self.rescale_pixel_size,localizations[:,1]*self.pixel_size/self.rescale_pixel_size,s=1,c='b')
 
-                #make a circle with the radius of the blob
-                for i in range(len(cluster_centers)):
-                    #get the radius
-                    radius = cluster_radii[i]
-                    #get the center
-                    center = cluster_centers[i]
-                    #get the circle
-                    circle = plt.Circle(center*self.pixel_size/self.rescale_pixel_size,radius*self.pixel_size/self.rescale_pixel_size,color='r',fill=False)
-                    #add the circle to the axis
-                    ax.add_patch(circle)
-                plt.show()
+                # #make a circle with the radius of the blob
+                # for i in range(len(cluster_centers)):
+                #     #get the radius
+                #     radius = cluster_radii[i]
+                #     #get the center
+                #     center = cluster_centers[i]
+                #     #get the circle
+                #     circle = plt.Circle(center*self.pixel_size/self.rescale_pixel_size,radius*self.pixel_size/self.rescale_pixel_size,color='r',fill=False)
+                #     #add the circle to the axis
+                #     ax.add_patch(circle)
+                # plt.show()
 
                 
         #save the parameters
@@ -303,12 +302,12 @@ class segmentation_scale_space:
 #lets to a main run
 if __name__ == '__main__':
     #make a batch for a set of cds
-    CORRECTION_FACTOR = 0.065
+    CORRECTION_FACTOR = 1
     cds = [
-        "/Users/baljyot/Documents/testing_4percent"
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/RPOC_DATA/EZ_120min/20190527/rpoc_ez"
     ]           
     t_strings = [
-        "testing"
+        "rpoc_ez"
     ]
 
     blob_parameters = {
@@ -333,7 +332,7 @@ if __name__ == '__main__':
         }
 
     img_dims = [
-        (392,392)
+        (290,290)
     ]
 
     rescale_pixel_size = [
@@ -343,16 +342,16 @@ if __name__ == '__main__':
         "new"
     ]
     total_frames = [
-        380
+        5000
     ]
     subframes = [
-        1
+        10
     ]
     pixel_size = [
-        65
+        130
     ]
     loc_error = [
-        30
+        20
     ]
     include_all = [
         False

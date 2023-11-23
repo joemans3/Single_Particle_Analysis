@@ -49,7 +49,7 @@ import glob
 from abc import ABC, abstractmethod
 if __name__ == '__main__':
     import sys
-    sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts')
+    sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src')
     import matplotlib.pyplot as plt
 from SMT_Analysis_BP.helpers.analysisFunctions.scale_space_plus import SM_reconstruction_masked,MASK_VALUE,BOUNDING_BOX_PADDING,CONVERSION_TYPES,RANDOM_SEED
 from SMT_Analysis_BP.helpers.clusterMethods.blob_detection import residuals_gaus2d
@@ -59,16 +59,100 @@ CORRECTION_FACTOR=1.
 
 LOCALIZATION_UNIQUE_TYPE = "mean" #or "mean" is the other option
 
+XY_NAMES = ['x','y']#['x [px]','y [px]']#
+
+def load_localizations(localizations_path,skiprows=4):
+    '''
+    Load the localizations from the localizations.csv file
+    '''
+    colnames = ['track_ID','x','y','frame','intensity']
+    df = pd.read_csv(localizations_path,usecols=(2,4,5,8,12),delimiter=',',skiprows=skiprows,names=colnames) #this can be changed depending on the format of the localizations.csv file
+    return df
+def load_localizations_TS(localizations_path,skiprows=0):
+    '''
+    Load the localizations from the localizations.csv file (ThunderSTORM format)
+    '''
+    columns = ['id','frame','x [nm]','y [nm]','sigma [nm]','intensity [photon]','offset [photon]','bkgstd [photon]','chi2','uncertainty [nm]','detections','y [px]','x [px]','sigma [px]']
+    df = pd.read_csv(localizations_path,delimiter=',',names=columns,skiprows=skiprows) #this can be changed depending on the format of the localizations.csv file
+    return df
+def get_unique_localizations(localizations_df:pd.DataFrame,unique_loc_type:str="first")->pd.DataFrame:
+    '''
+    For each unique track_ID get the first localization or the mean value of all the localizations
+
+    Parameters:
+    -----------
+    localizations_df: pd.DataFrame
+        The dataframe of the localizations
+    unique_loc_type: str
+        The type of unique localization to get. Can be either "first" or "mean"
+    '''
+    if unique_loc_type == "first":
+        unique_localizations = localizations_df.groupby("track_ID").first()
+    elif unique_loc_type == "mean":
+        unique_localizations = localizations_df.groupby("track_ID").mean()
+    else:
+        raise ValueError("The unique_loc_type can be either first or mean")
+    return unique_localizations
+def get_unique_localizations_TS(localizations_df:pd.DataFrame,unique_loc_type:str="first")->pd.DataFrame:
+    '''
+    For each unique track_ID get the first localization or the mean value of all the localizations
+
+    Parameters:
+    -----------
+    localizations_df: pd.DataFrame
+        The dataframe of the localizations
+    unique_loc_type: str
+        The type of unique localization to get. Can be either "first" or "mean"
+    '''
+    unique_localizations = localizations_df
+    return unique_localizations
+def rescale_scale_space_blob_detection(blobs,rescaling_func:callable,**kwargs):
+    #get the fitted blobs
+    fitted_blobs = blobs["Fitted"]
+    #get the scale-space blobs
+    scale_space_blobs = blobs["Scale"]
+    type_of_convertion = kwargs.get("type_of_convertion")
+
+    #now we need to rescale the fitted blobs using the rescaling function
+    fitted_holder = np.zeros_like(fitted_blobs)
+    scale_holder = np.zeros_like(scale_space_blobs)
+    for i in range(len(fitted_blobs)):
+        #get the radius
+        radius_fitted = np.mean(fitted_blobs[i][2:4])
+        #get the center
+        center_fitted = fitted_blobs[i][0:2]
+        #get the radius for scale
+        radius_scale = np.mean(scale_space_blobs[i][2])
+        #get the center for scale
+        center_scale = scale_space_blobs[i][0:2]
+        #rescale the fitted blobs
+        #the function should take in the centers,radius, and a string which is supplied by the kwargs
+
+        center_fitted_scaled,radius_fitted_scaled = rescaling_func(center_fitted,radius_fitted,type_of_convertion)
+        center_scale_scaled,radius_scale_scaled = rescaling_func(center_scale,radius_scale,type_of_convertion)
+
+        #now we need to put the scaled values into the holder
+        fitted_holder[i][0:2] = center_fitted_scaled
+        fitted_holder[i][2:4] = radius_fitted_scaled
+        scale_holder[i][0:2] = center_scale_scaled
+        scale_holder[i][2] = radius_scale_scaled
+    
+    #now we need to put the fitted blobs back into the blobs dictionary
+    blobs["Fitted"] = fitted_holder
+    blobs["Scale"] = scale_holder
+    return blobs
+
+
 class Reconstruct_Masked_PALM_DATASETS(ABC):
     def __init__(self,
-                 cd,
-                 blob_parameters,
-                 fitting_parameters,
+                 cd:str,
+                 blob_parameters:dict,
+                 fitting_parameters:dict,
                  rescale_pixel_size = 10,
                  pixel_size = 130,
                  loc_error = 30,
-                 include_all = True
-                 ):
+                 include_all = True,
+                 unique_localization_getter:callable = get_unique_localizations):
 
         self.cd = cd
         self.blob_parameters = blob_parameters
@@ -77,6 +161,7 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
         self.pixel_size = pixel_size
         self.loc_error = loc_error
         self.include_all = include_all
+        self._unique_localization_getter = unique_localization_getter
         self._check_directory_structure()
         self._store_parameters()   
     @abstractmethod
@@ -122,7 +207,7 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
                 localizations_df = self._load_localizations(localizations_path=localizations_path)
                 #get the unique localizations if include_all is False
                 if self.include_all == False:
-                    unique_localizations = get_unique_localizations(localizations_df,unique_loc_type=LOCALIZATION_UNIQUE_TYPE)
+                    unique_localizations = self._unique_localization_getter(localizations_df,unique_loc_type=LOCALIZATION_UNIQUE_TYPE)
                     localizations_df = unique_localizations
                 #save the localizations as a csv file with molecule_loc.csv as the name with the last column being the area of the mask
                 mask_img11 = plt.imread(mask_path)
@@ -132,13 +217,13 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
                 #get the area of the mask
                 area = np.sum(mask_img1)
                 #add the area to the localizations df
-                localizations_df["area"] = area*(0.13**2)
+                localizations_df["area"] = area*((self.pixel_size/1000.)**2)
                 localizations_df.to_csv(path_structure_dict[movie_ID]["cells"][cell_ID]["Analysis"]["molecule_loc_path"],index=False)
                 #get the dims of the mask image
                 mask_img = plt.imread(mask_path)
                 mask_img_dim = mask_img.shape
                 #correct the x,y values of the localizations using the correction factor
-                localizations_corrected = localizations_df[['x','y']].to_numpy()/CORRECTION_FACTOR
+                localizations_corrected = localizations_df[XY_NAMES].to_numpy()/CORRECTION_FACTOR
                 #make localization errors in the same length as the localizations
                 loc_error_arr = np.ones(len(localizations_corrected))*self.loc_error
 
@@ -181,17 +266,20 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
                                                                     type_of_convertion='RC_to_Original')
                 #find the number of localizations in each blob 
                 blobs_rescaled["num_localizations"] = np.zeros(len(blobs_rescaled["Scale"]))
+                blobs_rescaled["num_localizations_scale"] = np.zeros(len(blobs_rescaled["Scale"]))
                 for i in range(len(blobs_rescaled["Scale"])):
                     blobs_rescaled["num_localizations"][i] = 0
                     for j in range(len(localizations_corrected)):
                         #check if it inside the circular blob
-                        if np.sqrt((localizations_corrected[j][0]-blobs_rescaled["Fitted"][i][0])**2 + (localizations_corrected[j][1]-blobs_rescaled["Fitted"][i][1])**2) <= blobs_rescaled["Scale"][i][2]:
+                        if np.sqrt((localizations_corrected[j][0]-blobs_rescaled["Fitted"][i][0])**2 + (localizations_corrected[j][1]-blobs_rescaled["Fitted"][i][1])**2) <= blobs_rescaled["Fitted"][i][2]:
                             blobs_rescaled["num_localizations"][i] += 1
+                        if np.sqrt((localizations_corrected[j][0]-blobs_rescaled["Fitted"][i][0])**2 + (localizations_corrected[j][1]-blobs_rescaled["Fitted"][i][1])**2) <= blobs_rescaled["Scale"][i][2]:
+                            blobs_rescaled["num_localizations_scale"][i] += 1
                 #now we need to save the blobs
                 #add the number of localizations to the blobs_rescaled dict
                 #add the loc column to the blobs_rescaled dict for the fitted blobs and scale blobs
                 blobs_rescaled["Fitted"] = np.hstack((blobs_rescaled["Fitted"],blobs_rescaled["num_localizations"].reshape(-1,1))) 
-                blobs_rescaled["Scale"] = np.hstack((blobs_rescaled["Scale"],blobs_rescaled["num_localizations"].reshape(-1,1)))
+                blobs_rescaled["Scale"] = np.hstack((blobs_rescaled["Scale"],blobs_rescaled["num_localizations_scale"].reshape(-1,1)))
                 np.savetxt(path_structure_dict[movie_ID]["cells"][cell_ID]["Analysis"]["scale_space_plus_blob_fitted_path"],blobs_rescaled["Fitted"],delimiter=',')
                 np.savetxt(path_structure_dict[movie_ID]["cells"][cell_ID]["Analysis"]["scale_space_plus_blob_scale_path"],blobs_rescaled["Scale"],delimiter=',')
                 print("#"*100)
@@ -199,7 +287,7 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
                 print("#"*100)
                 try:
                     cluster_labels,cluster_centers,cluster_radii,loc_in_cluster = perfrom_DBSCAN_Cluster(localizations=localizations_corrected,
-                                                                                        D=2*(self.loc_error)/self.pixel_size,
+                                                                                        D=(self.loc_error)/self.pixel_size,
                                                                                         minP=5,
                                                                                         show=True)
 
@@ -357,14 +445,16 @@ class Reconstruct_Masked_PALM_DATASETS(ABC):
         return self._state_parameters
 
 class Reconstruct_Fixed_PALM_DATASETS(Reconstruct_Masked_PALM_DATASETS):
-    def __init__(self, cd, blob_parameters, fitting_parameters, rescale_pixel_size=10, pixel_size=130, loc_error=30, include_all=True):
-        super().__init__(cd, blob_parameters, fitting_parameters, rescale_pixel_size, pixel_size, loc_error, include_all)
-
+    def __init__(self, cd, blob_parameters, fitting_parameters, rescale_pixel_size=10, 
+                 pixel_size=130, loc_error=30, include_all=True,
+                 localization_loader:callable = load_localizations, unique_localization_getter:callable = get_unique_localizations):
+        super().__init__(cd, blob_parameters, fitting_parameters, rescale_pixel_size, pixel_size, loc_error, include_all,unique_localization_getter)
+        self._localization_loader = localization_loader
     def _load_localizations(self,**kwargs):
         #if skiprows is not in kwargs then set it to 4
         if "skiprows" not in kwargs.keys():
             kwargs["skiprows"] = 1
-        df = load_localizations(**kwargs)
+        df = self._localization_loader(**kwargs)
         return df
 
 class Reconstruct_Tracked_PALM_DATASETS_with_mask(Reconstruct_Masked_PALM_DATASETS):
@@ -373,85 +463,114 @@ class Reconstruct_Tracked_PALM_DATASETS_with_mask(Reconstruct_Masked_PALM_DATASE
     since it inforces a cell mask for each cell in a movie and also expects a different file structure. (Cellpose mask or other)
     File structure is the same as the Fixed cell PALM data.
     '''
-    def __init__(self, cd, blob_parameters, fitting_parameters, rescale_pixel_size=10, pixel_size=130, loc_error=30, include_all=True):
-        super().__init__(cd, blob_parameters, fitting_parameters, rescale_pixel_size, pixel_size, loc_error, include_all)
-    
+    def __init__(self, cd, blob_parameters, fitting_parameters, rescale_pixel_size=10, 
+                 pixel_size=130, loc_error=30, include_all=True,
+                 localization_loader:callable = load_localizations, unique_localization_getter:callable = get_unique_localizations):
+        super().__init__(cd, blob_parameters, fitting_parameters, rescale_pixel_size, pixel_size, loc_error, include_all,unique_localization_getter)
+        self._localization_loader = localization_loader
     def _load_localizations(self,**kwargs):
         #if skiprows is not in kwargs then set it to 1
         if "skiprows" not in kwargs.keys():
             kwargs["skiprows"] = 1
-        df = load_localizations(**kwargs)
+        df = self._localization_loader(**kwargs)
         return df
+    def reconstructTime(self,subsample_frequency:int=500,total_frames:int=5000):
+        '''
+        For each cell we will now make a reconstruction (only, no scale and dbscan analysis) for subsampling
+        '''
+        #get the path structure dict
+        path_structure_dict = self.path_structure_dict
+        #print the welcome message
+        self._print_message()
+        #loop through the movies
+        for movie_ID in path_structure_dict.keys():
+            #loop through the cells
+            for cell_ID in path_structure_dict[movie_ID]["cells"].keys():
+                print("movie_ID: {0}, cell_ID: {1}".format(movie_ID,cell_ID))
+                #get the localizations and mask paths
+                localizations_path = path_structure_dict[movie_ID]["cells"][cell_ID]["localizations_path"]
+                mask_path = path_structure_dict[movie_ID]["cells"][cell_ID]["mask_path"]
+                #make a new directory for the subsampled recon. called subsampled_reconstruction
+                subsampled_reconstruction_dir = os.path.join(path_structure_dict[movie_ID]["cells"][cell_ID]["path"],"subsampled_reconstruction_sampling_{0}".format(subsample_frequency))
+                if not os.path.isdir(subsampled_reconstruction_dir):
+                    os.mkdir(subsampled_reconstruction_dir)
+                #load the localizations
+                localizations_df = self._load_localizations(localizations_path=localizations_path)
+                #get the unique localizations if include_all is False
+                if self.include_all == False:
+                    unique_localizations = self._unique_localization_getter(localizations_df,unique_loc_type=LOCALIZATION_UNIQUE_TYPE)
+                    localizations_df = unique_localizations
+                
+                global_reconstruction = []
+                global_uniform_reconstruction = []
+                global_normal_scale_projection = []
 
-def load_localizations(localizations_path,skiprows=4):
-    '''
-    Load the localizations from the localizations.csv file
-    '''
-    colnames = ['track_ID','x','y','frame','intensity']
-    df = pd.read_csv(localizations_path,usecols=(2,4,5,8,12),delimiter=',',skiprows=skiprows,names=colnames) #this can be changed depending on the format of the localizations.csv file
-    return df
+                #now we need to subsample the localizations based on the subsample_frequency
+                subsample_frames = np.arange(0,total_frames,subsample_frequency)
+                for sampler in range(len(subsample_frames)):
+                    #get the localizations in frames subsample_frames[i] to subsample_frames[i+1]
+                    try:
+                        localizations_subsampled = localizations_df[(localizations_df["frame"]>=subsample_frames[sampler]) & (localizations_df["frame"]<subsample_frames[sampler+1])]
+                    except IndexError:
+                        #this means that we are at the last frame
+                        localizations_subsampled = localizations_df[(localizations_df["frame"]>=subsample_frames[sampler])]
+                    #save the localizations as a csv file with molecule_loc.csv as the name 
+                    localizations_subsampled.to_csv(os.path.join(subsampled_reconstruction_dir,"molecule_loc_{0}.csv".format(sampler)),index=False)
+                    #get the dims of the mask image
+                    mask_img = plt.imread(mask_path)
+                    mask_img_dim = mask_img.shape
+                    #correct the x,y values of the localizations using the correction factor
+                    localizations_corrected = localizations_subsampled[XY_NAMES].to_numpy()/CORRECTION_FACTOR
+                    #make localization errors in the same length as the localizations
+                    loc_error_arr = np.ones(len(localizations_corrected))*self.loc_error
+                    #create the reconstruction object
+                    reconstruction_obj = SM_reconstruction_masked(mask_img_dim,self.pixel_size,self.rescale_pixel_size)
+                    #reconstruct space
+                    reconstruction = reconstruction_obj.make_reconstruction(localizations=localizations_corrected,
+                                                                            localization_error=loc_error_arr,
+                                                                            masked_img=mask_img)
+                    #make the uniform reconstruction
+                    uniform_reconstruction = reconstruction_obj.make_uniform_reconstruction(localizations=localizations_corrected,
+                                                                                                localization_error=loc_error_arr,
+                                                                                                masked_img=mask_img)
+                    #now make a new object but with the original pixel size as the rescale pixel size
+                    reconstruction_normal_scale_obj = SM_reconstruction_masked(mask_img_dim,self.pixel_size,self.pixel_size)
+                    #make the normal scale projection
+                    normal_scale_projection = reconstruction_normal_scale_obj.make_reconstruction(localizations=localizations_corrected,
+                                                                                                            localization_error=self.pixel_size,
+                                                                                                            masked_img=mask_img)
+                    #add the reconstruction to the global reconstruction
+                    global_reconstruction.append(reconstruction)
+                    global_uniform_reconstruction.append(uniform_reconstruction)
+                    global_normal_scale_projection.append(normal_scale_projection)
+                
+                #now save as a .tif file the global_reconstruction, global_uniform_reconstruction, global_normal_scale_projection
+                global_reconstruction = np.array(global_reconstruction)
+                global_uniform_reconstruction = np.array(global_uniform_reconstruction)
+                global_normal_scale_projection = np.array(global_normal_scale_projection)
+                #save the reconstruction, uniform reconstruction and normal scale projection
+                reconstruction_obj.saving_image(img=global_reconstruction,
+                                                full_path=os.path.join(subsampled_reconstruction_dir,"reconstruction.tif"))
+                reconstruction_obj.saving_image(img=global_uniform_reconstruction,
+                                                full_path=os.path.join(subsampled_reconstruction_dir,"uniform_reconstruction.tif"))
+                reconstruction_obj.saving_image(img=global_normal_scale_projection,
+                                                full_path=os.path.join(subsampled_reconstruction_dir,"normal_scale_projection.tif"))
+                print("#"*100)
+                print("Reconstruction complete for {0}".format(path_structure_dict[movie_ID]["cells"][cell_ID]["localizations_path"]))
+                print("#"*100)
+                    
 
-def get_unique_localizations(localizations_df:pd.DataFrame,unique_loc_type:str="first")->pd.DataFrame:
-    '''
-    For each unique track_ID get the first localization or the mean value of all the localizations
 
-    Parameters:
-    -----------
-    localizations_df: pd.DataFrame
-        The dataframe of the localizations
-    unique_loc_type: str
-        The type of unique localization to get. Can be either "first" or "mean"
-    '''
-    if unique_loc_type == "first":
-        unique_localizations = localizations_df.groupby("track_ID").first()
-    elif unique_loc_type == "mean":
-        unique_localizations = localizations_df.groupby("track_ID").mean()
-    else:
-        raise ValueError("The unique_loc_type can be either first or mean")
-    return unique_localizations
 
-def rescale_scale_space_blob_detection(blobs,rescaling_func:callable,**kwargs):
-    #get the fitted blobs
-    fitted_blobs = blobs["Fitted"]
-    #get the scale-space blobs
-    scale_space_blobs = blobs["Scale"]
-    type_of_convertion = kwargs.get("type_of_convertion")
-
-    #now we need to rescale the fitted blobs using the rescaling function
-    fitted_holder = np.zeros_like(fitted_blobs)
-    scale_holder = np.zeros_like(scale_space_blobs)
-    for i in range(len(fitted_blobs)):
-        #get the radius
-        radius_fitted = np.mean(fitted_blobs[i][2:4])
-        #get the center
-        center_fitted = fitted_blobs[i][0:2]
-        #get the radius for scale
-        radius_scale = np.mean(scale_space_blobs[i][2])
-        #get the center for scale
-        center_scale = scale_space_blobs[i][0:2]
-        #rescale the fitted blobs
-        #the function should take in the centers,radius, and a string which is supplied by the kwargs
-
-        center_fitted_scaled,radius_fitted_scaled = rescaling_func(center_fitted,radius_fitted,type_of_convertion)
-        center_scale_scaled,radius_scale_scaled = rescaling_func(center_scale,radius_scale,type_of_convertion)
-
-        #now we need to put the scaled values into the holder
-        fitted_holder[i][0:2] = center_fitted_scaled
-        fitted_holder[i][2:4] = radius_fitted_scaled
-        scale_holder[i][0:2] = center_scale_scaled
-        scale_holder[i][2] = radius_scale_scaled
+        
     
-    #now we need to put the fitted blobs back into the blobs dictionary
-    blobs["Fitted"] = fitted_holder
-    blobs["Scale"] = scale_holder
-    return blobs
 
 
 ####testing
 
 if __name__ == '__main__':
     global_path = [
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_m9_fixed"
+        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/Fixed_100ms/20231017/rp_rif_fixed_2"
     ]
 
 
@@ -475,18 +594,28 @@ if __name__ == '__main__':
         "radius_func":np.mean,#identity,
         "residual_func":residuals_gaus2d,
         "sigma_range":4,
-        "centroid_range":3,
+        "centroid_range":2,
         "height_range":1
         }
 
     for i in range(len(global_path)):
-        sm_rec = Reconstruct_Tracked_PALM_DATASETS_with_mask(cd = global_path[i],
-                                                blob_parameters = blob_parameters,
-                                                fitting_parameters = fitting_parameters,
-                                                rescale_pixel_size = 10,
-                                                pixel_size = 130,
-                                                loc_error = 15,
-                                                include_all = False
-                                                )
-        
+        # sm_rec = Reconstruct_Tracked_PALM_DATASETS_with_mask(cd = global_path[i],
+        #                                         blob_parameters = blob_parameters,
+        #                                         fitting_parameters = fitting_parameters,
+        #                                         rescale_pixel_size = 10,
+        #                                         pixel_size = 130,
+        #                                         loc_error = 30,
+        #                                         include_all = True)
+        #                                         #localization_loader = load_localizations_TS,
+        #                                         #unique_localization_getter = get_unique_localizations_TS)
+        # sm_rec.reconstructTime(subsample_frequency=1000,total_frames=5000)
+        sm_rec = Reconstruct_Fixed_PALM_DATASETS(cd = global_path[i],
+                                        blob_parameters = blob_parameters,
+                                        fitting_parameters = fitting_parameters,
+                                        rescale_pixel_size = 10,
+                                        pixel_size = 130,
+                                        loc_error = 20,
+                                        include_all = False)
+                                        #localization_loader = load_localizations_TS,
+                                        #unique_localization_getter = get_unique_localizations_TS)
         sm_rec.reconstruct()

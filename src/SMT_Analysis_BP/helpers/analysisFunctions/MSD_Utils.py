@@ -1,11 +1,12 @@
+import copy
 import numpy as np
 from abc import ABC, abstractmethod
-from SMT_Analysis_BP.helpers.analysisFunctions import Analysis_functions as af
+from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import dic_union_two
 from src.SMT_Analysis_BP.databases import trajectory_analysis_script as tas
 
-class MSD_Calculation_abc(ABC):
+class Calculation_abc(ABC):
     '''
-    Abstract base class for MSD Calculations
+    Abstract base class for Calculations
     Will only inforce pixel size, units and frame length, units
     '''
     def __init__(self,pixel_size:float,frame_length:float,pixel_unit:str,frame_unit:str) -> None:
@@ -39,13 +40,6 @@ class MSD_Calculation_abc(ABC):
     @property
     def frame_unit(self):
         return self._frame_unit
-
-    @abstractmethod
-    def _build_MSD_Tracks(self):
-        '''
-        Does the actual building of the MSD_Tracks to create the storage objects
-        '''
-        raise NotImplementedError("This is an abstract method and needs to be implemented in the child class")
     
     @property
     @abstractmethod
@@ -56,7 +50,7 @@ class MSD_Calculation_abc(ABC):
     def individual_store(self):
         raise NotImplementedError("This is an abstract method and needs to be implemented in the child class")
 
-class MsdDatabaseUtil:
+class DatabaseOrderUtil:
     '''
     lets create a generic MSD analysis class which will store all the MSD analysis for a single dataset or multiple datasets
     using encapsulation we will utilize smaller functions to do the analysis
@@ -251,7 +245,125 @@ class MSD_storage:
             self._ensemble_displacement_r = temp_dict
             return self._ensemble_displacement_r
 
-class MSD_Calculations(MSD_Calculation_abc):
+    @property
+    def track_lengths(self):
+        if hasattr(self,"_track_lengths"):
+            return self._track_lengths
+        else:
+            #iterate over the track displacement and get the lengths and add 1 for each track to get the original length
+            temp_dict = {}
+            for i in self.track_displacement.keys():
+                temp_dict[i] = {}
+                for j in self.track_displacement[i].keys():
+                    temp_dict[i][j] = len(self.track_displacement[i][j]) + 1
+            #store the temp_dict
+            self._track_lengths = temp_dict
+            return self._track_lengths
+    @track_lengths.setter
+    def track_lengths(self,track_lengths):
+        self._track_lengths = track_lengths
+
+
+def msd_avgerage_utility(displacements):
+    '''Documentation for _msd_avgerage_utility
+
+    Parameters: 
+    -----------
+    displacements : dict
+        dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,D), D is the dimension of the data
+
+    Returns:
+    --------
+    msd : dict
+        dictionary of the MSD for each time lag, key = time lag, value = array of MSD values, shape (n,)
+    error_msd : dict (this is the standard error of the mean of the MSD)
+        dictionary of the error in the MSD for each time lag, key = time lag, value = array of error in the MSD values, shape (n,) 
+
+    '''
+    #create a dictionary to store the MSD for each time lag
+    msd = {}
+    error_msd = {}
+    #loop through the time lags
+    for key,value in displacements.items():
+        #calculate the MSD for each time lag
+        #the MSD is the average of the squared displacements
+        #the squared displacements are the sum of the squared components of the displacements
+        #divide by the number of dimensions to get the average of the squared displacements
+        msd[key] = np.mean(np.sum(np.array(value)**2,axis=1))
+        #calculate the error in the MSD for each time lag
+        #the error in the MSD is the standard deviation of the standard error of the mean of the squared displacements
+        #the standard error of the mean of the squared displacements is the standard deviation of the squared displacements divided by the square root of the number of displacements
+        error_msd[key] = np.std(np.sum(np.array(value)**2,axis=1))/np.sqrt(len(value))
+    #return the MSD
+    return [msd,error_msd]
+
+
+def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_factor=None,min_track_length=1,max_track_length=10,**kwargs):#return_type="msd_curves",verbose=False,conversion_factor=None):
+    '''Documentation for MSD_Tracks
+
+    Parameters:
+    -----------
+    tracks : dict
+        dictionary of tracks, key = track ID, value = [[x,y],...] of coordinates
+    permutation : bool (default = True, don't change this)
+        if permutation == True then the MSD is calculated for all possible permutations of the data
+        if permutation == False then the MSD is calculated for the data in the order it is given
+    conversion_factor : float (default = None)
+        if conversion_factor != None then the coordinates are converted to the desired units before the MSD is calculated
+    tau_conversion_factor : float (default = None)
+        if tau_conversion_factor != None then the time lags are converted to the desired units before the MSD is calculated
+        units are for [0->n] (int) -> seconds (1 = 0.02 seconds)
+    min_track_length : int (default = 1)
+        the minimum length of a track to be included in the MSD calculation
+    max_track_length : int (default = 10)
+        the maximum length of a track to be included in the MSD calculation
+
+    Returns:
+    --------
+    return_dict : dict
+        dictionary of MSD curves for each track, key = track ID, value = dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,2)
+
+    Notes:
+    ------
+    1. Only implimented sequential tau. If trajectories are missing coordinate values (ex. if using gap linking in TRACKMATE) then this is not accounted for.
+
+    '''
+    #create a dictionary to store the ensemble disp for each track
+
+    track_copy = copy.deepcopy(tracks) #so that the original tracks are not modified since python is pass by reference
+
+    ensemble_disp = {}
+    #create a dictionary to store the displacements for each track
+    tracks_displacements = {}
+    track_msds = {}
+    track_msds_error = {}
+    #loop through the tracks
+    for key,value in track_copy.items():
+        #check if the track is long enough to calculate the MSD
+        if len(value) >= min_track_length:
+            #convert the coordinates based on the conversion factor
+            if conversion_factor != None:
+                value *= conversion_factor
+            #calculate the displacements for each track
+            disp = MSD_tau(value[:,0][:max_track_length],value[:,1][:max_track_length],permutation)
+            #lets convert the taus (in the keys of disp) to the desired units
+            if tau_conversion_factor != None:
+                disp = {key*tau_conversion_factor:value for key,value in disp.items()}
+
+            tracks_displacements[key] = disp
+            track_msd_temp = msd_avgerage_utility(disp)
+            track_msds[key] = track_msd_temp[0]
+            track_msds_error[key] = track_msd_temp[1]
+            #unify the ensemble MSD curve dictionary with disp
+            ensemble_disp = dic_union_two(ensemble_disp,disp)
+
+    #update the ensemble MSD curve dictionary
+    ensemble_msd,errors_ensemble_msd = msd_avgerage_utility(ensemble_disp)
+    return_dict = {"msd_curves":[ensemble_msd,errors_ensemble_msd,track_msds,track_msds_error],"displacements":[ensemble_disp,tracks_displacements]}
+    #keeping the code below for backwards compatibility, but is useless now
+    return return_dict,ensemble_disp
+
+class MSD_Calculations(Calculation_abc):
     def __init__(self,data_set_RA:list,pixel_to_um:float=0.13,frame_to_seconds:float=0.02,frame_units:str="s",pixel_units:str="um",**kwargs) -> None:
         '''
         Parameters:
@@ -272,6 +384,8 @@ class MSD_Calculations(MSD_Calculation_abc):
         min_track_length: int, Default = 1
             minimum track length to be considered. 
             This is passed on to the af.MSD_Tracks() function
+        max_track_length: int, Default = 1000
+            maximum track length to be considered.
         '''
         #initialize the MSD_Calculation_abc class
         super().__init__(pixel_size=pixel_to_um,
@@ -281,7 +395,7 @@ class MSD_Calculations(MSD_Calculation_abc):
                         )
         
         #list has to be made up of objects of type tas.run_analysis
-        self.MSD_dataset = MsdDatabaseUtil(data_set_RA=data_set_RA,pixel_to_um=pixel_to_um,frame_to_seconds=frame_to_seconds)
+        self.MSD_dataset = DatabaseOrderUtil(data_set_RA=data_set_RA,pixel_to_um=pixel_to_um,frame_to_seconds=frame_to_seconds)
         #build the MSD_Tracks
         self._build_MSD_Tracks(**kwargs)
 
@@ -292,7 +406,7 @@ class MSD_Calculations(MSD_Calculation_abc):
             #get the track_dict_bulk
             track_dict_bulk_temper = self.MSD_dataset.combined_track_dict_bulk[i]
             #build the MSD_Tracks
-            MSD_Tracks_i,_ = af.MSD_Tracks(track_dict_bulk_temper,
+            MSD_Tracks_i,_ = MSD_Tracks(track_dict_bulk_temper,
                                         conversion_factor=self.MSD_dataset.pixel_to_um,
                                         tau_conversion_factor=self.MSD_dataset.frame_to_seconds,
                                         **kwargs)
@@ -321,7 +435,7 @@ class MSD_Calculations(MSD_Calculation_abc):
                 #get the track_dict_bulk
                 track_dict_bulk_temper = self.MSD_dataset.track_dict_bulk_list[k][i]
                 #build the MSD_Tracks
-                MSD_Tracks_i,_ = af.MSD_Tracks(track_dict_bulk_temper,
+                MSD_Tracks_i,_ = MSD_Tracks(track_dict_bulk_temper,
                                             conversion_factor=self.MSD_dataset.pixel_to_um,
                                             tau_conversion_factor=self.MSD_dataset.frame_to_seconds,
                                             **kwargs)
@@ -379,7 +493,7 @@ class MSD_Calculations(MSD_Calculation_abc):
     def individual_store(self,individual_store):
         raise ValueError("individual_store cannot be set")
 
-class MSD_Calculations_Track_Dict(MSD_Calculation_abc):
+class MSD_Calculations_Track_Dict(Calculation_abc):
     
     #this is a similar class to the MSD_Calculations class but it takes in a track_dict instead of a data_set_RA
     def __init__(self,track_dict,**kwargs) -> None:
@@ -404,6 +518,10 @@ class MSD_Calculations_Track_Dict(MSD_Calculation_abc):
             frame units
         pixel_units: str
             pixel units
+        min_track_length: int, Default = 1
+            minimum track length to be considered.
+        max_track_length: int, Default = 1000
+            maximum track length to be considered.
         '''
         #initialize the MSD_Calculation_abc class
         super().__init__(pixel_size=kwargs.get("pixel_to_um",0.13),
@@ -424,7 +542,7 @@ class MSD_Calculations_Track_Dict(MSD_Calculation_abc):
 
     def _build_MSD_Tracks(self,**kwargs):
         #build the MSD_Tracks
-        MSD_tracks,_ = af.MSD_Tracks(
+        MSD_tracks,_ = MSD_Tracks(
             self.track_dict, 
             conversion_factor=self.pixel_to_um, 
             tau_conversion_factor=self.frame_to_seconds,
@@ -457,6 +575,7 @@ class MSD_Calculations_Track_Dict(MSD_Calculation_abc):
     @individual_store.setter
     def individual_store(self,individual_store):
         raise ValueError("individual_store cannot be set")
+
 
 
 #radius of confinment fucntion
@@ -500,6 +619,115 @@ def combine_track_dicts(dicts):
                 combined_dict[j][str(track_counter)] = i[j][k]
                 track_counter += 1
     return combined_dict
+
+
+def _msd_tau_utility_all(x,y,tau):
+    ''' Documentation for _msd_tau_utility_all
+
+    Parameters:
+    -----------
+    x : array
+        x positions of the data
+    y : array
+        y positions of the data
+    tau : int
+        time lag for the MSD calculation
+
+    Returns:
+    --------
+    displacements : array, shape (n,2)
+        array of displacements for all possible permutations of the data
+
+    Notes:
+    ------
+    For the theory behind this see https://web.mit.edu/savin/Public/.Tutorial_v1.2/Concepts.html#A1
+    '''
+    #find the total displacements possible, from https://web.mit.edu/savin/Public/.Tutorial_v1.2/Concepts.html#A1
+    total_displacements = len(x) - tau
+    #create an array to store the displacements
+    displacements = np.zeros((total_displacements,2))
+    #loop through the displacements
+    for i in range(total_displacements):
+        #calculate the displacements
+        #make sure that i+tau is less than the length of the data
+        if i+tau < len(x):
+            displacements[i] = np.array([x[i+tau]-x[i],y[i+tau]-y[i]])
+    #return the displacements as (x,y) pairs
+    return displacements
+
+
+def _msd_tau_utility_single(x,y,tau):
+    #dont use this, its just to show this doesn't work as well as the permutation method
+    x_dis = np.diff(x[::tau])
+    y_dis = np.diff(y[::tau])
+    #return the displacements as (x,y) pairs
+    return np.array([x_dis,y_dis]).T
+
+
+def MSD_tau_utility(x,y,tau=1,permutation=True):
+    '''Documentation for MSD_tau_utility
+
+    Parameters:
+    -----------
+    x : array
+        x positions of the data
+    y : array
+        y positions of the data
+    tau : int
+        time lag for the MSD calculation
+    permutation : bool
+        if permutation == True then the MSD is calculated for all possible permutations of the data
+        if permutation == False then the MSD is calculated for the data in the order it is given
+
+    Returns:
+    --------
+    displacements : array, shape (n,2)
+        array of displacements 
+
+
+    '''
+
+    #if permutation == True then the MSD is calculated for all possible permutations of the data
+    #if permutation == False then the MSD is calculated for the data in the order it is given
+    if permutation == True:
+        displacements = _msd_tau_utility_all(x,y,tau)
+    else:
+        #dont use this condition, its wrong
+        displacements = _msd_tau_utility_single(x,y,tau)
+
+    return displacements
+
+
+def MSD_tau(x,y,permutation=True):
+    '''Documentation for MSD_tau
+
+    Parameters:
+    -----------
+    x : array
+        x positions of the data
+    y : array
+        y positions of the data
+    permutation : bool
+        if permutation == True then the MSD is calculated for all possible permutations of the data
+        if permutation == False then the MSD is calculated for the data in the order it is given
+
+    Returns:
+    --------
+    displacements : dict
+        dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,2)
+
+    '''
+
+    #find the maximum time lag possible
+    max_tau = len(x)-1
+    #create a dictionary to store the displacements for each time lag
+    displacements = {}
+    #loop through the time lags
+    for tau in range(1,max_tau+1):
+        #calculate the displacements for each time lag
+        displacements[tau] = MSD_tau_utility(x,y,tau,permutation)
+    #return the displacements
+    return displacements
 
 
         

@@ -54,7 +54,37 @@ rpoc_ez_cluster_tracking_paths = {"RPOC_EZ_CLUSTER_TRACKING":{
     }
 }
 
+ 
+nusa_ez_paths_keywords = {"NUSA_EZ":{
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/EZ_120min/20180907/Nusa_ez":{"t_string":"NUSA","name":"20180907_Nusa_ez"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/EZ_120min/20190305/Nusa_ez":{"t_string":"nusA","name":"20190305_Nusa_ez"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/EZ_120min/20230619/Nusa_ez":{"t_string":"nusa_ez","name":"20230619_Nusa_ez"}
+    }
+}
 
+nusa_m9_paths_keywords = {"NUSA_M9":{
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/M9/12/nusa_m9":{"t_string":"nusa_m9","name":"12_nusa_m9"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/M9/12/nusa_m9_2":{"t_string":"nusa_m9","name":"12_nusa_m9_2"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/M9/20191216/nusa_m9":{"t_string":"nusa_m9","name":"20191216_nusa_m9"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/M9/20191218/nusa_m9":{"t_string":"nusa_m9","name":"20191218_nusa_m9"}
+    }
+}
+
+nusa_hex5_paths_keywords = {"NUSA_Hex5":{
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/EZ_5min_5pHex/15/nusa_ez_hex5":{"t_string":"nusa_ez_hex5","name":"15_nusa_ez_hex5"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/EZ_5min_5pHex/15/nusa_ez_hex5_2":{"t_string":"nusa_ez_hex5","name":"15_nusa_ez_hex5_2"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/EZ_5min_5pHex/15/nusa_ez_hex5_3":{"t_string":"nusa_ez_hex5","name":"15_nusa_ez_hex5_3"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/EZ_5min_5pHex/16/nusa_ez_hex5":{"t_string":"nusa_ez_hex5","name":"16_nusa_ez_hex5"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/EZ_5min_5pHex/16/nusa_ez_hex5_2":{"t_string":"nusa_ez_hex5","name":"16_nusa_ez_hex5_2"}
+    }
+}
+
+nusa_rif_paths_keywords = {"NUSA_RIF":{
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/100ugml_5min_RIF/20230528/nusa_rif_100ugml":{"t_string":"nusa_rif","name":"20230528_nusa_rif_100ugml"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/100ugml_5min_RIF/20230618/nusa_rif_100ugml":{"t_string":"nusa_rif","name":"20230618_nusa_rif_100ugml"},
+    "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/DATA/SMT_FAST_CAPTURE/NUSA_DATA/100ugml_5min_RIF/20230618/nusa_rif_100ugml_2":{"t_string":"nusa_rif","name":"20230618_nusa_rif_100ugml_2"}
+    }
+}
 
 
 
