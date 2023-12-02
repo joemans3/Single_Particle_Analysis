@@ -3,6 +3,9 @@ import numpy as np
 from abc import ABC, abstractmethod
 from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import dic_union_two
 from src.SMT_Analysis_BP.databases import trajectory_analysis_script as tas
+RANDOM_SEED = 666 #for reproducibility, hail satan
+#use the RANDOM_SEED for reproducibility
+np.random.seed(RANDOM_SEED)
 
 class Calculation_abc(ABC):
     '''
@@ -264,14 +267,23 @@ class MSD_storage:
         self._track_lengths = track_lengths
 
 
-def msd_avgerage_utility(displacements):
+def msd_avgerage_utility(displacements:dict,bootstrap:bool=False,bootstrap_samples:float=0.1,bootstrap_percentile:float=0.95,bootstrap_num=100):
     '''Documentation for _msd_avgerage_utility
 
     Parameters: 
     -----------
     displacements : dict
         dictionary of displacements for each time lag, key = time lag, value = array of displacements, shape (n,D), D is the dimension of the data
-
+    bootstrap : bool (default = False)
+        if bootstrap == True then the MSD is calculated for all possible permutations of the data
+        if bootstrap == False then the MSD is calculated for the data in the order it is given
+    bootstrap_samples : float (default = 0.1)
+        the fraction of the data to use for the bootstrap (0.1 = 10%)
+    bootstrap_percentile : float (default = 0.95)
+        the percentile to use for the bootstrap (0.95 = 95%)
+    bootstrap_num : int (default = 100)
+        the number of bootstrap iterations to perform
+    
     Returns:
     --------
     msd : dict
@@ -283,17 +295,52 @@ def msd_avgerage_utility(displacements):
     #create a dictionary to store the MSD for each time lag
     msd = {}
     error_msd = {}
-    #loop through the time lags
-    for key,value in displacements.items():
-        #calculate the MSD for each time lag
-        #the MSD is the average of the squared displacements
-        #the squared displacements are the sum of the squared components of the displacements
-        #divide by the number of dimensions to get the average of the squared displacements
-        msd[key] = np.mean(np.sum(np.array(value)**2,axis=1))
-        #calculate the error in the MSD for each time lag
-        #the error in the MSD is the standard deviation of the standard error of the mean of the squared displacements
-        #the standard error of the mean of the squared displacements is the standard deviation of the squared displacements divided by the square root of the number of displacements
-        error_msd[key] = np.std(np.sum(np.array(value)**2,axis=1))/np.sqrt(len(value))
+    if bootstrap == False:
+        #loop through the time lags
+        for key,value in displacements.items():
+            #calculate the MSD for each time lag
+            #the MSD is the average of the squared displacements
+            #the squared displacements are the sum of the squared components of the displacements
+            #divide by the number of dimensions to get the average of the squared displacements
+            msd[key] = np.mean(np.sum(np.array(value)**2,axis=1))
+            #calculate the error in the MSD for each time lag
+            #the error in the MSD is the standard deviation of the standard error of the mean of the squared displacements
+            #the standard error of the mean of the squared displacements is the standard deviation of the squared displacements divided by the square root of the number of displacements
+            error_msd[key] = np.std(np.sum(np.array(value)**2,axis=1))/np.sqrt(len(value))
+    else:
+        #loop through the time lags
+        for key,value in displacements.items():
+            #calculate the MSD for each time lag
+            #the MSD is the average of the squared displacements
+            #the squared displacements are the sum of the squared components of the displacements
+            #divide by the number of dimensions to get the average of the squared displacements
+            #lets do a bootstrap
+            #get the number of displacements
+            #make a set of indexes for values
+            value_indexes = np.arange(len(value))
+            number_displacements = len(value)
+            #get the number of displacements to use for the bootstrap
+            number_bootstrap_displacements = int(number_displacements*bootstrap_samples)
+            #if number_bootstrap_displacements is less than 10 print an warning message use the total number of displacements
+            if number_bootstrap_displacements < 10:
+                print("WARNING: number_bootstrap_displacements is less than 10, using all displacements")
+                msd[key] = np.mean(np.sum(np.array(value)**2,axis=1))
+                error_msd[key] = np.std(np.sum(np.array(value)**2,axis=1))/np.sqrt(len(value))
+                continue
+
+            #get the number of bootstrap samples
+            number_bootstrap_samples = bootstrap_num
+            #create an array to store the MSD values
+            msd_values = np.zeros(number_bootstrap_samples)
+            #loop through the bootstrap samples
+            for i in range(number_bootstrap_samples):
+                #get the random displacements, using the index since its not 1D
+                bootstrap_displacements = np.random.choice(value_indexes,number_bootstrap_displacements,replace=False)
+                msd_values[i] = np.mean(np.sum((np.array(value)[bootstrap_displacements])**2,axis=1))
+            #calculate the MSD for each time lag
+            msd[key] = np.mean(msd_values)
+            #calculate the error in the MSD for each time lag
+            error_msd[key] = np.abs(np.percentile(msd_values,bootstrap_percentile) - np.percentile(msd_values,100-bootstrap_percentile))
     #return the MSD
     return [msd,error_msd]
 
@@ -317,6 +364,10 @@ def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_fac
         the minimum length of a track to be included in the MSD calculation
     max_track_length : int (default = 10)
         the maximum length of a track to be included in the MSD calculation
+    
+    KWARGS:
+    -------
+    Passed to msd_avgerage_utility() -> (bootstrap:bool=False,bootstrap_samples:float=0.1,bootstrap_percentile:float=0.95,bootstrap_num=100)
 
     Returns:
     --------
@@ -358,7 +409,7 @@ def MSD_Tracks(tracks,permutation=True,conversion_factor=None,tau_conversion_fac
             ensemble_disp = dic_union_two(ensemble_disp,disp)
 
     #update the ensemble MSD curve dictionary
-    ensemble_msd,errors_ensemble_msd = msd_avgerage_utility(ensemble_disp)
+    ensemble_msd,errors_ensemble_msd = msd_avgerage_utility(ensemble_disp,**kwargs)
     return_dict = {"msd_curves":[ensemble_msd,errors_ensemble_msd,track_msds,track_msds_error],"displacements":[ensemble_disp,tracks_displacements]}
     #keeping the code below for backwards compatibility, but is useless now
     return return_dict,ensemble_disp
@@ -386,6 +437,8 @@ class MSD_Calculations(Calculation_abc):
             This is passed on to the af.MSD_Tracks() function
         max_track_length: int, Default = 1000
             maximum track length to be considered.
+        
+        Passed to af.MSD_Tracks() -> (bootstrap:bool=False,bootstrap_samples:float=0.1,bootstrap_percentile:float=0.95,bootstrap_num=100)
         '''
         #initialize the MSD_Calculation_abc class
         super().__init__(pixel_size=pixel_to_um,
