@@ -2308,8 +2308,6 @@ class Trajectory:
 		-------
 		distance_from_drop : float
 			distance from the drop center to the trajectory
-		
-		
 	'''
 	def __init__(self, Track_ID, Frame_number, X, Y, Classification, Drop_Identifier, Frames, MSD_total_um = None,**kwargs):
 
