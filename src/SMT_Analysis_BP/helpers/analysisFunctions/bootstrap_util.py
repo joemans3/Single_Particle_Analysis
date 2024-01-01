@@ -1,8 +1,10 @@
 '''
 Utility functions for bootstrapping different types of data
 
-Contains: (FILL IN LATER)
-
+Containing functions:
+1) bootstrap_hist = histogram bootstrap with bin selection
+2) bootstrap_mean_std = bootstrap for the observable of mean and std 
+3) bootstrap_statistics = same as bootstrap_mean_std but for a user defined statistic (mean, std, IQR, etc ...)
 '''
 
 import numpy as np
@@ -100,7 +102,7 @@ def bootstrap_mean_std(values,n_bootstraps,bootsize,log_values=False):
     #calculate the mean and std
     mean = np.mean(bootstrapped_values)
     std = np.std(bootstrapped_values)
-    return mean,std
+    return mean, std
 
 
 def bootstrap_statistic(values,n_bootstraps,bootsize,log_values=False,statistic="mean"):

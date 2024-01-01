@@ -177,7 +177,6 @@ class Simulate_cells(sf.Track_generator):
             list of tracks for each cell
         points_per_track : list
             list of number of points in each frame
-        
         '''
         if diffusion_coefficients is None:
             diffusion_coefficients = self.cell_params['diffusion_coefficients']
@@ -187,14 +186,12 @@ class Simulate_cells(sf.Track_generator):
             num_tracks = self.cell_params['num_tracks']
         if track_type is None:
             track_type = self.cell_params['track_type']
-
         #get the mean track length
         if mean_track_length is None:
             mean_track_length = self.global_params['track_length_mean']
         #get the track length distribution
         if track_length_distribution is None:
             track_length_distribution = self.global_params["track_distribution"]
-
         #get the exposure time for the SMT experiment in ms
         if exposure_time is None:
             exposure_time = self.global_params['exposure_time'] #ms
@@ -206,8 +203,6 @@ class Simulate_cells(sf.Track_generator):
         track_lengths = np.array([i if i < movie_frames else movie_frames-1 for i in track_lengths])
         #for each track_lengths find the starting frame
         starting_frames = np.array([random.randint(0,movie_frames-i) for i in track_lengths])
-
-
         if isinstance(initials,dict): 
             #do the _initial_checker()
             self._initial_checker(initials=initials)
@@ -228,7 +223,6 @@ class Simulate_cells(sf.Track_generator):
                 density_dif = self.global_params['density_dif'],
                 space_size = np.array(area_cell),
             )
-
             #make a placeholder for the initial position array with all 0s
             initials = np.zeros((num_tracks,3))
             #lets use the starting frames to find the inital position based on the position of the condensates
@@ -250,21 +244,13 @@ class Simulate_cells(sf.Track_generator):
                                                               min_y=self.cell_params['cell_space'][2],
                                                               max_y=self.cell_params['cell_space'][3],
                                                               density_dif=self.global_params["density_dif"])[0]
-
-
-
-            
         else:
             #make sure that the number of tracks is equal to the number of diffusion coefficients and initials with raise an error if not
             assert len(hursts) == len(diffusion_coefficients) == len(initials) == num_tracks, 'The number of tracks is not equal to the number of diffusion coefficients or initials or hurst exponents'
-        
         #check to see if there is 2 or 3 values in the second dimension of initials
         if initials.shape[1] == 2:
             #add a third dimension of zeros so that the final shape is (num_tracks,3) with (:,3) being 0s
             initials = np.hstack((initials,np.zeros((num_tracks,1)))) 
-            
-
-
         #create tracks
         tracks = {}
         points_per_frame = dict(zip([str(i) for i in range(movie_frames)],[[] for i in range(movie_frames)]))
@@ -274,10 +260,8 @@ class Simulate_cells(sf.Track_generator):
                 xyz,t = self._make_fbm_track(length=track_lengths[i],end_time=track_lengths[i],hurst=hursts[i],return_time=True,dim=3)
                 #convery the time to ints
                 t = np.array(t,dtype=int)
-
                 #shift the frames to start at the start_frame
                 frames = start_frame + t
-                
                 #shift the track with the initial position and diffusion coefficient
                 xyz = (xyz * np.sqrt(2*diffusion_coefficients[i])) + initials[i]
                 #add this to the dictionary of tracks
@@ -290,7 +274,6 @@ class Simulate_cells(sf.Track_generator):
                 xyz = np.array([initials[i] for ll in range(int(track_lengths[i]))])
                 #make the time array
                 t = np.arange(track_lengths[i],dtype=int)
-
                 start_frame = starting_frames[i]
                 #shift the frames to start at the start_frame
                 frames = start_frame + t
@@ -299,8 +282,7 @@ class Simulate_cells(sf.Track_generator):
                 #add the number of points per frame to the dictionary
                 for j in range(len(frames)):
                     points_per_frame[str(frames[j])].append(xyz[j])
-                    
-        return tracks,points_per_frame
+        return tracks, points_per_frame
     
     @decorators.deprecated("This function is not useful, but is still here for a while in case I need it later")
     def _format_points_per_frame(self,points_per_frame):
