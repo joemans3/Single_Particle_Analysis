@@ -13,7 +13,6 @@ Author: Baljyot Singh Parmar
 '''
 
 import numpy as np
-import pandas as pd
 from fbm import FBM
 
 

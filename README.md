@@ -13,7 +13,7 @@
 1. Make sure you have anaconda installed: <https://www.anaconda.com/download>
 2. Download or clone this repository.
 3. In the conda prompt, navigate to the folder where you downloaded this repository using : **cd "path_to_folder"**
-4. Using the **SMT_env_BP.yml** file, create a new environment using: **conda env create -f SMT_env.yml**
+4. Using the **SMT_env_BP.yml** file, create a new environment using: **conda env create -f SMT_env_BP.yml**
 5. Activate the environment using: **conda activate SMT_env_BP**
 6. Install the extra pip packages using: **pip install -r requirements.txt**
 7. Since tensflow and tensorflow-probability are platform dependent we need to install inidividually.
