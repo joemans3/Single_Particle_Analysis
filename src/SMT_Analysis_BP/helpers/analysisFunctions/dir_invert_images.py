@@ -5,10 +5,7 @@ Author: Baljyot Singh Parmar
 '''
 import os
 import numpy as np 
-from PIL import Image
-import PIL.ImageOps
 import sys
-import glob as glob
 
 if __name__ == "__main__":
     sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts')
