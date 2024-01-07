@@ -23,13 +23,9 @@ if __name__ == '__main__':
     sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src')
 
 import numpy as np
-import matplotlib.pyplot as plt
 import os
 import glob
-
-from skimage import measure
 import skimage.io as ioski
-import cv2
 from cellpose import utils,io
 from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import sorted_alphanumeric
 #remove warnings
