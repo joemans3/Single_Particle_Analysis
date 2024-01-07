@@ -215,7 +215,7 @@ class Track_Calculations_Individual_Dict(Calculation_abc):
         self.pixel_to_um = kwargs.get("pixel_to_um",0.13)
         self.frame_to_seconds = kwargs.get("frame_to_seconds",0.02)
         #build the Angle_Tracks
-        self._build_Angle_Tracks()
+        self._build_Angle_Tracks(**kwargs)
 
     def _build_Angle_Tracks(self,**kwargs):
         #build the Angle_Tracks

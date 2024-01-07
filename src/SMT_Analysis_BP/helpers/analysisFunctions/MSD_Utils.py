@@ -267,7 +267,7 @@ class MSD_storage:
         self._track_lengths = track_lengths
 
 
-def msd_avgerage_utility(displacements:dict,bootstrap:bool=False,bootstrap_samples:float=0.1,bootstrap_percentile:float=0.95,bootstrap_num=100):
+def msd_avgerage_utility(displacements:dict,bootstrap:bool=False,bootstrap_samples:float=0.1,bootstrap_percentile:float=0.95,bootstrap_num=100,**kwargs):
     '''Documentation for _msd_avgerage_utility
 
     Parameters: 
@@ -591,7 +591,7 @@ class MSD_Calculations_Track_Dict(Calculation_abc):
         self.pixel_to_um = kwargs.get("pixel_to_um",0.13)
         self.frame_to_seconds = kwargs.get("frame_to_seconds",0.02)
         #build the MSD_Tracks
-        self._build_MSD_Tracks()
+        self._build_MSD_Tracks(**kwargs)
 
     def _build_MSD_Tracks(self,**kwargs):
         #build the MSD_Tracks
