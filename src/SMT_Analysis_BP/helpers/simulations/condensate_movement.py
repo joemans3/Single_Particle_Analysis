@@ -171,7 +171,7 @@ class Condensate:
         #make a time array starting from the last time +1 and goin to the time inclusive
         time_array = np.arange(self.times[-1]+1, time+1)
         #since time is positive consecutive integers we can just use the length of the time array to be the difference we calculated
-        t,xy = fbm.get_fbm_sample(l=1,n=int(time_difference)+1,h=self.hurst_exponent,d=self.dim)
+        t,xy = fbm.get_fbm_sample(l=time_difference,n=int(time_difference)+1,h=self.hurst_exponent,d=self.dim)
         #convert the xy into [[x,y],...] format 
         x,y = xy
         coords = np.stack((x,y),axis =-1) * np.sqrt(2*self.diffusion_coefficient)
