@@ -56,10 +56,6 @@ class Simulate_cells(sf.Track_generator):
             This controls the axial (z) effect on the PSF (Ones is no axial effect, exponential is axial effect with a decay)
         
         Full list see the docstring for Track_generator and sim_foci class in simulate_foci.py 
-
-        
-        
-        
         '''
         #if axial_function is not in global_params, set it to "ones"
         if 'axial_function' not in global_params:

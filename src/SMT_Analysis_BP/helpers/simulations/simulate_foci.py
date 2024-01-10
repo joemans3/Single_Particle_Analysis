@@ -631,311 +631,6 @@ class Track_generator(sim_foci):
 		t = np.linspace(0,end_time,length)
 		return track,t
 
-class sim_focii(Track_generator): #is this usefull or not? Turns out to be slower ~x2 than the brute force way.
-	''' 
-	Class for simulating focii in space, and detecting them.
-	Inherits from Track_generator class, which inherits from sim_foci class.
-	MRO: sim_focii -> Track_generator -> sim_foci -> object
-
-	Initalization parameters:
-	-------------------------
-	radii: list of radii to simulate, default is [1,2,3], in pixels
-	repeats: number of times to repeat the simulation for each radii, default is 3
-	detection_kwargs: dictionary of parameters for the detection algorithm
-	sim_kwargs: dictionary of parameters for the simulation algorithm
-	fitting_parm: dictionary of parameters for the fitting algorithm
-	track_parm: dictionary of parameters for the track generation algorithm
-
-	Methods:
-	--------
-		_create_sim: creates a simulation object
-		_repeat_sim: repeats the simulation for the given number of repeats and radii
-		_blob_detection_object: creates a blob detection object, with the given parameters
-		_map_detection: maps the detection algorithm to the simulation
-		_found_utils: returns the number of focii found, and the number of focii that were simulated
-		radius_analysis: returns the number of focii found, and the number of focii that were simulated, for each radius
-		total_point_analysis: returns the number of focii found, and the number of focii that were simulated, for each number of points simulated
-	
-	Notes:
-	------
-		- The detection algorithm is a blob detection algorithm, with the parameters given in the detection_kwargs dictionary.
-		- The simulation algorithm is a simulation of focii in space, with the parameters given in the sim_kwargs dictionary.
-		- The fitting algorithm is a fitting algorithm for the focii, with the parameters given in the fitting_parm dictionary.
-		- The track generation algorithm is a track generation algorithm, with the parameters given in the track_parm dictionary.
-
-	'''
-	def __init__(self,radii=None,repeats=3,detection_kwargs={},sim_kwargs={},fitting_parm={},track_parm={}) -> None:
-		'''
-		Docstring for __init__:
-		-----------------------
-		Initializes the class, and creates the blob detection object.
-
-		Parameters:
-		-----------
-		radii: array-like or list, default is None, in pixels
-			list of radii to simulate
-		repeats: int, default is 3
-			number of times to repeat the simulation for each radii
-		detection_kwargs: dictionary
-			dictionary of parameters for the detection algorithm
-		sim_kwargs: dictionary
-			dictionary of parameters for the simulation algorithm
-		fitting_parm: dictionary
-			dictionary of parameters for the fitting algorithm
-		track_parm: dictionary
-			dictionary of parameters for the track generation algorithm
-
-		Notes:
-		------
-		1. The detection algorithm is a blob detection algorithm, with the parameters given in the detection_kwargs dictionary.
-		2. The simulation algorithm is a simulation of focii in space, with the parameters given in the sim_kwargs dictionary.
-		3. The fitting algorithm is a fitting algorithm for the focii, with the parameters given in the fitting_parm dictionary.
-		4. The track generation algorithm is a track generation algorithm, with the parameters given in the track_parm dictionary.
-		'''
-		self.radii = radii
-		self.detection_kwargs = detection_kwargs
-		self.sim_kwargs = sim_kwargs
-		self.fitting_parm = fitting_parm
-		self.repeats = repeats
-		super(sim_focii,self).__init__(sim_parameters=sim_kwargs,track_parameters=track_parm)
-		self.blob_detector = None
-		self._blob_detection_object(detection_kwargs=detection_kwargs,fitting_parm=fitting_parm)
-		#if self.use_points is True: then points are simualted independently and then the detection algorithm is applied
-		# if self.use_points is False: then tracks are simulated, and then the detection algorithm is applied
-		self.use_points = True
-
-	def _create_sim(self,radius):
-		'''
-		Docstring for _create_sim:
-		--------------------------
-		Creates a simulation object.
-
-		Parameters:
-		-----------
-		radius: float
-			radius of the focii to simulate, in pixels
-		
-		Returns:
-		--------
-		sim_obj: simulation object, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
-
-		'''
-		self.radius=radius
-		if self.use_points is True:
-			sim_obj = self.simulate_point()
-		else:
-			sim_obj = self.generate_map_from_points(self.create_points(self.diffusion_coefficient),self.point_intensity)
-		return sim_obj
-
-	def _repeat_sim(self,repeats,radius):
-		'''
-		Docstring for _repeat_sim:
-		--------------------------
-		Repeats the simulation for the given number of repeats and radii.
-
-		Parameters:
-		-----------
-		repeats: number of times to repeat the simulation for each radii, default is 3
-		radius: radius of the focii to simulate, in pixels
-
-		Returns:
-		--------
-		repeat_obj: dictionary of simulation objects, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
-		'''
-		repeat_obj = {}
-		for i in range(repeats):
-			repeat_obj[i+1] = self._create_sim(radius=radius)
-		return repeat_obj
-
-	def _blob_detection_object(self,detection_kwargs={},fitting_parm={}):
-		'''
-		Docstring for _blob_detection_object:
-		-------------------------------------
-		Creates a blob detection object, with the given parameters. 
-		Initalizes the class variable self.blob_detector, which calls the blob detection algorithm in the blob_detection.py file.
-		Originally it sets the path/img to 0, but this is updated in the _map_detection function for each simulation space (img).
-
-		Parameters:
-		-----------
-		detection_kwargs: dictionary of parameters for the detection algorithm
-		fitting_parm: dictionary of parameters for the fitting algorithm
-
-		Notes:
-		------
-		1. The detection algorithm is a blob detection algorithm, with the parameters given in the detection_kwargs dictionary.
-		2. The fitting algorithm is a fitting algorithm for the focii, with the parameters given in the fitting_parm dictionary.
-		3. This function creates a blob detection object, and assigns it to the class variable self.blob_detector.
-		'''
-		self.blob_detector = blob_detection.blob_detection(path=0,**detection_kwargs)
-		self.blob_detector._update_fitting_parameters(kwargs=fitting_parm)
-
-	def _mapdetection(self,radius,repeats):
-		'''
-		Docstring for _mapdetection:
-		----------------------------
-		Maps the detection algorithm to the simulation.
-
-		Parameters:
-		-----------
-		radius: radius of the focii to simulate, in pixels
-		repeats: number of times to repeat the simulation for each radii, default is 3
-
-		Returns:
-		--------
-		found_map: dictionary of the found focii, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
-		repeat_map: dictionary of the simulation objects, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
-
-		Notes:
-		------
-		1. The detection algorithm is a blob detection algorithm, with the parameters given in the detection_kwargs dictionary.
-		2. All the simulation objects are stored in the repeat_map dictionary.
-		'''
-		repeat_map = self._repeat_sim(repeats=repeats,radius=radius)
-		found_map = {}
-		for i,j in repeat_map.items():
-			self.blob_detector.img = np.array(j[0])
-			found_map[i] = self.blob_detector.detection(type = "bp")
-		return found_map,repeat_map
-
-	def _found_utils(self,found_spots,method="single"):
-		'''
-		Docstring for _found_utils:
-		---------------------------
-		Extracts the found focii from the found_spots dictionary, and returns the mean and standard deviation of the found focii.
-
-		Parameters:
-		-----------
-		found_spots: dictionary of the found focii, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
-		method: if detection is done on both the scale space and the fit, then the method is "both", else it is "single"
-
-		Returns:
-		--------
-		if method=="single":
-		mean: mean of the found focii
-		std: standard deviation of the found focii
-		if method=="both":
-		sig_mean: mean of the found focii from the scale space
-		sig_std: standard deviation of the found focii from the scale space
-		fit_mean: mean of the found focii from the fit
-		fit_std: standard deviation of the found focii from the fit
-
-		'''
-		
-		if method=="single":#fix this TODO
-			try:
-				temp = [k[:,2:] for i,k in found_spots.items()]
-			except:
-				raise ValueError("More than one spot found")
-			return np.mean(temp),np.std(temp)
-		if method=="both":
-			sig_mean = []
-			fit_mean = []
-			for i,j in found_spots.items():
-				sig_mean.append(j["Scale"][:,2:])
-				fit_mean.append(j["Fitted"][:,2:])
-			
-			return np.mean(Analysis_functions.flatten(sig_mean)),np.std(Analysis_functions.flatten(sig_mean)),np.mean(Analysis_functions.flatten(fit_mean)),np.std(Analysis_functions.flatten(fit_mean))
-
-	def radius_analysis(self,point_density=None):
-		'''
-		Docstring for radius_analysis:
-		------------------------------
-		Performs the radius analysis, and returns the mean and standard deviation of the found focii.
-
-		Parameters:
-		-----------
-		point_density: array-like or list or scalar, default None
-			This is the point density for the blob to simulate. This should be 1d array or list of size self.radii
-			(If scalar, function applies the same point_density for each blob of radius self.radii)
-			(One point desnity for each element in self.radii to simualte.)
-			(If None, then use the self.total_points variable for the number of points for each radius blob)
-
-		Returns:
-		--------
-		if self.blob_detector.verbose:
-			sig_means: mean of the found focii from the scale space
-			sig_stds: standard deviation of the found focii from the scale space
-			fit_means: mean of the found focii from the fit
-			fit_stds: standard deviation of the found focii from the fit
-		if not self.blob_detector.verbose:
-			fit_means: mean of the found focii
-			fit_stds: standard deviation of the found focii
-
-		Raises:
-		-------
-
-		'''
-
-		#check the input of point_density is not None and is a 1d array or list of size self.radii
-		if point_density==None:
-			point_density_tracks = np.ones(len(self.radii))*self.total_points
-
-		if not isinstance(point_density,(np.ndarray,list)):
-			if np.isscalar(point_density):
-				point_density = np.ones(len(self.radii))*point_density
-				point_density_tracks = np.pi*(np.asarray(self.radii)**2)*point_density
-
-			elif point_density==None:
-				point_density_tracks = np.ones(len(self.radii))*self.total_points
-			
-			else:
-				raise ValueError("For variable: point_density, please enter a scalar or 1d array or 1d list of size: {0}".format(len(self.radii)))
-		
-		sig_means = []
-		fit_means = []
-		sig_stds = []
-		fit_stds = []
-		if self.blob_detector.verbose:
-			for i,j in enumerate(self.radii):
-				self.total_points=int(point_density_tracks[i])
-				found,repeat = self._mapdetection(radius=j,repeats=self.repeats)
-				sig_mean,sig_std,fit_mean,fit_std = self._found_utils(found_spots=found,method="both")
-				sig_means.append(sig_mean)
-				sig_stds.append(sig_std)
-				fit_means.append(fit_mean)
-				fit_stds.append(fit_std)
-
-		else:
-			for i,j in enumerate(self.radii):
-				self.total_points=int(point_density_tracks[i])
-				found,repeat = self._mapdetection(radius=j,repeats=self.repeats)
-				fit_mean,fit_std = self._found_utils(found_spots=found)
-				fit_means.append(fit_mean)
-				fit_stds.append(fit_std)
-
-		if self.blob_detector.verbose:
-			return {"sig_mean":sig_means,"sig_std":sig_stds,"fit_mean":fit_means,"fit_stds":fit_stds}
-		else:
-			return {"fit_mean":fit_means,"fit_stds":fit_stds}
-	def total_points_radius_analysis(self,total_points):
-		'''
-		Docstring for total_points_radius_analysis:
-		-------------------------------------------
-		Performs the radius analysis, and returns the mean and standard deviation of the found focii, with the total number of points in the simulation set to total_points.
-		
-		Parameters:
-		-----------
-		total_points: total number of points in the simulation
-
-		Returns:
-		--------
-		if self.blob_detector.verbose:
-			sig_means: mean of the found focii from the scale space
-			sig_stds: standard deviation of the found focii from the scale space
-			fit_means: mean of the found focii from the fit
-			fit_stds: standard deviation of the found focii from the fit
-		if not self.blob_detector.verbose:
-			fit_means: mean of the found focii
-			fit_stds: standard deviation of the found focii
-		
-		Notes:
-		------
-		1. Total points is set to the total number of points in the simulation, and the radius is set to the radius of the top hat distribution.
-
-		'''
-		self.total_points = total_points
-		return self.radius_analysis()
-
 def tophat_function_2d(var,center,radius,bias_subspace,space_prob,**kwargs):
 	'''
 	Defines a circular top hat probability distribution with a single biased region defining the hat.
@@ -1239,6 +934,308 @@ if __name__ == "__main__":
 	plt.axvline(x=density_dif*(np.pi*radius**2)/max_x**2)
 	plt.show()
 
+#depriecated
+# class sim_focii(Track_generator): #is this usefull or not? Turns out to be slower ~x2 than the brute force way.
+# 	''' 
+# 	Class for simulating focii in space, and detecting them.
+# 	Inherits from Track_generator class, which inherits from sim_foci class.
+# 	MRO: sim_focii -> Track_generator -> sim_foci -> object
 
+# 	Initalization parameters:
+# 	-------------------------
+# 	radii: list of radii to simulate, default is [1,2,3], in pixels
+# 	repeats: number of times to repeat the simulation for each radii, default is 3
+# 	detection_kwargs: dictionary of parameters for the detection algorithm
+# 	sim_kwargs: dictionary of parameters for the simulation algorithm
+# 	fitting_parm: dictionary of parameters for the fitting algorithm
+# 	track_parm: dictionary of parameters for the track generation algorithm
 
+# 	Methods:
+# 	--------
+# 		_create_sim: creates a simulation object
+# 		_repeat_sim: repeats the simulation for the given number of repeats and radii
+# 		_blob_detection_object: creates a blob detection object, with the given parameters
+# 		_map_detection: maps the detection algorithm to the simulation
+# 		_found_utils: returns the number of focii found, and the number of focii that were simulated
+# 		radius_analysis: returns the number of focii found, and the number of focii that were simulated, for each radius
+# 		total_point_analysis: returns the number of focii found, and the number of focii that were simulated, for each number of points simulated
+	
+# 	Notes:
+# 	------
+# 		- The detection algorithm is a blob detection algorithm, with the parameters given in the detection_kwargs dictionary.
+# 		- The simulation algorithm is a simulation of focii in space, with the parameters given in the sim_kwargs dictionary.
+# 		- The fitting algorithm is a fitting algorithm for the focii, with the parameters given in the fitting_parm dictionary.
+# 		- The track generation algorithm is a track generation algorithm, with the parameters given in the track_parm dictionary.
 
+# 	'''
+# 	def __init__(self,radii=None,repeats=3,detection_kwargs={},sim_kwargs={},fitting_parm={},track_parm={}) -> None:
+# 		'''
+# 		Docstring for __init__:
+# 		-----------------------
+# 		Initializes the class, and creates the blob detection object.
+
+# 		Parameters:
+# 		-----------
+# 		radii: array-like or list, default is None, in pixels
+# 			list of radii to simulate
+# 		repeats: int, default is 3
+# 			number of times to repeat the simulation for each radii
+# 		detection_kwargs: dictionary
+# 			dictionary of parameters for the detection algorithm
+# 		sim_kwargs: dictionary
+# 			dictionary of parameters for the simulation algorithm
+# 		fitting_parm: dictionary
+# 			dictionary of parameters for the fitting algorithm
+# 		track_parm: dictionary
+# 			dictionary of parameters for the track generation algorithm
+
+# 		Notes:
+# 		------
+# 		1. The detection algorithm is a blob detection algorithm, with the parameters given in the detection_kwargs dictionary.
+# 		2. The simulation algorithm is a simulation of focii in space, with the parameters given in the sim_kwargs dictionary.
+# 		3. The fitting algorithm is a fitting algorithm for the focii, with the parameters given in the fitting_parm dictionary.
+# 		4. The track generation algorithm is a track generation algorithm, with the parameters given in the track_parm dictionary.
+# 		'''
+# 		self.radii = radii
+# 		self.detection_kwargs = detection_kwargs
+# 		self.sim_kwargs = sim_kwargs
+# 		self.fitting_parm = fitting_parm
+# 		self.repeats = repeats
+# 		super(sim_focii,self).__init__(sim_parameters=sim_kwargs,track_parameters=track_parm)
+# 		self.blob_detector = None
+# 		self._blob_detection_object(detection_kwargs=detection_kwargs,fitting_parm=fitting_parm)
+# 		#if self.use_points is True: then points are simualted independently and then the detection algorithm is applied
+# 		# if self.use_points is False: then tracks are simulated, and then the detection algorithm is applied
+# 		self.use_points = True
+
+# 	def _create_sim(self,radius):
+# 		'''
+# 		Docstring for _create_sim:
+# 		--------------------------
+# 		Creates a simulation object.
+
+# 		Parameters:
+# 		-----------
+# 		radius: float
+# 			radius of the focii to simulate, in pixels
+		
+# 		Returns:
+# 		--------
+# 		sim_obj: simulation object, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
+
+# 		'''
+# 		self.radius=radius
+# 		if self.use_points is True:
+# 			sim_obj = self.simulate_point()
+# 		else:
+# 			sim_obj = self.generate_map_from_points(self.create_points(self.diffusion_coefficient),self.point_intensity)
+# 		return sim_obj
+
+# 	def _repeat_sim(self,repeats,radius):
+# 		'''
+# 		Docstring for _repeat_sim:
+# 		--------------------------
+# 		Repeats the simulation for the given number of repeats and radii.
+
+# 		Parameters:
+# 		-----------
+# 		repeats: number of times to repeat the simulation for each radii, default is 3
+# 		radius: radius of the focii to simulate, in pixels
+
+# 		Returns:
+# 		--------
+# 		repeat_obj: dictionary of simulation objects, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
+# 		'''
+# 		repeat_obj = {}
+# 		for i in range(repeats):
+# 			repeat_obj[i+1] = self._create_sim(radius=radius)
+# 		return repeat_obj
+
+# 	def _blob_detection_object(self,detection_kwargs={},fitting_parm={}):
+# 		'''
+# 		Docstring for _blob_detection_object:
+# 		-------------------------------------
+# 		Creates a blob detection object, with the given parameters. 
+# 		Initalizes the class variable self.blob_detector, which calls the blob detection algorithm in the blob_detection.py file.
+# 		Originally it sets the path/img to 0, but this is updated in the _map_detection function for each simulation space (img).
+
+# 		Parameters:
+# 		-----------
+# 		detection_kwargs: dictionary of parameters for the detection algorithm
+# 		fitting_parm: dictionary of parameters for the fitting algorithm
+
+# 		Notes:
+# 		------
+# 		1. The detection algorithm is a blob detection algorithm, with the parameters given in the detection_kwargs dictionary.
+# 		2. The fitting algorithm is a fitting algorithm for the focii, with the parameters given in the fitting_parm dictionary.
+# 		3. This function creates a blob detection object, and assigns it to the class variable self.blob_detector.
+# 		'''
+# 		self.blob_detector = blob_detection.blob_detection(path=0,**detection_kwargs)
+# 		self.blob_detector._update_fitting_parameters(kwargs=fitting_parm)
+
+# 	def _mapdetection(self,radius,repeats):
+# 		'''
+# 		Docstring for _mapdetection:
+# 		----------------------------
+# 		Maps the detection algorithm to the simulation.
+
+# 		Parameters:
+# 		-----------
+# 		radius: radius of the focii to simulate, in pixels
+# 		repeats: number of times to repeat the simulation for each radii, default is 3
+
+# 		Returns:
+# 		--------
+# 		found_map: dictionary of the found focii, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
+# 		repeat_map: dictionary of the simulation objects, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
+
+# 		Notes:
+# 		------
+# 		1. The detection algorithm is a blob detection algorithm, with the parameters given in the detection_kwargs dictionary.
+# 		2. All the simulation objects are stored in the repeat_map dictionary.
+# 		'''
+# 		repeat_map = self._repeat_sim(repeats=repeats,radius=radius)
+# 		found_map = {}
+# 		for i,j in repeat_map.items():
+# 			self.blob_detector.img = np.array(j[0])
+# 			found_map[i] = self.blob_detector.detection(type = "bp")
+# 		return found_map,repeat_map
+
+# 	def _found_utils(self,found_spots,method="single"):
+# 		'''
+# 		Docstring for _found_utils:
+# 		---------------------------
+# 		Extracts the found focii from the found_spots dictionary, and returns the mean and standard deviation of the found focii.
+
+# 		Parameters:
+# 		-----------
+# 		found_spots: dictionary of the found focii, with the given radius, and the simulation parameters given in the sim_kwargs dictionary.
+# 		method: if detection is done on both the scale space and the fit, then the method is "both", else it is "single"
+
+# 		Returns:
+# 		--------
+# 		if method=="single":
+# 		mean: mean of the found focii
+# 		std: standard deviation of the found focii
+# 		if method=="both":
+# 		sig_mean: mean of the found focii from the scale space
+# 		sig_std: standard deviation of the found focii from the scale space
+# 		fit_mean: mean of the found focii from the fit
+# 		fit_std: standard deviation of the found focii from the fit
+
+# 		'''
+		
+# 		if method=="single":#fix this TODO
+# 			try:
+# 				temp = [k[:,2:] for i,k in found_spots.items()]
+# 			except:
+# 				raise ValueError("More than one spot found")
+# 			return np.mean(temp),np.std(temp)
+# 		if method=="both":
+# 			sig_mean = []
+# 			fit_mean = []
+# 			for i,j in found_spots.items():
+# 				sig_mean.append(j["Scale"][:,2:])
+# 				fit_mean.append(j["Fitted"][:,2:])
+			
+# 			return np.mean(Analysis_functions.flatten(sig_mean)),np.std(Analysis_functions.flatten(sig_mean)),np.mean(Analysis_functions.flatten(fit_mean)),np.std(Analysis_functions.flatten(fit_mean))
+
+# 	def radius_analysis(self,point_density=None):
+# 		'''
+# 		Docstring for radius_analysis:
+# 		------------------------------
+# 		Performs the radius analysis, and returns the mean and standard deviation of the found focii.
+
+# 		Parameters:
+# 		-----------
+# 		point_density: array-like or list or scalar, default None
+# 			This is the point density for the blob to simulate. This should be 1d array or list of size self.radii
+# 			(If scalar, function applies the same point_density for each blob of radius self.radii)
+# 			(One point desnity for each element in self.radii to simualte.)
+# 			(If None, then use the self.total_points variable for the number of points for each radius blob)
+
+# 		Returns:
+# 		--------
+# 		if self.blob_detector.verbose:
+# 			sig_means: mean of the found focii from the scale space
+# 			sig_stds: standard deviation of the found focii from the scale space
+# 			fit_means: mean of the found focii from the fit
+# 			fit_stds: standard deviation of the found focii from the fit
+# 		if not self.blob_detector.verbose:
+# 			fit_means: mean of the found focii
+# 			fit_stds: standard deviation of the found focii
+
+# 		Raises:
+# 		-------
+
+# 		'''
+
+# 		#check the input of point_density is not None and is a 1d array or list of size self.radii
+# 		if point_density==None:
+# 			point_density_tracks = np.ones(len(self.radii))*self.total_points
+
+# 		if not isinstance(point_density,(np.ndarray,list)):
+# 			if np.isscalar(point_density):
+# 				point_density = np.ones(len(self.radii))*point_density
+# 				point_density_tracks = np.pi*(np.asarray(self.radii)**2)*point_density
+
+# 			elif point_density==None:
+# 				point_density_tracks = np.ones(len(self.radii))*self.total_points
+			
+# 			else:
+# 				raise ValueError("For variable: point_density, please enter a scalar or 1d array or 1d list of size: {0}".format(len(self.radii)))
+		
+# 		sig_means = []
+# 		fit_means = []
+# 		sig_stds = []
+# 		fit_stds = []
+# 		if self.blob_detector.verbose:
+# 			for i,j in enumerate(self.radii):
+# 				self.total_points=int(point_density_tracks[i])
+# 				found,repeat = self._mapdetection(radius=j,repeats=self.repeats)
+# 				sig_mean,sig_std,fit_mean,fit_std = self._found_utils(found_spots=found,method="both")
+# 				sig_means.append(sig_mean)
+# 				sig_stds.append(sig_std)
+# 				fit_means.append(fit_mean)
+# 				fit_stds.append(fit_std)
+
+# 		else:
+# 			for i,j in enumerate(self.radii):
+# 				self.total_points=int(point_density_tracks[i])
+# 				found,repeat = self._mapdetection(radius=j,repeats=self.repeats)
+# 				fit_mean,fit_std = self._found_utils(found_spots=found)
+# 				fit_means.append(fit_mean)
+# 				fit_stds.append(fit_std)
+
+# 		if self.blob_detector.verbose:
+# 			return {"sig_mean":sig_means,"sig_std":sig_stds,"fit_mean":fit_means,"fit_stds":fit_stds}
+# 		else:
+# 			return {"fit_mean":fit_means,"fit_stds":fit_stds}
+# 	def total_points_radius_analysis(self,total_points):
+# 		'''
+# 		Docstring for total_points_radius_analysis:
+# 		-------------------------------------------
+# 		Performs the radius analysis, and returns the mean and standard deviation of the found focii, with the total number of points in the simulation set to total_points.
+		
+# 		Parameters:
+# 		-----------
+# 		total_points: total number of points in the simulation
+
+# 		Returns:
+# 		--------
+# 		if self.blob_detector.verbose:
+# 			sig_means: mean of the found focii from the scale space
+# 			sig_stds: standard deviation of the found focii from the scale space
+# 			fit_means: mean of the found focii from the fit
+# 			fit_stds: standard deviation of the found focii from the fit
+# 		if not self.blob_detector.verbose:
+# 			fit_means: mean of the found focii
+# 			fit_stds: standard deviation of the found focii
+		
+# 		Notes:
+# 		------
+# 		1. Total points is set to the total number of points in the simulation, and the radius is set to the radius of the top hat distribution.
+
+# 		'''
+# 		self.total_points = total_points
+# 		return self.radius_analysis()
