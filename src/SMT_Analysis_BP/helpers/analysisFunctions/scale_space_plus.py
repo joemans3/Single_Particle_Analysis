@@ -93,7 +93,7 @@ class SM_reconstruction_image(ScaleSpacePlus):
             
             #we want to only sample a 10x10 pixel area around the localization and then remap it to the original image space
             #make the new domain range scale with this localization error/ pixel size ratio
-            domain_max = int(5*loc_error_val) #TODO fix, This produces an asymetric domain due to the rounding. (lower domain values are cut off slightly. This does not seem to affect intensity sampling much. (<1% of the gaussian trails off into the cut off region)))
+            domain_max = int(5*loc_error_val) 
             domain = [np.arange(0,domain_max,1.),np.arange(0,domain_max,1.)]
             #lets get the x,y in this new domain
             x_scaled = rescale_range(x,*[0,self.img_dims[0]],*[0,domain_max])
@@ -102,8 +102,8 @@ class SM_reconstruction_image(ScaleSpacePlus):
             temp_scape = get_gaussian(mu = [x_scaled,y_scaled],sigma = sigma_shape,domain = domain)
             #now we have a 20x20 matrix but we need to embed it into the orginal self.img_space
             #we can find the bottom corner of the 20x20 matrix in the self.img_space
-            x_bottom = int(x - domain_max/2.)#TODO fix, This produces an asymetric domain due to the rounding. (lower domain values are cut off slightly. This does not seem to affect intensity sampling much. (<1% of the gaussian trails off into the cut off region)))
-            y_bottom = int(y - domain_max/2.)#TODO fix, This produces an asymetric domain due to the rounding. (lower domain values are cut off slightly. This does not seem to affect intensity sampling much. (<1% of the gaussian trails off into the cut off region)))
+            x_bottom = int(x - domain_max/2.)
+            y_bottom = int(y - domain_max/2.)
             #now we can embed the 20x20 matrix into the self.img_space
             try:
                 self.img_space[x_bottom:x_bottom+domain_max,y_bottom:y_bottom+domain_max] = self.img_space[x_bottom:x_bottom+domain_max,y_bottom:y_bottom+domain_max] + np.array(temp_scape)
@@ -216,7 +216,7 @@ class SM_reconstruction_masked(ScaleSpacePlus):
 
             #we want to only sample a 10x10 pixel area around the localization and then remap it to the original image space
             #make the new domain range scale with this localization error/ pixel size ratio
-            domain_max = int(5*loc_error_val) #TODO this is an issue maybe? Int cuts off part of the gaussian asymetrically.
+            domain_max = int(5*loc_error_val) #this is an issue maybe? Int cuts off part of the gaussian asymetrically.
             domain = [np.arange(0,domain_max,1.),np.arange(0,domain_max,1.)]
             #lets get the x,y in this new domain
             x_scaled = rescale_range(x,*[0,small_img_space.shape[0]],*[0,domain_max])

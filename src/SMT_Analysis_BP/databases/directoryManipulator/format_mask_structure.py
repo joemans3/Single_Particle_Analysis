@@ -102,7 +102,6 @@ class movie_mask_directory_structure_manager:
                     os.mkdir(path_structure['movie_dir']['movies'][movie+1]['cells'][cells]['path'])
                 #save the mask
                 ioski.imsave(os.path.join(path_structure['movie_dir']['movies'][movie+1]['cells'][cells]['path'],'mask.tif'),cell_mask)
-            #TODO impliment the ROI file saving
             #save the ROI files to the Movie directory with name Movie_{}.zip by taking the total mask (all cells) and saving it as a ROI file
             #save the ROI file
             io.save_rois(read_npy_file(self.mask_files[movie])['masks'],os.path.join(path_structure['movie_dir']['movies'][movie+1]["path"],"Movie_{}".format(movie+1)))

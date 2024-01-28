@@ -268,7 +268,7 @@ class blob_detection:
 		if len(pairs) == 0:
 			return blobs_array,sigma_indx
 		else:
-			for (i, j) in pairs: ####TODO turns out that for each pair it assigns -1 to the sigma if it fails the call,
+			for (i, j) in pairs: ####turns out that for each pair it assigns -1 to the sigma if it fails the call,
 				#but depending on the pairs which are choosen first it assigns a -1 to a blob that is likely larger than others
 				#find a way to do a ranked list of sorts for this. 
 				blob1, blob2 = blobs_array[i], blobs_array[j]

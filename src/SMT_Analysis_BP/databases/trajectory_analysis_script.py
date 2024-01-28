@@ -220,7 +220,6 @@ class run_analysis:
 			#store seg_files
 			segf.append(seg_files)
 			#blob analysis
-			#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
 			blob_total.append(self._blob_detection_utility(seg_files=seg_files,
 														movie_ID=pp,
 														plot = False,
@@ -336,7 +335,6 @@ class run_analysis:
 			#####LOADING SEGMENTED BLOB DATA#####
 			if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
 				#blob analysis
-				#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
 				blob_total.append(self._blob_detection_utility(seg_files=seg_files,
 															movie_ID=pp,
 															plot = False,
@@ -509,7 +507,6 @@ class run_analysis:
 			#####LOADING SEGMENTED BLOB DATA#####
 			if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
 				#blob analysis
-				#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
 				blob_total.append(self._blob_detection_utility(seg_files=seg_files,
 															movie_ID=pp,
 															plot = False,
@@ -686,7 +683,6 @@ class run_analysis:
 			##-----LOADING SEGMENTED BLOB DATA-----##
 			if (not (LOADING_DROP_BLOB_TYPES[self.type_of_blob])):
 				#blob analysis
-				#TODO make sure to use the bounded box image created from Analysis_functions.subarray2D()
 				blobs_found = self._blob_detection_utility(seg_files=seg_files,
 															movie_ID=i,
 															plot = False,

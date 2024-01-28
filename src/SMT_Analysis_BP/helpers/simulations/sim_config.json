@@ -1,15 +1,45 @@
 {
     "version":"0.1",
-    "Simulate_3DCell":true,
+    "length_unit":"um",
+    "space_unit":"pixel",
+    "time_unit":"ms",
+    "intensity_unit":"AUD",
+    "diffusion_unit":"um^2/s",
     "Cell_Parameters":{
-
+        "cell_space":[[80,120],[80,120]],
+        "cell_axial_radius":5
     },
     "Track_Parameters":{
-
+        "num_tracks":100,
+        "track_type":"fbm",
+        "track_length_mean":10,
+        "track_distribution":"exponential",
+        "diffusion_coefficient":[0.1,0.1],
+        "diffusion_track_amount":[50,50],
+        "hurst_exponent":[0.2,0.5],
+        "hurst_track_amount":[50,50],
+        "allow_transition_probability":false,
+        "diffusion_transition_matrix":[[0.9,0.1],[0.1,0.9]],
+        "hurst_transition_matrix":[[0.9,0.1],[0.1,0.9]]
     },
     "Global_Parameters":{
-
+        "field_of_view_dim":[200,200],
+        "frame_count":500,
+        "exposure_time":20,
+        "interval_time":0,
+        "oversample_motion_time":1,
+        "pixel_size":0.13,
+        "axial_detection_range":0.4,
+        "base_noise":140,
+        "point_intensity":20,
+        "psf_sigma":0.13,
+        "axial_function":"exponential"
+    },
+    "Condensate_Parameters":{
+        "initial_centers":[[100,100],[90,95]],
+        "initial_scale": [2,2],
+        "diffusion_coefficient": [0,0],
+        "hurst_exponent": [0.2,0.2], 
+        "density_dif":10
     }
-
-
 }
