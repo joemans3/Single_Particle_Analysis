@@ -64,7 +64,7 @@ class FBM_BP:
                  hurst_parameter_transition_matrix:np.ndarray,
                  state_probability_diffusion:np.ndarray,
                  state_probability_hurst:np.ndarray,
-                 space_lim:float):
+                 space_lim:np.ndarray):
         self.n = n
         self.dt = dt#ms
         self.diffusion_parameter = diffusion_parameters
@@ -73,7 +73,7 @@ class FBM_BP:
         self.hurst_parameter_transition_matrix = hurst_parameter_transition_matrix #stocastic rate constants with units 1/dt
         self.state_probability_diffusion = state_probability_diffusion #probability of the initial state, this approximates the population distribution
         self.state_probability_hurst = state_probability_hurst #probability of the initial state, this approximates the population distribution
-        self.space_lim = space_lim
+        self.space_lim = np.array(space_lim,dtype=float) #space lim (min, max) for the FBM
     def _autocovariance(self,k,hurst):
         '''Autocovariance function for fGn
 
@@ -131,13 +131,12 @@ class FBM_BP:
             for i in range(1, self.n):
                 fbm_candidate = fbm_store[i - 1] + gn[i]
                 #check if this is outside the space limit in either direction of 0
-                if abs(fbm_candidate) > self.space_lim:
-                    if fbm_candidate > self.space_lim:
-                        #if the candidate is greater than the space limit then reflect the difference back into the space limit
-                        fbm_store[i] = self.space_lim - (fbm_candidate - self.space_lim)
-                    else:
-                        #if the candidate is less than the negative space limit then reflect the difference back into the space limit
-                        fbm_store[i] = -self.space_lim + (-fbm_candidate - self.space_lim)
+                if fbm_candidate > self.space_lim[1]:
+                    #if the candidate is greater than the space limit then reflect the difference back into the space limit
+                    fbm_store[i] = self.space_lim[1] - np.abs(fbm_candidate - self.space_lim[1])
+                elif fbm_candidate < self.space_lim[0]:
+                    #if the candidate is less than the negative space limit then reflect the difference back into the space limit
+                    fbm_store[i] = self.space_lim[0] + np.abs(fbm_candidate - self.space_lim[0])
                 else:
                     fbm_store[i] = fbm_candidate
             return fbm_store
@@ -163,18 +162,17 @@ class FBM_BP:
             #add to the fbm
             fbm_candidate = fbm_store[i - 1] + fgn[i]
             #check if this is outside the space limit in either direction of 0
-            if abs(fbm_candidate) > self.space_lim:
-                #reflect the difference back into the space limit
-                if fbm_candidate > self.space_lim:
-                    #if the candidate is greater than the space limit then reflect the difference back into the space limit
-                    fbm_store[i] = self.space_lim - (fbm_candidate - self.space_lim)
-                    #update the fgn based on the new difference
-                    fgn[i] = fbm_store[i] - fbm_store[i - 1]
-                else:
-                    #if the candidate is less than the negative space limit then reflect the difference back into the space limit
-                    fbm_store[i] = -self.space_lim + (-fbm_candidate - self.space_lim)
-                    #update the fgn based on the new difference
-                    fgn[i] = fbm_store[i] - fbm_store[i - 1]
+            #reflect the difference back into the space limit
+            if fbm_candidate > self.space_lim[1]:
+                #if the candidate is greater than the space limit then reflect the difference back into the space limit
+                fbm_store[i] = self.space_lim[1] - np.abs(fbm_candidate - self.space_lim[1])
+                #update the fgn based on the new difference
+                fgn[i] = fbm_store[i] - fbm_store[i - 1]
+            elif fbm_candidate < self.space_lim[0]:
+                #if the candidate is less than the negative space limit then reflect the difference back into the space limit
+                fbm_store[i] = self.space_lim[0] + np.abs(fbm_candidate - self.space_lim[0])
+                #update the fgn based on the new difference
+                fgn[i] = fbm_store[i] - fbm_store[i - 1]
             else:
                 fbm_store[i] = fbm_candidate
 
@@ -186,26 +184,26 @@ class FBM_BP:
 if __name__ == "__main__":
 
     # # test the FBM_BP class
-    # n = 100
-    # dt = 1
-    # diffusion_parameters = np.array([0.1])
-    # hurst_parameters = np.array([0.9])
-    # diffusion_parameter_transition_matrix = np.array([[0.01, 0.01],
-    #                                                 [0.01, 0.01]])
-    # hurst_parameter_transition_matrix = np.array([[0.9, 0.1],
-    #                                             [0.1, 0.9]])
-    # state_probability_diffusion = np.array([1])
-    # state_probability_hurst = np.array([0.5])
-    # space_lim = 1000
-    # fbm_bp = FBM_BP(n, dt, diffusion_parameters, hurst_parameters, diffusion_parameter_transition_matrix, hurst_parameter_transition_matrix, state_probability_diffusion, state_probability_hurst, space_lim)
-    # # test the fbm method
-    # fbm = fbm_bp.fbm()
-    # # plot the fbm
-    # plt.plot(fbm, linestyle='--')
-    # plt.xlabel('Iteration')
-    # plt.ylabel('Value')
-    # plt.title('Fractional Brownian motion')
-    # plt.show()
+    n = 100
+    dt = 1
+    diffusion_parameters = np.array([0.1])
+    hurst_parameters = np.array([0.9])
+    diffusion_parameter_transition_matrix = np.array([[0.01, 0.01],
+                                                    [0.01, 0.01]])
+    hurst_parameter_transition_matrix = np.array([[0.9, 0.1],
+                                                [0.1, 0.9]])
+    state_probability_diffusion = np.array([1])
+    state_probability_hurst = np.array([0.5])
+    space_lim = [-10,10]
+    fbm_bp = FBM_BP(n, dt, diffusion_parameters, hurst_parameters, diffusion_parameter_transition_matrix, hurst_parameter_transition_matrix, state_probability_diffusion, state_probability_hurst, space_lim)
+    # test the fbm method
+    fbm = fbm_bp.fbm()
+    # plot the fbm
+    plt.plot(fbm, linestyle='--')
+    plt.xlabel('Iteration')
+    plt.ylabel('Value')
+    plt.title('Fractional Brownian motion')
+    plt.show()
 
     # # test the MCMC_state_selection function
     # # initialize the transition matrix
