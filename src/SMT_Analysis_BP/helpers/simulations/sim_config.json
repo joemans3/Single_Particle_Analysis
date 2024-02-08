@@ -11,10 +11,10 @@
     },
     "Track_Parameters":{
         "num_tracks":500,
-        "track_type":"constant",
+        "track_type":"fbm",
         "track_length_mean":1,
-        "track_distribution":"constant",
-        "diffusion_coefficient":[8,8],
+        "track_distribution":"exponential",
+        "diffusion_coefficient":[2,2],
         "diffusion_track_amount":[
             0.5,0.5
         ],
@@ -37,15 +37,21 @@
         "pixel_size":0.13,
         "axial_detection_range":0.4,
         "base_noise":140,
-        "point_intensity":5000,
+        "point_intensity":100,
         "psf_sigma":0.13,
         "axial_function":"ones"
     },
     "Condensate_Parameters":{
         "initial_centers":[[40,30],[40,40]],
         "initial_scale": [2,2],
-        "diffusion_coefficient": [0,0],
+        "diffusion_coefficient": [1,1],
         "hurst_exponent": [0.2,0.2], 
         "density_dif":1000
+    },
+    "Output_Parameters":{
+        "output_path":"/Users/baljyot/Documents/TESTINGSTUFF",
+        "output_name":"Cell_Movie_Test_001",
+        "subsegment_type": "mean",
+        "subsegment_number": 5
     }
 }

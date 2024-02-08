@@ -12,7 +12,6 @@ from PIL import Image
 import pickle
 import SMT_Analysis_BP.helpers.misc.decorators as decorators
 import SMT_Analysis_BP.helpers.simulations.probability_functions as pf
-import SMT_Analysis_BP.helpers.misc.errors as errors
 
 def save_tiff(image,path,img_name=None):
 	''' Docstring for save_tiff: save the image as a tiff file
@@ -33,7 +32,7 @@ def save_tiff(image,path,img_name=None):
 	if img_name is None:
 		skimage.io.imsave(path,image)
 	else:
-		skimage.io.imsave(path+img_name+".tiff",image)
+		skimage.io.imsave(os.path.join(path,img_name+".tiff"),image)	
 	return  
 #function to perform the subsegmentation
 def sub_segment(img,sub_frame_num,img_name=None,subsegment_type="mean"):
@@ -110,16 +109,22 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
 	#make the directory if it does not exist
 	if not os.path.exists(cd):
 		os.makedirs(cd)
+	#track_pickle
+	track_pickle = os.path.join(cd,"Track_dump.pkl")
+	#params_pickle
+	params_pickle = os.path.join(cd,"params_dump.pkl")
+	#params_json
+	params_json = os.path.join(cd,"params_dump.json")
 
 	#saves the data if it is passed as a keyword argument (map,tracks,points_per_frame)
-	with open(cd+'Track_dump.pkl', 'wb+') as f:
+	with open(track_pickle, 'wb+') as f:
 		pickle.dump(kwargs.get("data",{}), f)
 	#saves the parameters used to generate the simulation
-	with open(cd+'params_dump.pkl', 'wb+') as f:
+	with open(params_pickle, 'wb+') as f:
 		pickle.dump(kwargs.get("parameters",{}), f)
 
 	#in this directory, dump the parameters into a json file
-	with open(cd+'params_dump.json', 'w') as f:
+	with open(params_json, 'w') as f:
 		#dump the parameters into a json file
 		json.dump(convert_arrays_to_lists(kwargs.get("parameters",{})), f)
 
@@ -461,8 +466,11 @@ class Simulate_cells():
 					points_per_time[str(int(tracks[i]["frames"][j]))].append(tracks[i]["xy"][j])
 		elif self.init_dict["Track_Parameters"]["allow_transition_probability"]==False:
 			#for the amount of tracks make a choice from the diffusion and hurst parameters based on the probability from diffusion_track_amount, hurst_track_amount
-			track_diffusion_choice = np.random.choice(self.init_dict["Track_Parameters"]["diffusion_coefficient"],size=self.init_dict["Track_Parameters"]["num_tracks"],p=self.init_dict["Track_Parameters"]["diffusion_track_amount"])
-			track_hurst_choice = np.random.choice(self.init_dict["Track_Parameters"]["hurst_exponent"],size=self.init_dict["Track_Parameters"]["num_tracks"],p=self.init_dict["Track_Parameters"]["hurst_track_amount"])
+			#make an index of the track_diffusion_updated and hurst_exponent
+			index_diffusion = np.arange(len(self.track_diffusion_updated))
+			index_hurst = np.arange(len(self.init_dict["Track_Parameters"]["hurst_exponent"]))
+			track_diffusion_choice = np.random.choice(index_diffusion,size=self.init_dict["Track_Parameters"]["num_tracks"],p=self.init_dict["Track_Parameters"]["diffusion_track_amount"])
+			track_hurst_choice = np.random.choice(index_hurst,size=self.init_dict["Track_Parameters"]["num_tracks"],p=self.init_dict["Track_Parameters"]["hurst_track_amount"])
 			for i in range(self.init_dict["Track_Parameters"]["num_tracks"]):
 				tracks_diffusion = self.track_diffusion_updated[track_diffusion_choice[i]]
 				tracks_hurst = self.init_dict["Track_Parameters"]["hurst_exponent"][track_hurst_choice[i]]
@@ -481,8 +489,8 @@ class Simulate_cells():
 			for i in range(self.init_dict["Track_Parameters"]["num_tracks"]):
 				#make a track with transition probability
 				tracks[i] = track_generator.track_generation_with_transition(
-					diffusion_transition_matrix=self.diffusion_transition_matrix,
-					hurst_transition_matrix=self.hurst_transition_matrix,
+					diffusion_transition_matrix=self.diffusion_transition_matrix * (1./1000.) * self.oversample_motion_time,
+					hurst_transition_matrix=self.hurst_transition_matrix * (1./1000.) * self.oversample_motion_time,
 					diffusion_parameters=self.track_diffusion_updated,
 					hurst_parameters=self.init_dict["Track_Parameters"]["hurst_exponent"],
 					diffusion_state_probability=self.init_dict["Track_Parameters"]["state_probability_diffusion"],

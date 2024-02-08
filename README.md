@@ -20,7 +20,10 @@
     - Try the conda install method: **conda install tensorflow**, and **conda install tensorflow-probability**
     - If the above method fails, try the pip install method: **pip install tensorflow**, and **pip install tensorflow-probability**
 
-8. TODO add a test script to check if the installation is successful.
+8. Now we will install this package in edit mode so we can use its functionalities without invoking sys.path.append() every time.
+    - Navigate to the root directory of the package using the conda prompt.
+    - Run the command: **pip install -e .**
+    - This will install the package in editable mode and you can now use the package in any python environment without having to append the path every time. 
 
 9. You need to download the latest stable release of MATLAB. Use McGill account.
 10. Install the bioformats package for MATLAB and follow their install instructions to set the environment variables: <https://docs.openmicroscopy.org>. 
