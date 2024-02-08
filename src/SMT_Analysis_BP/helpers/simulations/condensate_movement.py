@@ -21,8 +21,8 @@ Usage:
 import numpy as np
 import SMT_Analysis_BP.helpers.simulations.fbm_utility as fbm
 import matplotlib.pyplot as plt
-from SMT_Analysis_BP.helpers.misc.decorators import cache
-
+from SMT_Analysis_BP.helpers.misc.decorators import cache,deprecated
+import SMT_Analysis_BP.helpers.simulations.simulate_foci_new as sf
 class Condensate:
     ''' Condensate class for storing condensate data.
     
@@ -47,6 +47,10 @@ class Condensate:
         ID of the condensate.
     initial_scale: float = 0
         Initial scale of the condensate.
+    cell_space: np.ndarray = np.array([[0,0],[0,0]])
+        Space of the cell.
+    cell_axial_range: float|int = 0
+        Axial range of the cell.
 
     '''
     def __init__(
@@ -59,6 +63,8 @@ class Condensate:
             units_position: str = 'um',
             condensate_id: int = 0,
             initial_scale: float = 0,
+            cell_space: np.ndarray = np.array([[0,0],[0,0]]),
+            cell_axial_range: float|int = 0
             ):
         self.initial_position = inital_position
         self.initial_time = initial_time
@@ -69,6 +75,8 @@ class Condensate:
         self.condensate_id = condensate_id
         self.initial_scale = initial_scale
         self.dim = self.initial_position.shape[0]
+        self.cell_space = cell_space
+        self.cell_axial_range = cell_axial_range
 
     @property
     def times(self)->np.ndarray:
@@ -156,8 +164,8 @@ class Condensate:
             self.generate_condensate_positions(time)
 
         return {"Position":self.condensate_positions[self.times == time][0], "Scale":self.scale[self.times == time][0]}
-    
-    def generate_condensate_positions(self, time: int)->None:
+    @deprecated("Use generate_condensate_positions instead.") 
+    def _generate_condensate_positions(self, time: int)->None:
         ''' Generates the condensate positions up to a given time.
 
         Parameters:
@@ -181,6 +189,46 @@ class Condensate:
         scales = self.calculate_scale(time_array, coords[1:])
         #add the positions to the condensate_positions
         self.add_positions(time_array, coords[1:], scales)
+    
+    def generate_condensate_positions(self, time: int)->None:
+        ''' Generates the condensate positions up to a given time.
+
+        Parameters:
+        -----------
+        time: int
+            Time up to which to generate the condensate positions.
+        '''
+        #find the time difference
+        time_difference = time - self.times[-1]
+        #make a time array starting from the last time +1 and goin to the time inclusive
+        time_array = np.arange(self.times[-1]+1, time+1)
+        #we need to use the track generator class
+        track_generator = sf.Track_generator(
+			cell_space=self.cell_space,
+			cell_axial_range=self.cell_axial_range,
+			frame_count=500,
+			exposure_time=20,
+			interval_time=0,
+			oversample_motion_time=20
+		)
+        track = track_generator.track_generation_no_transition(
+            diffusion_coefficient=self.diffusion_coefficient,
+            hurst_exponent=self.hurst_exponent,
+            track_length=time_difference,
+            initials=self.condensate_positions[-1],
+            start_time=self.times[-1]
+        )
+        track_xy = track["xy"][:]
+        #take only the x and y coordinates (first two columns)
+        track_xy = track_xy[:,:2]
+        #get the scale for the time array and positions
+        scales = self.calculate_scale(time_array, track_xy)
+        #add the positions to the condensate_positions
+        self.add_positions(time_array, track_xy, scales)
+
+
+
+
     
     def calculate_scale(self, time: np.ndarray, position: np.ndarray)->np.ndarray:
         '''Calculates the scale of the condensate at a given time.

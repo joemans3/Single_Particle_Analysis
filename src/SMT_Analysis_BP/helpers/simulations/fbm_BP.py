@@ -65,7 +65,7 @@ class FBM_BP:
                  state_probability_diffusion:np.ndarray,
                  state_probability_hurst:np.ndarray,
                  space_lim:np.ndarray):
-        self.n = n
+        self.n = int(n)
         self.dt = dt#ms
         self.diffusion_parameter = diffusion_parameters
         self.hurst_parameter = hurst_parameters
@@ -184,26 +184,26 @@ class FBM_BP:
 if __name__ == "__main__":
 
     # # test the FBM_BP class
-    n = 100
-    dt = 1
-    diffusion_parameters = np.array([0.1])
-    hurst_parameters = np.array([0.9])
-    diffusion_parameter_transition_matrix = np.array([[0.01, 0.01],
-                                                    [0.01, 0.01]])
-    hurst_parameter_transition_matrix = np.array([[0.9, 0.1],
-                                                [0.1, 0.9]])
-    state_probability_diffusion = np.array([1])
-    state_probability_hurst = np.array([0.5])
-    space_lim = [-10,10]
-    fbm_bp = FBM_BP(n, dt, diffusion_parameters, hurst_parameters, diffusion_parameter_transition_matrix, hurst_parameter_transition_matrix, state_probability_diffusion, state_probability_hurst, space_lim)
-    # test the fbm method
-    fbm = fbm_bp.fbm()
-    # plot the fbm
-    plt.plot(fbm, linestyle='--')
-    plt.xlabel('Iteration')
-    plt.ylabel('Value')
-    plt.title('Fractional Brownian motion')
-    plt.show()
+    # n = 100
+    # dt = 1
+    # diffusion_parameters = np.array([0.1])
+    # hurst_parameters = np.array([0.9])
+    # diffusion_parameter_transition_matrix = np.array([[0.01, 0.01],
+    #                                                 [0.01, 0.01]])
+    # hurst_parameter_transition_matrix = np.array([[0.9, 0.1],
+    #                                             [0.1, 0.9]])
+    # state_probability_diffusion = np.array([1])
+    # state_probability_hurst = np.array([0.5])
+    # space_lim = [-10,10]
+    # fbm_bp = FBM_BP(n, dt, diffusion_parameters, hurst_parameters, diffusion_parameter_transition_matrix, hurst_parameter_transition_matrix, state_probability_diffusion, state_probability_hurst, space_lim)
+    # # test the fbm method
+    # fbm = fbm_bp.fbm()
+    # # plot the fbm
+    # plt.plot(fbm, linestyle='--')
+    # plt.xlabel('Iteration')
+    # plt.ylabel('Value')
+    # plt.title('Fractional Brownian motion')
+    # plt.show()
 
     # # test the MCMC_state_selection function
     # # initialize the transition matrix
@@ -277,7 +277,7 @@ if __name__ == "__main__":
     # hurst_parameter_transition_matrix = np.array([[1]])
     # state_probability_diffusion = np.array([1])
     # state_probability_hurst = np.array([1])
-    # space_lim = 100
+    # space_lim = [-100,100]
     # fbm_bp = FBM_BP(n, dt, diffusion_parameters, hurst_parameters, diffusion_parameter_transition_matrix, hurst_parameter_transition_matrix, state_probability_diffusion, state_probability_hurst, space_lim)
     # # test the fbm method
     # fbm_x = fbm_bp.fbm()

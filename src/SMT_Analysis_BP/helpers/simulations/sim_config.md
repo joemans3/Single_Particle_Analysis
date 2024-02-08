@@ -34,31 +34,35 @@
         1. distribution of the track lengths ("exponential","constant")
     * diffusion_coefficient: list of floats (units of diffusion_unit)
         1. diffusion coefficient of the track, the length of the list is the unique type of diffusion coefficients
-    * diffusion_track_amount: list of ints
-        1. number of tracks with the corresponding diffusion coefficient 
-        2. same length as diffusion_coefficient
-        3. sum of all values must equal num_tracks
+    * diffusion_track_amount: list of floats
+        1. Only viable if allow_transition_probability is False
+        2. length is the total number of diffusion coefficients
+        3. each element is the probability of the track having the diffusion coefficient at the same index in the diffusion_coefficient list (add up to 1.0)
     * hurst_expontent: list of floats
         1. hurst exponent of the track, the length of the list is the unique type of hurst exponents
-    * hurst_track_amount: list of ints
-        1. number of tracks with the corresponding hurst exponent 
-        2. same length as hurst_expontent
-        3. sum of all values must equal num_tracks
+    * hurst_track_amount: list of floats
+        1. Only viable if allow_transition_probability is False
+        2. length is the total number of hurst exponents
+        3. each element is the probability of the track having the hurst exponent at the same index in the hurst_exponent list (add up to 1.0)
     * allow_transition_probability: bool
         1. whether to allow transition probabilities between different diffusion coefficients and hurst exponents within a track
         2. if false, the track will have a single diffusion coefficient and hurst exponent
-    * diffusion_transition_matrix: 2D array (probability, at oversample_motion_time)
+    * diffusion_transition_matrix: 2D array (stocastic rate constant in seconds)
         1. transition matrix between different diffusion coefficients
         2. rows are the current diffusion coefficient
         3. columns are the next diffusion coefficient
-        4. sum of each row must equal 1
-        5. if allow_transition_probability is false, this matrix is ignored
-    * hurst_transition_matrix: 2D array (probability, at oversample_motion_time)
+
+    * hurst_transition_matrix: 2D array (stocastic rate constant in seconds)
         1. transition matrix between different hurst exponents
         2. rows are the current hurst exponent
         3. columns are the next hurst exponent
-        4. sum of each row must equal 1
-        5. if allow_transition_probability is false, this matrix is ignored
+
+    * state_probability_diffusion: 1D array (probability)
+        1. probability of a track being in a certain diffusion coefficient state
+        2. length is the number of unique diffusion coefficients
+    * state_probability_hurst: 1D array (probability)
+        1. probability of a track being in a certain hurst exponent state
+        2. length is the number of unique hurst exponents
 
 * Global_Parameters: dict  
     * field_of_view_dim: 1D array (units of space_unit)

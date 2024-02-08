@@ -6,40 +6,46 @@
     "intensity_unit":"AUD",
     "diffusion_unit":"um^2/s",
     "Cell_Parameters":{
-        "cell_space":[[80,120],[80,120]],
-        "cell_axial_radius":5
+        "cell_space":[[30,50],[20,70]],
+        "cell_axial_radius":100
     },
     "Track_Parameters":{
-        "num_tracks":100,
-        "track_type":"fbm",
-        "track_length_mean":10,
-        "track_distribution":"exponential",
-        "diffusion_coefficient":[0.1,0.1],
-        "diffusion_track_amount":[50,50],
-        "hurst_exponent":[0.2,0.5],
-        "hurst_track_amount":[50,50],
+        "num_tracks":500,
+        "track_type":"constant",
+        "track_length_mean":1,
+        "track_distribution":"constant",
+        "diffusion_coefficient":[8,8],
+        "diffusion_track_amount":[
+            0.5,0.5
+        ],
+        "hurst_exponent":[0.9,0.9],
+        "hurst_track_amount":[
+            0.5,0.5
+        ],
         "allow_transition_probability":false,
         "diffusion_transition_matrix":[[0.9,0.1],[0.1,0.9]],
-        "hurst_transition_matrix":[[0.9,0.1],[0.1,0.9]]
+        "hurst_transition_matrix":[[0.9,0.1],[0.1,0.9]],
+        "state_probability_diffusion":[0.5,0.5],
+        "state_probability_hurst":[0.5,0.5]
     },
     "Global_Parameters":{
-        "field_of_view_dim":[200,200],
+        "field_of_view_dim":[80,80],
         "frame_count":500,
         "exposure_time":20,
         "interval_time":0,
-        "oversample_motion_time":1,
+        "oversample_motion_time":20,
         "pixel_size":0.13,
         "axial_detection_range":0.4,
         "base_noise":140,
-        "point_intensity":20,
+        "point_intensity":5000,
         "psf_sigma":0.13,
-        "axial_function":"exponential"
+        "axial_function":"ones"
     },
     "Condensate_Parameters":{
-        "initial_centers":[[100,100],[90,95]],
+        "initial_centers":[[40,30],[40,40]],
         "initial_scale": [2,2],
         "diffusion_coefficient": [0,0],
         "hurst_exponent": [0.2,0.2], 
-        "density_dif":10
+        "density_dif":1000
     }
 }

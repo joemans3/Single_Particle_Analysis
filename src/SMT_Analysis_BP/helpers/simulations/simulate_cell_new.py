@@ -1,4 +1,8 @@
 import json
+if __name__ == "__main__":
+	import sys
+	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts') 
+	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src')
 import numpy as np
 import os
 import random
@@ -31,7 +35,6 @@ def save_tiff(image,path,img_name=None):
 	else:
 		skimage.io.imsave(path+img_name+".tiff",image)
 	return  
-
 #function to perform the subsegmentation
 def sub_segment(img,sub_frame_num,img_name=None,subsegment_type="mean"):
 	''' Docstring for sub_segment: perform subsegmentation on the image
@@ -73,7 +76,6 @@ def sub_segment(img,sub_frame_num,img_name=None,subsegment_type="mean"):
 			hold_img.append(np.std(img[int(j*frames_per_subsegment):int((j+1)*frames_per_subsegment)],axis=0))
 		
 	return hold_img
-
 def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwargs):
 	''' Docstring for make_directory_structure: make the directory structure for the simulation and save the image + the data and parameters
 	Also perform the subsegmentation and save the subsegments in the appropriate directory
@@ -98,32 +100,7 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
 	data : dict, Default = None
 		dictionary of data to be saved, Keys = "map","tracks","points_per_frame" Values = array-like. 
 		See the return of the function simulate_cell_tracks for more details
-	parameters : dict, Default = None (dict with the keys "cell_parameters","global_parameters")
-		cell_parameters : dict, Default = None
-			dictionary of cell parameters, Keys = "num_tracks",
-												  "diffusion_coefficients",
-												  "initials",
-												  "simulation_cube",
-												  "hursts",
-												  "track_type",
-												  "mean_track_length",
-												  "track_length_distribution",
-												  "exposure_time"
-		global_parameters : dict, Default = None
-			dictionary of global parameters, Keys = "num_cells",
-													"num_subsegments",
-													"subsegment_type",
-													"subsegment_num_frames",
-													"subsegment_num_points",
-													"subsegment_num_tracks",
-													"subsegment_num_diffusion_coefficients",
-													"subsegment_num_initials",
-													"subsegment_num_hursts",
-													"subsegment_num_track_type",
-													"subsegment_num_mean_track_length",
-													"subsegment_num_track_length_distribution",
-													"subsegment_num_exposure_time"
-													(names might be different, but should be self explanatory once you load the dictionary)
+	parameters : dict, Default = self.init_dict
 	
 	Returns:
 	--------
@@ -142,36 +119,9 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
 		pickle.dump(kwargs.get("parameters",{}), f)
 
 	#in this directory, dump the parameters into a json file
-	if "parameters" in kwargs.keys():
-		with open(os.path.join(cd,"parameters.json"), 'w') as fp:
-			#check if parameter values are dictionaries
-			for i,j in kwargs["parameters"].items():
-				if type(j) == dict:
-					for k,l in j.items():
-						if type(l) == np.ndarray and k !="initials":
-							#if true then find the unique values in the array with the number of times they occur and save it as a dictionary "unique_values":count
-							unique, counts = np.unique(l, return_counts=True)
-							#convert the arrays to lists
-							unique = unique.tolist()
-							counts = counts.tolist()
-							kwargs["parameters"][i][k] = dict(zip(unique, counts))
-						elif k=="initials":
-							if isinstance(l,dict):
-								temp_dict = {}
-								for m,n in l.items():
-									temp_dict[m] = n.tolist()
-
-								kwargs["parameters"][i][k] = temp_dict
-							else:
-								#from the collection of [[x,y]...] find the unique values of [x,y] combinations and save it as a dictionary "unique_values":count
-								unique, counts = np.unique(l, axis=0,return_counts=True)
-								#convert the arrays to lists
-								unique = map(str,unique.tolist())
-								counts = counts.tolist()
-								kwargs["parameters"][i][k] = dict(zip(unique, counts))
-						
-							
-			json.dump(kwargs["parameters"], fp,indent=4)
+	with open(cd+'params_dump.json', 'w') as f:
+		#dump the parameters into a json file
+		json.dump(convert_arrays_to_lists(kwargs.get("parameters",{})), f)
 
 
 	#make a diretory inside cd called Analysis if it does not exist
@@ -194,6 +144,21 @@ def make_directory_structure(cd,img_name,img,subsegment_type,sub_frame_num,**kwa
 		img = Image.fromarray(hold_img[i])
 		img.save(hold_name[i])
 	return hold_img
+# Function to recursively convert lists to NumPy arrays
+def convert_lists_to_arrays(obj):
+	if isinstance(obj, list):
+		return np.array(obj)
+	elif isinstance(obj, dict):
+		return {k: convert_lists_to_arrays(v) for k, v in obj.items()}
+	else:
+		return obj
+def convert_arrays_to_lists(obj):
+	if isinstance(obj, np.ndarray):
+		return obj.tolist()
+	elif isinstance(obj, dict):
+		return {k: convert_arrays_to_lists(v) for k, v in obj.items()}
+	else:
+		return obj
 
 
 class Simulate_cells():
@@ -213,7 +178,7 @@ class Simulate_cells():
 		if isinstance(init_dict_json,str):
 			self.init_dict = self._read_json(init_dict_json)
 		elif isinstance(init_dict_json,dict):
-			self.init_dict = init_dict_json
+			self.init_dict = convert_lists_to_arrays(init_dict_json)
 		
 		#store the times
 		self.frame_count = self.init_dict["Global_Parameters"]["frame_count"]
@@ -227,7 +192,14 @@ class Simulate_cells():
 		#update the diffusion coefficients from um^2/s to pix^2/ms
 		self.track_diffusion_updated = self._update_units(self.init_dict["Track_Parameters"]["diffusion_coefficient"],'um^2/s','pix^2/(oversample_motion_time)ms)') 
 		self.condensate_diffusion_updated = self._update_units(self.init_dict["Condensate_Parameters"]["diffusion_coefficient"],'um^2/s','pix^2/(oversample_motion_time)ms)')
+		#update the pixel_size,axial_detection_range,psf_sigma from um to pix
+		self.pixel_size_pix = self._update_units(self.init_dict["Global_Parameters"]["pixel_size"],'um','pix')
+		self.axial_detection_range_pix = self._update_units(self.init_dict["Global_Parameters"]["axial_detection_range"],'um','pix')
+		self.psf_sigma_pix = self._update_units(self.init_dict["Global_Parameters"]["psf_sigma"],'um','pix')
 
+		#convert the transition matrix from the stocastic rate constants in 1/s to 1/oversample_motion_time which is in ms
+		self.diffusion_transition_matrix = self.init_dict["Track_Parameters"]["diffusion_transition_matrix"]*self.oversample_motion_time/1000.
+		self.hurst_transition_matrix = self.init_dict["Track_Parameters"]["hurst_transition_matrix"]*self.oversample_motion_time/1000.
 		return
 	def _convert_frame_to_time(self,frame:int,exposure_time:int,interval_time:int,oversample_motion_time:int)->int:
 		''' Docstring for _convert_frame_to_time: convert the frame number to time
@@ -275,7 +247,10 @@ class Simulate_cells():
 				return unit*1000.
 		elif orig_type == 'um^2/s':
 			if update_type == 'pix^2/(oversample_motion_time)ms)':
-				return unit*(self.init_dict["Global_Parameters"]["pixel_size"]**2)/(1000./self.init_dict["Global_Parameters"]["oversample_motion_time"])
+				return unit*(1./(self.init_dict["Global_Parameters"]["pixel_size"]**2))*(self.init_dict["Global_Parameters"]["oversample_motion_time"]/1000.)
+		if orig_type == "um":
+			if update_type == "pix":
+				return unit/self.init_dict["Global_Parameters"]["pixel_size"]
 		return 
 	def _check_init_dict(self)->bool:
 		''' Docstring for _check_init_dict: check the init_dict for the required keys, and if they are consistent with other keys
@@ -391,7 +366,7 @@ class Simulate_cells():
 			#add this to the dictionary
 			track_msd[i] = np.array(track_msd[i])
 		return track_msd
-	def _create_track_pop_dict(self,simulation_cube:np.ndarray,**kwargs):
+	def _create_track_pop_dict(self,simulation_cube:np.ndarray):
 		''' Docstring for _create_cell_tracks: create the tracks for the cell
 
 		Parameters:
@@ -402,8 +377,8 @@ class Simulate_cells():
 		--------
 		tracks : list
 			list of tracks for each cell
-		points_per_track : list
-			list of number of points in each frame
+		points_per_time : list
+			list of number of points in each time
 		'''
 		#get the number of frames to be simulated from simulation_cube
 		movie_frames = simulation_cube.shape[0]
@@ -413,17 +388,21 @@ class Simulate_cells():
 									   total_tracks=self.init_dict["Track_Parameters"]["num_tracks"]
 									   )
 		#if track_lengths is larger than the number of frames then set that to the number of frames -1
-		track_lengths = np.array([i if i < movie_frames else movie_frames-1 for i in track_lengths])
+		track_lengths = np.array([i if i < self.total_time else self.total_time-1 for i in track_lengths])
 		#for each track_lengths find the starting frame
-		starting_frames = np.array([random.randint(0,movie_frames-i) for i in track_lengths])
+		starting_frames = np.array([random.randint(0,self.total_time-i) for i in track_lengths])
 		#initialize the Condensates.
 		#find area assuming cell_space is [[min_x,max_x],[min_y,max_y]]
 		area_cell = np.abs(np.diff(self.init_dict["Cell_Parameters"]['cell_space'][0]))*np.abs(np.diff(self.init_dict["Cell_Parameters"]['cell_space'][1]))
 		self.condensates = sf.create_condensate_dict(initial_centers=self.init_dict["Condensate_Parameters"]["initial_centers"],
 									initial_scale=self.init_dict["Condensate_Parameters"]["initial_scale"],
-									diffusion_coefficients=self.condensate_diffusion_updated,
+									diffusion_coefficient=self.condensate_diffusion_updated,
 									hurst_exponent=self.init_dict["Condensate_Parameters"]["hurst_exponent"],
-									units_time=np.array([str(self.init_dict["Global_Parameters"]["oversample_motion_time"])+self.init_dict["time_unit"]]))
+									units_time=np.array([str(self.init_dict["Global_Parameters"]["oversample_motion_time"])+self.init_dict["time_unit"]]*len(self.condensate_diffusion_updated)),
+									cell_space=self.init_dict["Cell_Parameters"]['cell_space'],
+									cell_axial_range=self.init_dict["Cell_Parameters"]['cell_axial_radius']
+								)
+
 		#define the top_hat class that will be used to sample the condensates
 		top_hat_func = pf.multiple_top_hat_probability(
 			num_subspace = len(self.condensate_diffusion_updated),
@@ -437,7 +416,7 @@ class Simulate_cells():
 		#lets use the starting frames to find the inital position based on the position of the condensates
 		for i in range(self.init_dict["Track_Parameters"]["num_tracks"]):
 			#get the starting time from the frame, oversample_motion_time, and interval_time
-			starting_frame = starting_frames[i]*self.init_dict["Global_Parameters"]["oversample_motion_time"]*self.init_dict["Global_Parameters"]["interval_time"]
+			starting_frame = starting_frames[i]
 			#condensate positions
 			condensate_positions = np.zeros((len(self.condensates),2))
 			#loop through the condensates
@@ -459,23 +438,208 @@ class Simulate_cells():
 			initials = np.hstack((initials,np.zeros((self.init_dict["Track_Parameters"]["num_tracks"],1)))) 
 		#create tracks
 		tracks = {}
-		points_per_frame = dict(zip([str(i) for i in range(movie_frames)],[[] for i in range(movie_frames)]))
+		points_per_time = dict(zip([str(i) for i in range(int(self.total_time))],[[] for i in range(int(self.total_time))]))
+		#initialize the Track_generator class
+		track_generator = sf.Track_generator(
+			cell_space=self.init_dict["Cell_Parameters"]['cell_space'],
+			cell_axial_range=self.init_dict["Cell_Parameters"]['cell_axial_radius'],
+			frame_count=self.frame_count,
+			exposure_time=self.exposure_time,
+			interval_time=self.interval_time,
+			oversample_motion_time=self.oversample_motion_time
+		)
 		if self.init_dict["Track_Parameters"]["track_type"]=="constant":
 			for i in range(self.init_dict["Track_Parameters"]["num_tracks"]):
 				#make a constant track
-				xyz = np.array([initials[i] for ll in range(int(track_lengths[i]))])
-				#make the time array
-				t = np.arange(track_lengths[i],dtype=int)
-				start_frame = starting_frames[i]
-				#shift the frames to start at the start_frame
-				frames = start_frame + t
-				#add this to the dictionary of tracks
-				tracks[i] = {'xy':xyz,'frames':frames,'diffusion_coefficient':0,'initial':initials[i],'hurst':0}
+				tracks[i] = track_generator.track_generation_constant(
+					track_length=track_lengths[i],
+					initials=initials[i],
+					starting_time=starting_frames[i]
+				)
 				#add the number of points per frame to the dictionary
-				for j in range(len(frames)):
-					points_per_frame[str(frames[j])].append(xyz[j])
-		return tracks, points_per_frame
-	
+				for j in range(len(tracks[i]["frames"])):
+					points_per_time[str(int(tracks[i]["frames"][j]))].append(tracks[i]["xy"][j])
+		elif self.init_dict["Track_Parameters"]["allow_transition_probability"]==False:
+			#for the amount of tracks make a choice from the diffusion and hurst parameters based on the probability from diffusion_track_amount, hurst_track_amount
+			track_diffusion_choice = np.random.choice(self.init_dict["Track_Parameters"]["diffusion_coefficient"],size=self.init_dict["Track_Parameters"]["num_tracks"],p=self.init_dict["Track_Parameters"]["diffusion_track_amount"])
+			track_hurst_choice = np.random.choice(self.init_dict["Track_Parameters"]["hurst_exponent"],size=self.init_dict["Track_Parameters"]["num_tracks"],p=self.init_dict["Track_Parameters"]["hurst_track_amount"])
+			for i in range(self.init_dict["Track_Parameters"]["num_tracks"]):
+				tracks_diffusion = self.track_diffusion_updated[track_diffusion_choice[i]]
+				tracks_hurst = self.init_dict["Track_Parameters"]["hurst_exponent"][track_hurst_choice[i]]
+				#make a track with no transition probability
+				tracks[i] = track_generator.track_generation_no_transition(
+					diffusion_coefficient=tracks_diffusion,
+					hurst_exponent=tracks_hurst,
+					track_length=track_lengths[i],
+					initials=initials[i],
+					start_time=starting_frames[i]
+				)
+				#add the number of points per frame to the dictionary
+				for j in range(len(tracks[i]["frames"])):
+					points_per_time[str(int(tracks[i]["frames"][j]))].append(tracks[i]["xy"][j])
+		elif self.init_dict["Track_Parameters"]["allow_transition_probability"]==True:
+			for i in range(self.init_dict["Track_Parameters"]["num_tracks"]):
+				#make a track with transition probability
+				tracks[i] = track_generator.track_generation_with_transition(
+					diffusion_transition_matrix=self.diffusion_transition_matrix,
+					hurst_transition_matrix=self.hurst_transition_matrix,
+					diffusion_parameters=self.track_diffusion_updated,
+					hurst_parameters=self.init_dict["Track_Parameters"]["hurst_exponent"],
+					diffusion_state_probability=self.init_dict["Track_Parameters"]["state_probability_diffusion"],
+					hurst_state_probability=self.init_dict["Track_Parameters"]["state_probability_hurst"],
+					track_length=track_lengths[i],
+					initials=initials[i],
+					start_time=starting_frames[i]
+				)
+				for j in range(len(tracks[i]["frames"])):
+					points_per_time[str(int(tracks[i]["frames"][j]))].append(tracks[i]["xy"][j])
+		
+		return tracks, points_per_time
+	def _create_map(self,initial_map:np.ndarray,points_per_frame:dict,axial_function:str):
+		''' Docstring for __create_map: create the map for the simulation using the points_per_frame dictionary
+
+		Parameters:
+		-----------
+		initial_map : array-like
+			empty space for simulation
+		points_per_frame : dict
+			dictionary of points per frame (this is different from the points_per_time dictionary, and is sampled at the exposure time)
+		axial_function : str
+			function to be used to create the axial map
+		
+		Returns:
+		--------
+		map : array-like
+			map for the simulation
+		'''
+		for i in range(initial_map.shape[0]):
+			#if empty points_per_frame for frame i then do some house keeping
+			if len(points_per_frame[str(i)]) == 0:
+				abs_axial_position = 1.0 * self.init_dict["Global_Parameters"]["point_intensity"] * self.oversample_motion_time/self.exposure_time
+				points_per_frame_xyz = np.array(points_per_frame[str(i)])
+				points_per_frame_xyz = np.array(points_per_frame_xyz)
+			else:
+				abs_axial_position = 1.0 * self.init_dict["Global_Parameters"]["point_intensity"] * sf.axial_intensity_factor(np.abs(np.array(points_per_frame[str(i)])[:,2]),func = self.init_dict["Global_Parameters"]["axial_function"]) * self.oversample_motion_time/self.exposure_time
+				points_per_frame_xyz = np.array(points_per_frame[str(i)])[:,:2]
+			initial_map[i],_ = sf.generate_map_from_points(
+				points_per_frame_xyz,
+				point_intensity=abs_axial_position,
+				map=initial_map[i],
+				movie=True,
+				base_noise=self.init_dict["Global_Parameters"]["base_noise"],
+				psf_sigma=self.psf_sigma_pix
+			)
+		return initial_map	
+
+		pass
+	def _point_per_time_selection(self,points_per_time:dict)->dict:
+		''' Docstring for _track_and_point_per_time_selection: select the tracks and points per time for the simulation
+		
+		Parameters:
+		-----------
+		points_per_time : dict
+			dictionary of points per time
+		
+		Returns:
+		--------
+		points_per_frame: dict
+			dictionary of points per frame
+		'''
+		#The tracks and points_per_time are already created, so we just need to convert the points_per_time to points_per_frame
+		#we only select the points which are in every exposure time ignoring the interval time inbetween the exposure time
+		points_per_frame = dict(zip([str(i) for i in range(self.frame_count)],[[] for i in range(self.frame_count)]))
+		exposure_counter = 0
+		interval_counter = 0
+		frame_counter = 0
+		for i in range(int(self.total_time)):
+			if (exposure_counter < int(self.exposure_time/self.oversample_motion_time)) or (interval_counter < int(self.interval_time/self.oversample_motion_time)):
+				#append the points to the points_per_frame
+				if len(points_per_time[str(i)]) != 0:
+					points_per_frame[str(frame_counter)].append(points_per_time[str(i)][0])
+				#increment the exposure_counter
+				exposure_counter += 1
+			if (exposure_counter == int(self.exposure_time/self.oversample_motion_time)) and (interval_counter <int(self.interval_time/self.oversample_motion_time)):
+				#increment the interval_counter
+				interval_counter += 1
+			if (exposure_counter == int(self.exposure_time/self.oversample_motion_time)) and (interval_counter ==int(self.interval_time/self.oversample_motion_time)):
+				#reset the counters
+				exposure_counter = 0
+				interval_counter = 0
+				frame_counter += 1
+
+		return points_per_frame
+	def get_cell(self)->dict:
+		''' Docstring for get_cell: get the cell simulation
+		
+		Parameters:
+		-----------
+		None
+		
+		Returns:
+		--------
+		cell : dict
+			dictionary of the cell simulation, keys = "map","tracks","points_per_frame"
+		'''
+		#create the space for the simulation
+		space = self._define_space(
+			dims = self.init_dict["Global_Parameters"]["field_of_view_dim"],
+			movie_frames = self.frame_count
+		)
+		#create the tracks and points_per_time
+		tracks, points_per_time = self._create_track_pop_dict(space)
+		points_per_frame = self._point_per_time_selection(points_per_time)
+
+		#update the space
+		space_updated = self._create_map(
+			initial_map = space,
+			points_per_frame =points_per_frame,
+			axial_function = self.init_dict["Global_Parameters"]["axial_function"]
+		)
+		return {
+			"map":space_updated,
+			"tracks":tracks,
+			"points_per_frame":points_per_frame
+		}
+	def get_and_save_sim(self,cd:str,img_name:str,subsegment_type:str,sub_frame_num:int,**kwargs)->None:
+		''' Docstring for make_directory_structure: make the directory structure for the simulation and save the image + the data and parameters
+		Also perform the subsegmentation and save the subsegments in the appropriate directory
+		
+		Parameters:
+		-----------
+		cd : str
+			directory to save the simulation
+		img_name : str
+			name of the image
+		img : array-like    
+			image to be subsegmented
+		subsegment_type : str
+			type of subsegmentation to be performed, currently only "mean" is supported
+		sub_frame_num : int
+			number of subsegments to be created
+		**kwargs : dict
+			dictionary of keyword arguments
+		
+		KWARGS:
+		-------
+		data : dict, Default = None
+			dictionary of data to be saved, Keys = "map","tracks","points_per_frame" Values = array-like. 
+			See the return of the function simulate_cell_tracks for more details
+		parameters : dict, Default = self.init_dict 
+		Returns:
+		--------
+		none
+		'''
+		#run the sim
+		sim = self.get_cell()
+		#update the kwargs with the data
+		kwargs["data"] = sim
+		kwargs["parameters"] = self.init_dict
+		#make the directory structure
+		_ = make_directory_structure(cd,img_name,sim["map"],subsegment_type,sub_frame_num,**kwargs)
+		return None
+
+
+
 
 	@property
 	def condensates(self)->dict:
@@ -495,7 +659,7 @@ class Simulate_cells():
 		Parameters:
 		-----------
 		points_per_frame : dict
-			keys = str(i) for i in range(movie_frames), values = list of tracks, which are collections of [x,y] coordinates
+			keys = str(i) for i in range(self.total_time), values = list of tracks, which are collections of [x,y] coordinates
 		
 		Returns:
 		--------
@@ -511,3 +675,24 @@ class Simulate_cells():
 				point_holder.append(j)
 			points_per_frame[i] = np.array(point_holder)
 		return points_per_frame
+
+
+
+
+
+
+##test the simulation
+
+if __name__ == "__main__":
+	import sys
+	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts') 
+	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src')
+	#use the sim_config.json file to simulate the cell
+	sim_new = Simulate_cells(init_dict_json="/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src/SMT_Analysis_BP/helpers/simulations/sim_config.json")
+	#save the simulation
+	sim_new.get_and_save_sim(
+		cd = "/Users/baljyot/Documents/CODE/testing/",
+		img_name = "test",
+		subsegment_type = "mean",
+		sub_frame_num = 5
+	)

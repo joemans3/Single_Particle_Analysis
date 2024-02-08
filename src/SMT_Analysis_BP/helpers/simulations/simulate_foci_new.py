@@ -9,6 +9,7 @@ import tensorflow as tf
 import tensorflow_probability as tfp
 import SMT_Analysis_BP.helpers.simulations.fbm_utility as fbm
 import SMT_Analysis_BP.helpers.simulations.condensate_movement as condensate_movement
+import SMT_Analysis_BP.helpers.simulations.fbm_BP as fbm_BP
 
 def get_lengths(track_distribution:str,track_length_mean:int,total_tracks:int):
 	''' 
@@ -48,6 +49,8 @@ def create_condensate_dict(initial_centers: np.ndarray,
 							initial_scale: np.ndarray,
 							diffusion_coefficient: np.ndarray,
 							hurst_exponent: np.ndarray,
+							cell_space: np.ndarray,
+							cell_axial_range: float,
 							**kwargs) -> dict:
 	'''
 	Docstring for create_condensate_dict:
@@ -58,6 +61,8 @@ def create_condensate_dict(initial_centers: np.ndarray,
 	initial_scale: numpy array of shape (num_condensates,2) with the initial scales of the condensates
 	diffusion_coefficient: numpy array of shape (num_condensates,2) with the diffusion coefficients of the condensates
 	hurst_exponent: numpy array of shape (num_condensates,2) with the hurst exponents of the condensates
+	cell_space: numpy array of shape (2,2) with the cell space
+	cell_axial_range: float
 	**kwargs: additional arguments to be passed to the condensate_movement.Condensate class
 	'''
 	# check the length of diffusion_coefficient to find the number of condensates
@@ -71,7 +76,9 @@ def create_condensate_dict(initial_centers: np.ndarray,
 			diffusion_coefficient=diffusion_coefficient[i],
 			hurst_exponent=hurst_exponent[i],
 			condensate_id=str(i),
-			units_time=units_time[i]
+			units_time=units_time[i],
+			cell_space=cell_space,
+			cell_axial_range=cell_axial_range
 		)
 	return condensates
 def tophat_function_2d(var,center,radius,bias_subspace,space_prob,**kwargs):
@@ -291,11 +298,74 @@ def axial_intensity_factor(abs_axial_pos: float|np.ndarray,**kwargs) -> float|np
 	'''
 	func_type = kwargs.get("func","ones")
 	if func_type == "ones":
-		return np.ones(len(abs_axial_pos))
+		try:
+			return np.ones(len(abs_axial_pos))
+		except:
+			return 1
 	elif func_type == "exponential":
 		#for now this uses a negative exponential decay
 		return np.exp(-abs_axial_pos**2 / (2*2.2**2))
+def generate_map_from_points(points:np.ndarray,point_intensity:float|np.ndarray,map:np.ndarray|None,movie:bool,base_noise:float,psf_sigma:float)->np.ndarray:
+	''' 
+	Docstring for generate_map_from_points:
+	---------------------------
+	Generates the space map from the points. 2D
 
+	Parameters:
+	-----------
+	points: array-like 
+		points numpy array of shape (total_points,2)
+	point_intensity: array-like
+		intensity of the points, if None, then self.point_intensity is used.
+	map: array-like
+		space map, if None, then a new space map is generated.
+	movie: bool
+		if True, then don't add the gaussian+noise for each point. Rather add the gaussians and then to the whole add the noise.
+	base_noise: float
+		base noise to add to the space map
+	psf_sigma: float
+		sigma of the psf (pix units)
+		
+
+	Returns:
+	--------
+	1. space map as a numpy array of shape (max_x,max_x)
+	2. points as a numpy array of shape (total_points,2)
+	
+	
+	Notes:
+	------
+	1. The space map is generated using get_gaussian function.
+	2. For movie: In the segmented experimental images you are adding the noise of each frame to the whole subframe,
+		so for this (movie=False) add each gaussian point to the image with the noise per point.
+		(movie=True) add the gaussians together and then add the noise to the final image. 
+	'''
+	
+	space_map = map
+	x = np.arange(0,np.shape(map)[0],1.)
+	y = np.arange(0,np.shape(map)[1],1.)
+
+	if np.isscalar(point_intensity):
+		point_intensity *= np.ones(len(points))
+		
+	if point_intensity is None:
+		for i,j in enumerate(points):
+			space_map += get_gaussian(j,np.ones(2)*psf_sigma,domain=[x,y])
+	else:
+		for i,j in enumerate(points):
+			gauss_probability = get_gaussian(j,np.ones(2)*psf_sigma,domain=[x,y])
+			#normalize
+			gauss_probability = gauss_probability/np.max(gauss_probability)
+
+			#generate poisson process over this space using the gaussian probability as means
+			if movie==False:
+				space_map += np.random.poisson(gauss_probability*point_intensity[i] + base_noise,size=(len(x),len(y)))
+			else:
+				space_map += gauss_probability*point_intensity[i]
+		if movie==True:
+			intensity = np.random.poisson(space_map + base_noise,size=(len(x),len(y)))
+			space_map = intensity 
+	return space_map,points
 class Track_generator:
 	def __init__(self,
 			  cell_space:np.ndarray|list,
@@ -309,36 +379,229 @@ class Track_generator:
 		self.max_x = self.cell_space[0][1]
 		self.min_y = self.cell_space[1][0]
 		self.max_y = self.cell_space[1][1]
-		self._min_rel_x = 0
-		self._max_rel_x = self.max_x - self.min_x
-		self._min_rel_y = 0
-		self._max_rel_y = self.max_y - self.min_y
 		self.cell_axial_range = cell_axial_range
+		self.space_lim = np.array([[self.min_x,self.max_x],[self.min_y,self.max_y],[-self.cell_axial_range,self.cell_axial_range]])
 		self.frame_count = frame_count #count of frames
 		self.exposure_time = exposure_time #in ms
 		self.interval_time = interval_time #in ms
 		self.oversample_motion_time = oversample_motion_time #in ms
 		#total time in ms is the exposure time + interval time * (frame_count) / oversample_motion_time
 		#in ms
-		self.total_time = ((self.exposure_time + self.interval_time)*self.frame_count)/self.oversample_motion_time
-	def track_generation_no_transition(self,diffusion_coefficient:np.ndarray|list,
-							  hurst_exponent:np.ndarray|list,
-							  diffusion_track_amount:np.ndarray|list,
-							  hurst_track_amount:np.ndarray|list,
-							  track_length_mean:int)->list:
+		self.total_time = self._convert_frame_to_time(self.frame_count)
+	def track_generation_no_transition(self,diffusion_coefficient:float,
+							  hurst_exponent:float,
+							  track_length:int,
+							  initials:np.ndarray,
+							  start_time:int|float)->dict:
 		'''
+		Simulates the track generation with no transition between the diffusion coefficients and the hurst exponents
+		namely, this means each track has a unique diffusion coefficient and hurst exponent
+		This simulation is confined to the cell space and the axial range of the cell
+
+		Parameters:
+		-----------
+		diffusion_coefficient : float
+			diffusion coefficient for the track
+		hurst_exponent : float
+			hurst exponent for the track
+		track_length : int
+			track_length for the track
+		initials : array-like
+			[[x,y,z]] coordinates of the initial positions of the track
+		start_time : int
+			time at which the track start (this is not the frame, and needs to be converted to the frame using the exposure time and interval time and the oversample motion time)	
+		Returns:
+		--------
+		dict-like with format: {"xy":xyz,"frames":frames,"diffusion_coefficient":diffusion_coefficient,"hurst":hurst_exponent,"initial":initial}
 		'''
-		return	[]
-	def track_generation_with_transition(self,diffusion_coefficient:np.ndarray|list,
-							  hurst_exponent:np.ndarray|list,
+		#initialize the fbm class
+		#make self.space_lim relative to the initial position, using self.space_lim define the 0 to be initial position
+		if np.shape(initials) == (2,):
+			#change the shape to (3,)
+			initials = np.array([initials[0],initials[1],0])
+		#subtract each element of the first dimension of self.space_lim by the first element of initials
+		rel_space_lim = np.zeros((3,2))
+		for i in range(3):
+			rel_space_lim[i] = self.space_lim[i] - initials[i]
+
+		fbm_x = fbm_BP.FBM_BP(n=track_length,
+						dt=1,
+						hurst_parameters=[hurst_exponent],
+						diffusion_parameters=[diffusion_coefficient],
+						diffusion_parameter_transition_matrix=[1],
+						hurst_parameter_transition_matrix=[1],
+						state_probability_diffusion=[1],
+						state_probability_hurst=[1],
+						space_lim=rel_space_lim[0])
+		x = fbm_x.fbm()
+		#repeat for y,z
+		fbm_y = fbm_BP.FBM_BP(n=track_length,
+						dt=1,
+						hurst_parameters=[hurst_exponent],
+						diffusion_parameters=[diffusion_coefficient],
+						diffusion_parameter_transition_matrix=[1],
+						hurst_parameter_transition_matrix=[1],
+						state_probability_diffusion=[1],
+						state_probability_hurst=[1],
+						space_lim=rel_space_lim[1])
+		y = fbm_y.fbm()
+		fbm_z = fbm_BP.FBM_BP(n=track_length,
+						dt=1,
+						hurst_parameters=[hurst_exponent],
+						diffusion_parameters=[diffusion_coefficient],
+						diffusion_parameter_transition_matrix=[1],
+						hurst_parameter_transition_matrix=[1],
+						state_probability_diffusion=[1],
+						state_probability_hurst=[1],
+						space_lim=rel_space_lim[2])
+		z = fbm_z.fbm()
+
+		#convert to format [[x1,y1,z1],[x2,y2,z2],...]
+		xyz = np.stack((x,y,z),axis=-1)
+		#make the times starting from the starting time
+		track_times = np.arange(start_time,track_length+start_time,1)
+		#add back the initial position to the track
+		track_xyz = xyz + initials
+		#create the dict
+		track_data = {"xy":track_xyz,"frames":track_times,"diffusion_coefficient":diffusion_coefficient,"hurst":hurst_exponent,"initial":initials}
+		#construct the dict
+		return	track_data
+	def track_generation_with_transition(self,
 							  diffusion_transition_matrix:np.ndarray|list,
 							  hurst_transition_matrix:np.ndarray|list,
-							  track_length_mean:int)->list:
+							  diffusion_parameters:np.ndarray|list,
+							  hurst_parameters:np.ndarray|list,
+							  diffusion_state_probability:np.ndarray|list,
+							  hurst_state_probability:np.ndarray|list,
+							  track_length:int,
+							  initials:np.ndarray,
+							  start_time:int|float)->dict:
 
 		'''
+		Genereates the track data with transition between the diffusion coefficients and the hurst exponents
+
+		Parameters:
+		-----------
+		diffusion_transition_matrix : array-like
+			transition matrix for the diffusion coefficients
+		hurst_transition_matrix : array-like
+			transition matrix for the hurst exponents
+		diffusion_parameters : array-like
+			diffusion coefficients for the tracks
+		hurst_parameters : array-like
+			hurst exponents for the tracks
+		diffusion_state_probability : array-like
+			probabilities for the diffusion coefficients
+		hurst_state_probability : array-like
+			probabilities for the hurst exponents
+		track_length : int
+			track_length for the track
+		initials : array-like
+			[[x,y,z]] coordinates of the initial positions of the track
+		start_time : int
+			time at which the track start (this is not the frame, and needs to be converted to the frame using the exposure time and interval time and the oversample motion time)
+
+		Returns:
+		--------
+		dict-like with format: {"xy":xyz,"frames":frames,"diffusion_coefficient":diffusion_coefficient,"hurst":hurst_exponent,"initial":initial}
 		'''
-		return []
-	def track_generation_constant(self,track_length_mean:int)->list:
+		#make self.space_lim relative to the initial position, using self.space_lim define the 0 to be initial position
+		#self.space_lim is in general shape (3,2) while the initials is in shape (3,)
+		#make sure the - operator is broadcasted correctly
+		if np.shape(initials) == (2,):
+			#change the shape to (3,)
+			initials = np.array([initials[0],initials[1],0])
+		#subtract each element of the first dimension of self.space_lim by the first element of initials
+		rel_space_lim = np.zeros((3,2))
+		for i in range(3):
+			rel_space_lim[i] = self.space_lim[i] - initials[i]
+		#initialize the fbm class
+		fbm_x = fbm_BP.FBM_BP(n=track_length,
+						dt=1,
+						hurst_parameters=hurst_parameters,
+						diffusion_parameters=diffusion_parameters,
+						diffusion_parameter_transition_matrix=diffusion_transition_matrix,
+						hurst_parameter_transition_matrix=hurst_transition_matrix,
+						state_probability_diffusion=diffusion_state_probability,
+						state_probability_hurst=hurst_state_probability,
+						space_lim=rel_space_lim[0])
+		x = fbm_x.fbm()
+		#repeat for y,z
+		fbm_y = fbm_BP.FBM_BP(n=track_length,
+						dt = 1,
+						hurst_parameters=hurst_parameters,
+						diffusion_parameters=diffusion_parameters,
+						diffusion_parameter_transition_matrix=diffusion_transition_matrix,
+						hurst_parameter_transition_matrix=hurst_transition_matrix,
+						state_probability_diffusion=diffusion_state_probability,
+						state_probability_hurst=hurst_state_probability,
+						space_lim=rel_space_lim[1])
+		y = fbm_y.fbm()
+		
+		fbm_z = fbm_BP.FBM_BP(n=track_length,
+						dt = 1,
+						hurst_parameters=hurst_parameters,
+						diffusion_parameters=diffusion_parameters,
+						diffusion_parameter_transition_matrix=diffusion_transition_matrix,
+						hurst_parameter_transition_matrix=hurst_transition_matrix,
+						state_probability_diffusion=diffusion_state_probability,
+						state_probability_hurst=hurst_state_probability,
+						space_lim=rel_space_lim[2])
+		z = fbm_z.fbm()
+		#convert to format [[x1,y1,z1],[x2,y2,z2],...]
+		xyz = np.stack((x,y,z),axis=-1)
+		#make the times starting from the starting time
+		track_times = np.arange(start_time,track_length+start_time,1)
+		#add back the initial position to the track
+		track_xyz = xyz + initials
+		#create the dict
+		track_data = {"xy":track_xyz,"frames":track_times,"diffusion_coefficient":diffusion_parameters,"hurst":hurst_parameters,"initial":initials}
+		#construct the dict
+		return track_data
+	def track_generation_constant(self,track_length:int,initials:np.ndarray,starting_time:int)->dict:
 		'''
+		Parameters:
+		-----------
+		track_length : int
+			mean track length, in this case the track length is constant with this mean
+		initials : array-like
+			[[x,y,z]] coordinates of the initial positions of the track
+		starting_time : int
+			time at which the track start (this is not the frame, and needs to be converted to the frame using the exposure time and interval time and the oversample motion time)
+		
+		Returns:
+		--------
+		np.ndarray
+			track data for the constant track, {"xy":xyz,"frames":frames,"diffusion_coefficient":diffusion_coefficient,"hurst":hurst_exponent,"initial":initial}
 		'''
-		return []
+		#make the times starting from the starting time
+		track_times = np.arange(starting_time,track_length+starting_time,1)
+		#make the track x,y,z from the initial positions
+		track_xyz = np.tile(initials,(len(track_times),1))
+		#construct the dict
+		track_data = {"xy":track_xyz,"frames":track_times,"diffusion_coefficient":0,"hurst":0,"initial":initials}
+		return track_data
+	def _convert_time_to_frame(self,time:int)->int:
+		'''
+		Parameters:
+		-----------
+		time : int
+			time in ms
+		
+		Returns:
+		--------
+		int: frame number
+		'''
+		return int((time*self.oversample_motion_time)/(self.exposure_time+self.interval_time))
+	def _convert_frame_to_time(self,frame:int)->int:
+		'''
+		Parameters:
+		-----------
+		frame : int
+			frame number
+		
+		Returns:
+		--------
+		int: time in ms
+		'''
+		return int((frame*(self.exposure_time+self.interval_time))/self.oversample_motion_time)
