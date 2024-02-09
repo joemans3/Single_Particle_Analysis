@@ -1,12 +1,8 @@
 import json
-if __name__ == "__main__":
-	import sys
-	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts') 
-	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src')
 import numpy as np
 import os
 import random
-import SMT_Analysis_BP.helpers.simulations.simulate_foci_new as sf
+import SMT_Analysis_BP.helpers.simulations.simulate_foci as sf
 import skimage as skimage
 from PIL import Image
 import pickle
@@ -692,9 +688,6 @@ class Simulate_cells():
 ##test the simulation
 
 if __name__ == "__main__":
-	import sys
-	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts') 
-	sys.path.append('/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src')
 	#use the sim_config.json file to simulate the cell
 	sim_new = Simulate_cells(init_dict_json="/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src/SMT_Analysis_BP/helpers/simulations/sim_config.json")
 	#save the simulation

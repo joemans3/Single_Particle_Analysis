@@ -1,7 +1,7 @@
 import sys
 import os
 import argparse
-from simulate_cell_new import Simulate_cells
+from SMT_Analysis_BP.helpers.simulations.simulate_cell import Simulate_cells
 import json
 
 def main():
