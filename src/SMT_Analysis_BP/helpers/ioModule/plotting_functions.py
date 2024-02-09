@@ -11,8 +11,8 @@ from matplotlib.patches import Circle
 from skimage import io
 from sklearn import mixture
 
-from src.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import *
-from src.SMT_Analysis_BP.helpers.ioModule.import_functions import *
+from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import *
+from SMT_Analysis_BP.helpers.ioModule.import_functions import *
 
 
 class run_analysis_plotting:

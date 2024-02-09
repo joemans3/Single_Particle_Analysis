@@ -2,7 +2,7 @@ import copy
 import numpy as np
 
 from SMT_Analysis_BP.helpers.analysisFunctions.MSD_Utils import DatabaseOrderUtil,Calculation_abc,combine_track_dicts,dic_union_two
-from src.SMT_Analysis_BP.databases import trajectory_analysis_script as tas
+from SMT_Analysis_BP.databases import trajectory_analysis_script as tas
 
 
 class Angle_Storage:
