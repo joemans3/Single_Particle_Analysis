@@ -3,9 +3,9 @@ import numpy as np
 from abc import ABC, abstractmethod
 from SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import dic_union_two
 from SMT_Analysis_BP.databases import trajectory_analysis_script as tas
-RANDOM_SEED = 666 #for reproducibility, hail satan
-#use the RANDOM_SEED for reproducibility
-np.random.seed(RANDOM_SEED)
+# RANDOM_SEED = 666 #for reproducibility, hail satan
+# #use the RANDOM_SEED for reproducibility
+# np.random.seed(RANDOM_SEED)
 
 class Calculation_abc(ABC):
     '''
