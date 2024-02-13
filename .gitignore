@@ -18,3 +18,4 @@ src/SMT_Analysis_BP/helpers/ioModule/__pycache__
 src/SMT_Analysis_BP/helpers/misc/__pycache__
 src/SMT_Analysis_BP/helpers/simulations/__pycache__
 src/SMT_Analysis_BP/helpers/simulations/USER_GUIDE
+.gitignore
