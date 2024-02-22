@@ -44,8 +44,8 @@ from scipy.stats import gaussian_kde
 from shapely.geometry import Point, Polygon
 from SMT.SMT_Analysis_BP.helpers.ioModule.SMT_converters import IO_run_analysis
 
-importSMT.SMT_Analysis_BP.helpers.ioModule.import_functions as import_functions
-importSMT.SMT_Analysis_BP.helpers.analysisFunctions.nucleoid_detection as nucleoid_detection
+import SMT.SMT_Analysis_BP.helpers.ioModule.import_functions as import_functions
+import SMT.SMT_Analysis_BP.helpers.analysisFunctions.nucleoid_detection as nucleoid_detection
 from SMT.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import *
 from SMT.SMT_Analysis_BP.helpers.clusterMethods.blob_detection import *
 from SMT.SMT_Analysis_BP.helpers.ioModule.plotting_functions import *
