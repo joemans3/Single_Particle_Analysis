@@ -37,7 +37,7 @@
 - The Olympus .vsi files are not supported by the python libraries. So we need to convert them to .tif files. (this is not entirely true, we can use the python-bioformats library to read the .vsi files, but it is very slow and the API is not very user friendly) To do this we will use the Bioformats tool in Matlab. 
     - Download the Bioformats tool from: <https://www.openmicroscopy.org/bio-formats/downloads/>
     - Install the tool in Matlab using the instructions given in the link above. (you will need to set the environment variable in Matlab to access the bioformats library, or manually add path every time.)
-    - Open the **src/SMT_Analysis/Matlab/batch_convert_single_fluorescence_BW.m** file in Matlab and edit the following lines:
+    - Open the **SMT/SMT_Analysis/Matlab/batch_convert_single_fluorescence_BW.m** file in Matlab and edit the following lines:
         - **line 2**: change the initial file to the first .vsi file in the folder.
         - **line 3**: Repeat but now replace the numbering term with "\*" which will be used as a wildcard for finding all files with the basename which is not "\*".
         - **line 19**: Same as in line 3 but now replace with "\*" with "%d" which will be used to name the output files. 
@@ -60,16 +60,16 @@
 #### 2.2.2. Extracting the ROI for Cells in a Movie
 - I prefer to use SuperSegger or CellPose to extract the ROI. The issue with SuperSegger is that it is written in Matlab and is not very extendable and does not allow manual adjustments. CellPose is written in python and is very extendable and allows manual adjustments. So ill just focus on CellPose here. However, the analysis code has API for reading formatting outputs from either one.
 - Download the Cellpose for python and use the GUI to save .npy files for the mask using the gfp images (or the bf).
-- Now that you have a folder with the .npy files run the script: **src/SMT_Analysis_BP/databases/format_mask_structure.py** 
+- Now that you have a folder with the .npy files run the script: **SMT/SMT_Analysis_BP/databases/format_mask_structure.py** 
     - You need to tell it which path the .npy files are in and it will save the masks and cells in a new folder called **Movies** in the parent directory.
     - If running as a script, change the path variable to your path after the "if \_\_name\_\_ == '\_\_main\_\_':" line. Else interface with the API if calling from another script.
 
 #### 2.2.3. Extracting the Time Average Projections.
-- Run the file **src/SMT_Analysis_BP/helpers/tifanal.py** with the directory path changed to the **Movie** path. This will create a folder called **Segmented_mean** in the directory. Move this folder to the main parent path, such that the folder is in the same scope as the **Movies** folder.
+- Run the file **SMT/SMT_Analysis_BP/helpers/tifanal.py** with the directory path changed to the **Movie** path. This will create a folder called **Segmented_mean** in the directory. Move this folder to the main parent path, such that the folder is in the same scope as the **Movies** folder.
 
 #### 2.2.4. Performing the Tracking.
 - You will need TrackMate plugin in ImageJ/FIJI for this.
-- I would use the default settings in the file **src/SMT_Analysis_BP/fiji/BP_TRACKING.py**. Change the directory path (DIRECTORY_MOVIES) to the **Movies** folder and change the value for the BASE_MOVIE_NAME to the base name of the set of movies in Movies. (this is the string that does not include the changing number in the file names).
+- I would use the default settings in the file **SMT/SMT_Analysis_BP/fiji/BP_TRACKING.py**. Change the directory path (DIRECTORY_MOVIES) to the **Movies** folder and change the value for the BASE_MOVIE_NAME to the base name of the set of movies in Movies. (this is the string that does not include the changing number in the file names).
 - You should open this script in FIJI/ImageJ unless you have told your interpreter to use the FIJI executable.
 - Run the script; it will create a folder called **Analysis_new**. Move this folder to the parent directory so that it is in the same scope as the **Movies** folder.
 
