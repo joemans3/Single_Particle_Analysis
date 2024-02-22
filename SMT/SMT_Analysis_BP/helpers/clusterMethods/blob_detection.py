@@ -21,7 +21,7 @@ from scipy.ndimage import filters
 from skimage.feature import blob
 from skimage.util import dtype
 
-importSMT.SMT_Analysis_BP.helpers.ioModule.import_functions as import_functions
+import SMT.SMT_Analysis_BP.helpers.ioModule.import_functions as import_functions
 from SMT.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import rescale_range
 
 
