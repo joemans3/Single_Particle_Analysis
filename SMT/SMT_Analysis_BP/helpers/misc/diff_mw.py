@@ -64,10 +64,18 @@ mw_RNAP = 350000 #Dalton
 #Measuring the Viscosity of the Escherichia coli Plasma Membrane Using Molecular Rotors (Mika et al, 2016, Biophys J.)
 vis_ecoli = 950 #cP
 
-dif_RPOC = mw_to_diff(mw_RPOC,vis_ecoli)
-dif_NUSA = mw_to_diff(mw_NUSA,vis_ecoli)
-dif_LACI = mw_to_diff(mw_LACI,vis_ecoli)
-dif_RNAP = mw_to_diff(mw_RNAP,vis_ecoli)
+#cytoplasmic viscocity
+#https://pubs.acs.org/doi/abs/10.1021/acs.jpcb.8b07362
+vis_cyto_ecoli = 2.82 #cP
+
+dif_RPOC = mw_to_diff(mw_RPOC,vis_cyto_ecoli)
+dif_NUSA = mw_to_diff(mw_NUSA,vis_cyto_ecoli)
+dif_LACI = mw_to_diff(mw_LACI,vis_cyto_ecoli)
+dif_RNAP = mw_to_diff(mw_RNAP,vis_cyto_ecoli)
+print("RPOC Diffusion Coefficient: ",dif_RPOC)
+print("NUSA Diffusion Coefficient: ",dif_NUSA)
+print("LACI Diffusion Coefficient: ",dif_LACI)
+print("RNAP Diffusion Coefficient: ",dif_RNAP)
 
 if __name__ == '__main__':
 	plt.plot(['RPOC','NUSA','LACI','RNAP_holo'],np.log10(np.array([dif_RPOC,dif_NUSA,dif_LACI,dif_RNAP])),'b.')

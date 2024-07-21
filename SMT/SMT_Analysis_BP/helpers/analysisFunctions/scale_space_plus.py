@@ -15,8 +15,8 @@ from abc import ABC, abstractmethod
 from SMT.SMT_Analysis_BP.helpers.ioModule.pickle_util import PickleUtil
 from SMT.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import rescale_range
 import matplotlib.pyplot as plt
-import tensorflow as tf
-import tensorflow_probability as tfp
+from scipy.stats import multivariate_normal
+
 KEY_IMAGE = {
     'png':skimage.io.imsave,
     'jpg':skimage.io.imsave,
@@ -28,35 +28,41 @@ BOUNDING_BOX_PADDING = 5
 CONVERSION_TYPES = {'RC_to_Original':0,'original_to_RC':1}
 RANDOM_SEED = 666 #for reproducibility, also praise the devil (joking)
 
-def get_gaussian(mu, sigma,domain = [list(range(10)),list(range(10))]):
-	'''
-	Parameters
-	----------
-	mu : array-like or float of floats
-		center position of gaussian (x,y) or collection of (x,y)
-	sigma : float or array-like of floats of shape mu
-		sigma of the gaussian
-	domain : array-like, Defaults to 0->9 for x,y
-		x,y domain over which this gassuain is over
+
+# numpy version of get_gaussian
+def get_gaussian(mu, sigma, domain=[list(range(10)), list(range(10))]):
+    '''
+    Parameters
+    ----------
+    mu : array-like or float of floats
+        center position of gaussian (x,y) or collection of (x,y)
+    sigma : float or array-like of floats of shape mu
+        sigma of the gaussian
+    domain : array-like, Defaults to 0->9 for x,y
+        x,y domain over which this gassuain is over
 
 
-	Returns
-	-------
-	array-like 2D 
-		values of the gaussian centered at mu with sigma across the (x,y) points defined in domain
-	
-	Notes:
-	------
-	THIS IS IMPORTANT: MAKE SURE THE TYPES IN EACH PARAMETER ARE THE SAME!!!!
-	'''
+    Returns
+    -------
+    array-like 2D
+        values of the gaussian centered at mu with sigma across the (x,y) points defined in domain
 
-	mvn = tfp.distributions.MultivariateNormalDiag(loc=mu, scale_diag=sigma)
-	x = domain[0] 
-	y = domain[1]
-	# meshgrid as a list of [x,y] coordinates
-	coords = tf.reshape(tf.stack(tf.meshgrid(x,y),axis=-1),(-1,2))
-	gauss = mvn.prob(coords)
-	return tf.reshape(gauss, (len(x),len(y)))
+    Notes:
+    ------
+    THIS IS IMPORTANT: MAKE SURE THE TYPES IN EACH PARAMETER ARE THE SAME!!!!
+    '''
+    # generate a multivariate normal distribution with the given mu and sigma over the domain using scipy stats
+    # generate the grid
+    x = domain[0]
+    y = domain[1]
+    xx, yy = np.meshgrid(x, y)
+    # generate the multivariate normal distribution
+    rv = multivariate_normal(mu, sigma)
+    # generate the probability distribution
+    gauss = rv.pdf(np.dstack((xx, yy)))
+    # reshape the distribution on the grid
+    return gauss
+
 #define a ABC class for the scale space plus procedure
 class ScaleSpacePlus(ABC):
     def __init__(self) -> None:
