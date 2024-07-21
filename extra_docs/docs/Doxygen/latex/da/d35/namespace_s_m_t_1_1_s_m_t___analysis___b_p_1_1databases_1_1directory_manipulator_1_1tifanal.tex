@@ -1,0 +1,140 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+dict \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a45f2cb1bf02374e293a34f246a84b98e}{SEGMENT\+\_\+\+TYPE}}
+\item 
+int \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a9a0793dee22768c595e89be6a8f89a6b}{STACK\+\_\+\+STEP}} = 5
+\item 
+int \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_af7d0940bf2620fa5c9feda0cd09a345b}{CONVERT\+\_\+\+NAME}} = 1
+\item 
+str \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a2476e0a48b7d05ea48065cd25d79e2b9}{DIR\+\_\+\+PATH}} = "{}/Volumes/Baljyot\+\_\+\+HD/SMT\+\_\+\+Olympus/RIF\+\_\+\+TREATMET\+\_\+\+LIVE/20230528/Movie"{}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a746109da978100713422f7281b532fa3}{root}} = tk.\+Tk()
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a3933fcca618c77c319a12a013699ca01}{filez}} = fd.\+askopenfilenames(parent=\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a746109da978100713422f7281b532fa3}{root}}, title=\textquotesingle{}Choose \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}} file\textquotesingle{}, initialdir=\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a2476e0a48b7d05ea48065cd25d79e2b9}{DIR\+\_\+\+PATH}})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a0eae62fc3e7fce2e1fd0cf5221015a0f}{root\+\_\+dir}} = os.\+path.\+dirname(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a3933fcca618c77c319a12a013699ca01}{filez}}\mbox{[}0\mbox{]})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a5701a36a7e75e2b09a60fe3ba667a44b}{sorted\+\_\+a\+\_\+files}} = sorted(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a3933fcca618c77c319a12a013699ca01}{filez}},key=lambda x\+: int(x.\+split("{}/"{})\mbox{[}-\/1\mbox{]}.split("{}."{})\mbox{[}0\mbox{]}.split("{}\+\_\+"{})\mbox{[}-\/1\mbox{]}))
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a85b9852689c6a2a9e41f6c938f7d440b}{temp\+\_\+im}} = io.\+imread(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a5701a36a7e75e2b09a60fe3ba667a44b}{sorted\+\_\+a\+\_\+files}}\mbox{[}\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{]})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a8aa395b82a11fd0f2a31b097d79b29ad}{temp\+\_\+del}} = \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a85b9852689c6a2a9e41f6c938f7d440b}{temp\+\_\+im}}\mbox{[}\+:\mbox{]}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_aefc96679117707c95b2f1a543bc6a63e}{length}} = int(len(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a8aa395b82a11fd0f2a31b097d79b29ad}{temp\+\_\+del}})/\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a9a0793dee22768c595e89be6a8f89a6b}{STACK\+\_\+\+STEP}})
+\item 
+list \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_ac0d7a322bbdaa7d05002750c80a0849d}{hold\+\_\+img}} = \mbox{[}$\,$\mbox{]}
+\item 
+list \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a089acc863e851be9b8b9f4f0a28cf76c}{hold\+\_\+name}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_ad9f530c15d13f75c6d76ce1634406cd2}{movie\+\_\+name}} = \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a5701a36a7e75e2b09a60fe3ba667a44b}{sorted\+\_\+a\+\_\+files}}\mbox{[}\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{]}.split("{}/"{})\mbox{[}-\/1\mbox{]}.split("{}."{})\mbox{[}0\mbox{]}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_aa888d7a1d39173041c7fb0d357f0bdb2}{updated\+\_\+movie\+\_\+name}} = movie\+\_\+name.\+split("{}\+\_\+"{})\mbox{[}\+:-\/1\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_af7d0940bf2620fa5c9feda0cd09a345b}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!CONVERT\_NAME@{CONVERT\_NAME}}
+\index{CONVERT\_NAME@{CONVERT\_NAME}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{CONVERT\_NAME}{CONVERT\_NAME}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_af7d0940bf2620fa5c9feda0cd09a345b} 
+int SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+CONVERT\+\_\+\+NAME = 1}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a2476e0a48b7d05ea48065cd25d79e2b9}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!DIR\_PATH@{DIR\_PATH}}
+\index{DIR\_PATH@{DIR\_PATH}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{DIR\_PATH}{DIR\_PATH}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a2476e0a48b7d05ea48065cd25d79e2b9} 
+str SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+DIR\+\_\+\+PATH = "{}/Volumes/Baljyot\+\_\+\+HD/SMT\+\_\+\+Olympus/RIF\+\_\+\+TREATMET\+\_\+\+LIVE/20230528/Movie"{}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a3933fcca618c77c319a12a013699ca01}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!filez@{filez}}
+\index{filez@{filez}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{filez}{filez}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a3933fcca618c77c319a12a013699ca01} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+filez = fd.\+askopenfilenames(parent=\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a746109da978100713422f7281b532fa3}{root}}, title=\textquotesingle{}Choose \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}} file\textquotesingle{}, initialdir=\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a2476e0a48b7d05ea48065cd25d79e2b9}{DIR\+\_\+\+PATH}})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_ac0d7a322bbdaa7d05002750c80a0849d}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!hold\_img@{hold\_img}}
+\index{hold\_img@{hold\_img}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{hold\_img}{hold\_img}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_ac0d7a322bbdaa7d05002750c80a0849d} 
+list SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+hold\+\_\+img = \mbox{[}$\,$\mbox{]}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a089acc863e851be9b8b9f4f0a28cf76c}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!hold\_name@{hold\_name}}
+\index{hold\_name@{hold\_name}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{hold\_name}{hold\_name}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a089acc863e851be9b8b9f4f0a28cf76c} 
+list SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+hold\+\_\+name = \mbox{[}$\,$\mbox{]}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_aefc96679117707c95b2f1a543bc6a63e}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!length@{length}}
+\index{length@{length}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{length}{length}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_aefc96679117707c95b2f1a543bc6a63e} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+length = int(len(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a8aa395b82a11fd0f2a31b097d79b29ad}{temp\+\_\+del}})/\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a9a0793dee22768c595e89be6a8f89a6b}{STACK\+\_\+\+STEP}})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_ad9f530c15d13f75c6d76ce1634406cd2}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!movie\_name@{movie\_name}}
+\index{movie\_name@{movie\_name}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{movie\_name}{movie\_name}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_ad9f530c15d13f75c6d76ce1634406cd2} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+movie\+\_\+name = \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a5701a36a7e75e2b09a60fe3ba667a44b}{sorted\+\_\+a\+\_\+files}}\mbox{[}\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{]}.split("{}/"{})\mbox{[}-\/1\mbox{]}.split("{}."{})\mbox{[}0\mbox{]}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a746109da978100713422f7281b532fa3}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!root@{root}}
+\index{root@{root}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{root}{root}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a746109da978100713422f7281b532fa3} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+root = tk.\+Tk()}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a0eae62fc3e7fce2e1fd0cf5221015a0f}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!root\_dir@{root\_dir}}
+\index{root\_dir@{root\_dir}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{root\_dir}{root\_dir}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a0eae62fc3e7fce2e1fd0cf5221015a0f} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+root\+\_\+dir = os.\+path.\+dirname(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a3933fcca618c77c319a12a013699ca01}{filez}}\mbox{[}0\mbox{]})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a45f2cb1bf02374e293a34f246a84b98e}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!SEGMENT\_TYPE@{SEGMENT\_TYPE}}
+\index{SEGMENT\_TYPE@{SEGMENT\_TYPE}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{SEGMENT\_TYPE}{SEGMENT\_TYPE}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a45f2cb1bf02374e293a34f246a84b98e} 
+dict SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+SEGMENT\+\_\+\+TYPE}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \{}
+\DoxyCodeLine{00002\ \ \ \ \ \textcolor{stringliteral}{"{}mean"{}}:np.mean,}
+\DoxyCodeLine{00003\ \ \ \ \ \textcolor{stringliteral}{"{}median"{}}:np.median,}
+\DoxyCodeLine{00004\ \ \ \ \ \textcolor{stringliteral}{"{}max"{}}:np.max,}
+\DoxyCodeLine{00005\ \ \ \ \ \textcolor{stringliteral}{"{}min"{}}:np.min,}
+\DoxyCodeLine{00006\ \ \ \ \ \textcolor{stringliteral}{"{}sum"{}}:np.sum,}
+\DoxyCodeLine{00007\ \ \ \ \ \textcolor{stringliteral}{"{}std"{}}:np.std}
+\DoxyCodeLine{00008\ \}}
+
+\end{DoxyCode}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a5701a36a7e75e2b09a60fe3ba667a44b}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!sorted\_a\_files@{sorted\_a\_files}}
+\index{sorted\_a\_files@{sorted\_a\_files}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{sorted\_a\_files}{sorted\_a\_files}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a5701a36a7e75e2b09a60fe3ba667a44b} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+sorted\+\_\+a\+\_\+files = sorted(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a3933fcca618c77c319a12a013699ca01}{filez}},key=lambda x\+: int(x.\+split("{}/"{})\mbox{[}-\/1\mbox{]}.split("{}."{})\mbox{[}0\mbox{]}.split("{}\+\_\+"{})\mbox{[}-\/1\mbox{]}))}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a9a0793dee22768c595e89be6a8f89a6b}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!STACK\_STEP@{STACK\_STEP}}
+\index{STACK\_STEP@{STACK\_STEP}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{STACK\_STEP}{STACK\_STEP}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a9a0793dee22768c595e89be6a8f89a6b} 
+int SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+STACK\+\_\+\+STEP = 5}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a8aa395b82a11fd0f2a31b097d79b29ad}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!temp\_del@{temp\_del}}
+\index{temp\_del@{temp\_del}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{temp\_del}{temp\_del}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a8aa395b82a11fd0f2a31b097d79b29ad} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+temp\+\_\+del = \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a85b9852689c6a2a9e41f6c938f7d440b}{temp\+\_\+im}}\mbox{[}\+:\mbox{]}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a85b9852689c6a2a9e41f6c938f7d440b}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!temp\_im@{temp\_im}}
+\index{temp\_im@{temp\_im}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{temp\_im}{temp\_im}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a85b9852689c6a2a9e41f6c938f7d440b} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+temp\+\_\+im = io.\+imread(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_a5701a36a7e75e2b09a60fe3ba667a44b}{sorted\+\_\+a\+\_\+files}}\mbox{[}\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{]})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_aa888d7a1d39173041c7fb0d357f0bdb2}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}!updated\_movie\_name@{updated\_movie\_name}}
+\index{updated\_movie\_name@{updated\_movie\_name}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.tifanal}}
+\doxysubsubsection{\texorpdfstring{updated\_movie\_name}{updated\_movie\_name}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1tifanal_aa888d7a1d39173041c7fb0d357f0bdb2} 
+str SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+tifanal.\+updated\+\_\+movie\+\_\+name = movie\+\_\+name.\+split("{}\+\_\+"{})\mbox{[}\+:-\/1\mbox{]}}
+

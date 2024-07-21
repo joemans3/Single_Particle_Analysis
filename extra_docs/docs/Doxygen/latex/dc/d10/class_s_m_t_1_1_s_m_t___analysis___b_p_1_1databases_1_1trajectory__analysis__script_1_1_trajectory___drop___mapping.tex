@@ -1,0 +1,89 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory\+\_\+\+Drop\+\_\+\+Mapping Class Reference}
+\hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping}{}\label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_a50af3ff4f2f7458e41df4e9beb9197cc}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_ae95373dd1014dba0b78d42610b6667c9}{Drop\+\_\+\+ID}})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_ae95373dd1014dba0b78d42610b6667c9}{Drop\+\_\+\+ID}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_aab28ef66add5e33a6275a9bea420320d}{IN\+\_\+\+Trajectory\+\_\+\+Collection}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_a27c30362be0c67785f59fff7f2f3731f}{OUT\+\_\+\+Trajectory\+\_\+\+Collection}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_a3daacf3e47c805d00a85d187c5dd1786}{IO\+\_\+\+Trajectory\+\_\+\+Collection}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}    create a mapping for each viable drop to store all the Trajectory instances that belong to it in terms of Classification
+    
+    Parameters
+    ----------
+    __init__ :
+        Drop_ID : str
+            unique identifier for each viable drop (i.e "0,1" for the first drop in the first sub-frame)
+            Note that the first number is the sub-frame number and the second number is the drop index in that sub-frame
+            See notes for more information
+    
+    IN_Trajectory_Collection : dict
+        dictionary of all the IN trajectories that belong to the viable drop
+    OUT_Trajectory_Collection : dict
+        dictionary of all the OUT trajectories that belong to the viable drop
+    IO_Trajectory_Collection : dict
+        dictionary of all the IN and OUT trajectories that belong to the viable drop
+
+    Notes:
+    ------
+    1. Each dictionary is of the form (i,j) -> (frame,trajectory index) where i is the frame number and j is the trajectory index
+    where the above represent the keys, the values are instances of the Trajectory class
+    2. The frame number is based on the sub segmented frames (i.e 0,1,2,3,4 if subframes = 5)
+    3. The trajectory index is the index of the trajectory in the raw_tracks list of the Cell class object
+    4. The viable drop index is the index of the detected drop in the Drop_Collection dictionary of the Cell class object
+    5. 4) shows that the viable drop index is the same as the drop index in the raw_tracks list of the Cell class object, \n
+    (i.e the drop index is determined by the blob detection. After the viability criterion is applied the non-viable drops are removed, but the order of the drop IDs is perserved)\n
+    (For a collection of drops with IDs (0,1),(0,2),(0,3), if (0,2) is not viable then the viable drops are: (0,1),(0,3) and they keep this order and ID name)\end{DoxyVerb}
+ 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_a50af3ff4f2f7458e41df4e9beb9197cc}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_a50af3ff4f2f7458e41df4e9beb9197cc} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory\+\_\+\+Drop\+\_\+\+Mapping.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{Drop\+\_\+\+ID}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_ae95373dd1014dba0b78d42610b6667c9}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}!Drop\_ID@{Drop\_ID}}
+\index{Drop\_ID@{Drop\_ID}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}}
+\doxysubsubsection{\texorpdfstring{Drop\_ID}{Drop\_ID}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_ae95373dd1014dba0b78d42610b6667c9} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory\+\_\+\+Drop\+\_\+\+Mapping.\+Drop\+\_\+\+ID}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_aab28ef66add5e33a6275a9bea420320d}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}!IN\_Trajectory\_Collection@{IN\_Trajectory\_Collection}}
+\index{IN\_Trajectory\_Collection@{IN\_Trajectory\_Collection}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}}
+\doxysubsubsection{\texorpdfstring{IN\_Trajectory\_Collection}{IN\_Trajectory\_Collection}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_aab28ef66add5e33a6275a9bea420320d} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory\+\_\+\+Drop\+\_\+\+Mapping.\+IN\+\_\+\+Trajectory\+\_\+\+Collection}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_a3daacf3e47c805d00a85d187c5dd1786}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}!IO\_Trajectory\_Collection@{IO\_Trajectory\_Collection}}
+\index{IO\_Trajectory\_Collection@{IO\_Trajectory\_Collection}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}}
+\doxysubsubsection{\texorpdfstring{IO\_Trajectory\_Collection}{IO\_Trajectory\_Collection}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_a3daacf3e47c805d00a85d187c5dd1786} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory\+\_\+\+Drop\+\_\+\+Mapping.\+IO\+\_\+\+Trajectory\+\_\+\+Collection}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_a27c30362be0c67785f59fff7f2f3731f}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}!OUT\_Trajectory\_Collection@{OUT\_Trajectory\_Collection}}
+\index{OUT\_Trajectory\_Collection@{OUT\_Trajectory\_Collection}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory\_Drop\_Mapping}}
+\doxysubsubsection{\texorpdfstring{OUT\_Trajectory\_Collection}{OUT\_Trajectory\_Collection}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping_a27c30362be0c67785f59fff7f2f3731f} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory\+\_\+\+Drop\+\_\+\+Mapping.\+OUT\+\_\+\+Trajectory\+\_\+\+Collection}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/baljyot/\+Documents/\+CODE/\+Git\+Hub\+\_\+t2/\+PHD/\+Baljyot\+\_\+\+EXP\+\_\+\+RPOC/\+Scripts/\+SMT/\+SMT\+\_\+\+Analysis\+\_\+\+BP/databases/\mbox{\hyperlink{trajectory__analysis__script_8py}{trajectory\+\_\+analysis\+\_\+script.\+py}}\end{DoxyCompactItemize}

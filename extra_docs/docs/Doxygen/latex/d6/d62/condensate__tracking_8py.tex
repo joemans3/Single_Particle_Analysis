@@ -1,0 +1,101 @@
+\doxysection{/\+Users/baljyot/\+Documents/\+CODE/\+Git\+Hub\+\_\+t2/\+PHD/\+Baljyot\+\_\+\+EXP\+\_\+\+RPOC/\+Scripts/\+SMT/\+SMT\+\_\+\+Analysis\+\_\+\+BP/\+Random/condensate\+\_\+tracking.py File Reference}
+\hypertarget{condensate__tracking_8py}{}\label{condensate__tracking_8py}\index{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/Random/condensate\_tracking.py@{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/Random/condensate\_tracking.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacecondensate__tracking}{condensate\+\_\+tracking}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a2dd9e7f9e212338efbba5100c0be323e}{condensate\+\_\+tracking.\+radius\+\_\+of\+\_\+confinement\+\_\+xy}} (t, r\+\_\+sqr, D, loc\+\_\+msd\+\_\+x, loc\+\_\+msd\+\_\+y)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{namespacecondensate__tracking_ab8555163a00d6e689d7ac66f1368b9c6}{condensate\+\_\+tracking.\+t\+\_\+len\+\_\+l}} = 4
+\item 
+int \mbox{\hyperlink{namespacecondensate__tracking_a55977b0c1c290811a978d230bea10901}{condensate\+\_\+tracking.\+t\+\_\+len\+\_\+u}} = 100
+\item 
+str \mbox{\hyperlink{namespacecondensate__tracking_aada641a25bd695162cd62529a13b3da9}{condensate\+\_\+tracking.\+path}} = \textquotesingle{}/Users/baljyot/Documents/test/\textquotesingle{}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_ad9d8c3375b18f9e2accbe117b1d36709}{condensate\+\_\+tracking.\+files\+\_\+to\+\_\+read}} = glob.\+glob(\mbox{\hyperlink{namespacecondensate__tracking_aada641a25bd695162cd62529a13b3da9}{path}}+\textquotesingle{}\texorpdfstring{$\ast$}{*}.csv\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a26e9d8b8e403cc4d952b091fe689b127}{condensate\+\_\+tracking.\+list\+\_\+exposure\+\_\+time}} = np.\+zeros(len(\mbox{\hyperlink{namespacecondensate__tracking_ad9d8c3375b18f9e2accbe117b1d36709}{files\+\_\+to\+\_\+read}}))
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a6b76f0e6d0029a502c141b52d3d336aa}{condensate\+\_\+tracking.\+list\+\_\+interval\+\_\+time}} = np.\+zeros(len(\mbox{\hyperlink{namespacecondensate__tracking_ad9d8c3375b18f9e2accbe117b1d36709}{files\+\_\+to\+\_\+read}}))
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_a223cdc629ad9e63dd8c372076ee3ca48}{condensate\+\_\+tracking.\+x\+\_\+all}} = \mbox{[}$\,$\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_aebd45a493c5dc85fd7c1b96c6f7f5c23}{condensate\+\_\+tracking.\+y\+\_\+all}} = \mbox{[}$\,$\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_a7ec5de5ebffcca0c8c354968bf4c2e34}{condensate\+\_\+tracking.\+f\+\_\+all}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a03fdbc60ab5e31156204818d866307f4}{condensate\+\_\+tracking.\+data}} = np.\+loadtxt(\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}},skiprows = 4, usecols = (2,4,5,7,8),delimiter = \textquotesingle{},\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_ada3abfd9d96e678e9732fe7ad57f1d0f}{condensate\+\_\+tracking.\+track\+\_\+\+ID}} = \mbox{\hyperlink{namespacecondensate__tracking_a03fdbc60ab5e31156204818d866307f4}{data}}\mbox{[}\+:,0\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a8dc8088d3d781608f2bd9694c73b2f96}{condensate\+\_\+tracking.\+tp\+\_\+x}} = \mbox{\hyperlink{namespacecondensate__tracking_a03fdbc60ab5e31156204818d866307f4}{data}}\mbox{[}\+:,1\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a85a208bcbfd7a2c20902ed7df5712eee}{condensate\+\_\+tracking.\+tp\+\_\+y}} = \mbox{\hyperlink{namespacecondensate__tracking_a03fdbc60ab5e31156204818d866307f4}{data}}\mbox{[}\+:,2\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a5ef26fac05e5bccfa8cbbaf6f4983769}{condensate\+\_\+tracking.\+tp}} = \mbox{\hyperlink{namespacecondensate__tracking_a03fdbc60ab5e31156204818d866307f4}{data}}\mbox{[}\+:,3\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_aba6a9701de456c3bcb7c1acaed8c2785}{condensate\+\_\+tracking.\+frame\+\_\+\+ID}} = \mbox{\hyperlink{namespacecondensate__tracking_a03fdbc60ab5e31156204818d866307f4}{data}}\mbox{[}\+:,4\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_ac80e019d4d6da0a7fbe0a1f94f02ee48}{condensate\+\_\+tracking.\+u\+\_\+track}}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_ae2ca4939b0579378fc33d71bffdbbc58}{condensate\+\_\+tracking.\+utrack\+\_\+ind}}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a36b674f69f6c3a178c03dfef64672f06}{condensate\+\_\+tracking.\+utrack\+\_\+count}}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_abddacdd3becbf61eef587d423e52af26}{condensate\+\_\+tracking.\+return\+\_\+index}}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_ab4392f628c7c5c514ea29be55f7b2abd}{condensate\+\_\+tracking.\+True}}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a0c669bde4c284d650143a3cd9882e579}{condensate\+\_\+tracking.\+return\+\_\+counts}}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_ad3c9423d96c5bbcc35bc5abb31406dc5}{condensate\+\_\+tracking.\+cut}} = \mbox{\hyperlink{namespacecondensate__tracking_ac80e019d4d6da0a7fbe0a1f94f02ee48}{u\+\_\+track}}\mbox{[}(\mbox{\hyperlink{namespacecondensate__tracking_a36b674f69f6c3a178c03dfef64672f06}{utrack\+\_\+count}}$>$=\mbox{\hyperlink{namespacecondensate__tracking_ab8555163a00d6e689d7ac66f1368b9c6}{t\+\_\+len\+\_\+l}})\texorpdfstring{$\ast$}{*}(\mbox{\hyperlink{namespacecondensate__tracking_a36b674f69f6c3a178c03dfef64672f06}{utrack\+\_\+count}}$<$=\mbox{\hyperlink{namespacecondensate__tracking_a55977b0c1c290811a978d230bea10901}{t\+\_\+len\+\_\+u}})\mbox{]}
+\item 
+tuple \mbox{\hyperlink{namespacecondensate__tracking_af7d8a753694273cf4a9b9ef9d6a7db3f}{condensate\+\_\+tracking.\+tind}} = (\mbox{\hyperlink{namespacecondensate__tracking_ada3abfd9d96e678e9732fe7ad57f1d0f}{track\+\_\+\+ID}}==\mbox{\hyperlink{namespacecondensate__tracking_ad3c9423d96c5bbcc35bc5abb31406dc5}{cut}}\mbox{[}j\mbox{]})
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_af31798b721943582023bf77e4e2d0069}{condensate\+\_\+tracking.\+temp}} = sorted(zip(\mbox{\hyperlink{namespacecondensate__tracking_aba6a9701de456c3bcb7c1acaed8c2785}{frame\+\_\+\+ID}}\mbox{[}\mbox{\hyperlink{namespacecondensate__tracking_af7d8a753694273cf4a9b9ef9d6a7db3f}{tind}}\mbox{]}, \mbox{\hyperlink{namespacecondensate__tracking_a5ef26fac05e5bccfa8cbbaf6f4983769}{tp}}\mbox{[}\mbox{\hyperlink{namespacecondensate__tracking_af7d8a753694273cf4a9b9ef9d6a7db3f}{tind}}\mbox{]}, \mbox{\hyperlink{namespacecondensate__tracking_a8dc8088d3d781608f2bd9694c73b2f96}{tp\+\_\+x}}\mbox{[}\mbox{\hyperlink{namespacecondensate__tracking_af7d8a753694273cf4a9b9ef9d6a7db3f}{tind}}\mbox{]}, \mbox{\hyperlink{namespacecondensate__tracking_a85a208bcbfd7a2c20902ed7df5712eee}{tp\+\_\+y}}\mbox{[}\mbox{\hyperlink{namespacecondensate__tracking_af7d8a753694273cf4a9b9ef9d6a7db3f}{tind}}\mbox{]}))
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_a9036b90efeecbb28970a132eb1789b0e}{condensate\+\_\+tracking.\+nx}} = \mbox{[}x for f, t, x, y in \mbox{\hyperlink{namespacecondensate__tracking_af31798b721943582023bf77e4e2d0069}{temp}}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_a00a8f5e70f4a150de1adf2d75b2d835c}{condensate\+\_\+tracking.\+nt}} = \mbox{[}t for f, t, x, y in \mbox{\hyperlink{namespacecondensate__tracking_af31798b721943582023bf77e4e2d0069}{temp}}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_a5d91ed6b806bd1ebbb3d378777bca754}{condensate\+\_\+tracking.\+ny}} = \mbox{[}y for f, t, x, y in \mbox{\hyperlink{namespacecondensate__tracking_af31798b721943582023bf77e4e2d0069}{temp}}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_aa703e14ef96fab40d6b621b94a08ed3f}{condensate\+\_\+tracking.\+nf}} = \mbox{[}f for f, t, x, y in \mbox{\hyperlink{namespacecondensate__tracking_af31798b721943582023bf77e4e2d0069}{temp}}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_a015672f80d60d596bd40fa5a531ed645}{condensate\+\_\+tracking.\+len\+\_\+track}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a984720f20d54d4b7bffd1af24c0dba7e}{condensate\+\_\+tracking.\+bins}}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_a5a19a3772b2be4d34c77df43b312f9c3}{condensate\+\_\+tracking.\+msd\+\_\+all}} = \mbox{[}$\,$\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_aa787bfb4146786f7327d9c054a702858}{condensate\+\_\+tracking.\+fit\+\_\+alpha}} = \mbox{[}$\,$\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_a1a27c027a09a75d96e137340357ccf36}{condensate\+\_\+tracking.\+fit\+\_\+d}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a8038c5ac25f1a1a813b5eb91490b66af}{condensate\+\_\+tracking.\+msd\+\_\+set}} = \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a6319255512a68b484aae60d090928b81}{track\+\_\+decomp}}(\mbox{\hyperlink{namespacecondensate__tracking_a223cdc629ad9e63dd8c372076ee3ca48}{x\+\_\+all}}\mbox{[}\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{]},\mbox{\hyperlink{namespacecondensate__tracking_aebd45a493c5dc85fd7c1b96c6f7f5c23}{y\+\_\+all}}\mbox{[}\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{]},\mbox{\hyperlink{namespacecondensate__tracking_a7ec5de5ebffcca0c8c354968bf4c2e34}{f\+\_\+all}}\mbox{[}\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{]},1.)
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a19a273f7f883321d08cf6484c7cb1683}{condensate\+\_\+tracking.\+tt}} = \mbox{\hyperlink{namespacecondensate__tracking_a8038c5ac25f1a1a813b5eb91490b66af}{msd\+\_\+set}}\mbox{[}\texorpdfstring{$\sim$}{\string~}np.\+isnan(\mbox{\hyperlink{namespacecondensate__tracking_a8038c5ac25f1a1a813b5eb91490b66af}{msd\+\_\+set}})\mbox{]}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_aaa184b32f87dee9b04fc09e4a653c542}{condensate\+\_\+tracking.\+popt}}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a048cfeac088b64d4ba71dcb2c3ad6a04}{condensate\+\_\+tracking.\+pcov}}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_a3bfbf910f5bf713de3fd933684e4c726}{condensate\+\_\+tracking.\+p0}}
+\item 
+\mbox{\hyperlink{namespacecondensate__tracking_ab7ecf4b45ddfd32cfd3eaa9a2ad87281}{condensate\+\_\+tracking.\+maxfev}}
+\item 
+list \mbox{\hyperlink{namespacecondensate__tracking_a7b56d4dadd3d9008670fb319356001c8}{condensate\+\_\+tracking.\+msd\+\_\+t1}} = \mbox{[}$\,$\mbox{]}
+\item 
+float \mbox{\hyperlink{namespacecondensate__tracking_a62b6d5561c4a83de6a039b9b7aeb62b7}{condensate\+\_\+tracking.\+dif\+\_\+x}} = np.\+diff(\mbox{\hyperlink{namespacecondensate__tracking_a223cdc629ad9e63dd8c372076ee3ca48}{x\+\_\+all}}\mbox{[}\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{]})\texorpdfstring{$\ast$}{*}0.\+13
+\item 
+float \mbox{\hyperlink{namespacecondensate__tracking_ae9cb857bc0cec3826008897cfaa78d62}{condensate\+\_\+tracking.\+dif\+\_\+y}} = np.\+diff(\mbox{\hyperlink{namespacecondensate__tracking_aebd45a493c5dc85fd7c1b96c6f7f5c23}{y\+\_\+all}}\mbox{[}\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{]})\texorpdfstring{$\ast$}{*}0.\+13
+\item 
+float \mbox{\hyperlink{namespacecondensate__tracking_abfb7b55c19729a592189f0fc4a5fffe5}{condensate\+\_\+tracking.\+dif\+\_\+r2}} = \mbox{\hyperlink{namespacecondensate__tracking_a62b6d5561c4a83de6a039b9b7aeb62b7}{dif\+\_\+x}}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}2 + \mbox{\hyperlink{namespacecondensate__tracking_ae9cb857bc0cec3826008897cfaa78d62}{dif\+\_\+y}}\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}2
+\end{DoxyCompactItemize}

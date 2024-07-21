@@ -1,0 +1,515 @@
+\doxysection{BP\+\_\+\+TRACKING Namespace Reference}
+\hypertarget{namespace_b_p___t_r_a_c_k_i_n_g}{}\label{namespace_b_p___t_r_a_c_k_i_n_g}\index{BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a41f0c0289116421268fa710e9bb78003}{main}} ()
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a0b991c79d8d322bbab0682f0b10eeffc}{tracking\+\_\+plus\+\_\+save}} (directory\+\_\+path, dir\+\_\+save, file\+\_\+path, file\+\_\+counter)
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a484793024a8cc33d78eeeb2ecf32e291}{sorted\+\_\+alphanumeric}} (data)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a3b6ddefc3e53eec5ea84c4e1286dc226}{DIRECTORY\+\_\+\+MOVIES}} = "{}/Volumes/Baljyot\+\_\+\+HD/SMT\+\_\+\+Olympus/RIF\+\_\+\+TREATMET\+\_\+\+LIVE/20230528/Movie"{}
+\item 
+str \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a860f09610343a35eca9b8006e88ebc8d}{MOVIE\+\_\+\+BASE\+\_\+\+NAME}} = "{}nusa\+\_\+rif"{}
+\item 
+str \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a0717dbe860857bc905dff42fcc56ddab}{DIRECTORY\+\_\+\+SAVE}} = "{}Analysis\+\_\+new"{}
+\item 
+dict \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a0f6b5ff9c02dd8656bbe1c8504419df9}{LINKING\+\_\+\+PARAMETERS}}
+\item 
+dict \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_ae95881061ffa7086eb0a7b741a21aaee}{LOCALIZATION\+\_\+\+PARAMETERS}}
+\item 
+dict \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a7f96dbfd85b3cbe16815da9fc43c3cdd}{FILTERING\+\_\+\+PARAMETERS}}
+\item 
+dict \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_af9bb4c03499fa167be8fce227cc67727}{OUTPUT\+\_\+\+COLUMNS}}
+\item 
+list \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a960b5baf3048211f47b84cb83c7befe4}{OUTPUT\+\_\+\+COLUMNS\+\_\+\+ORDER}}
+\item 
+int \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a9b26bb22e4e2088a1959860abe3fd684}{PAD\+\_\+\+ROWS}} = 3
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a71ea8dc42a01ea0648850cdd65648f3b}{model}} = Model()
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a0a6448645d368c45c35b3ccdb965ee97}{settings}} = Settings(imp)
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a49e61a64b8fea27a1e11a0fb0c737a07}{detector\+Factory}}
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a48c9ae9d9671904019bc8415cf432409}{detector\+Settings}}
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a02483951ededb615a5de2a198a1f81be}{tracker\+Factory}}
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a5245cc36e8213f34c7e535ad5e196720}{tracker\+Settings}}
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a278da54401944acdfa03fbeecb444170}{trackmate}} = Track\+Mate(\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a71ea8dc42a01ea0648850cdd65648f3b}{model}}, \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a0a6448645d368c45c35b3ccdb965ee97}{settings}})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a8aa6bf9eb9b0a24b389babc7c6f74ac9}{ok}} = trackmate.\+check\+Input()
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a6a7a624c46fe97f013fca4856e133296}{ds}} = Display\+Settings\+IO.\+read\+User\+Default()
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a617f5d66f28e8fae3f6083552e442537}{selection\+Model}} = Selection\+Model(\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a71ea8dc42a01ea0648850cdd65648f3b}{model}})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a998422c6353281a642ea9a41808f5ec9}{displayer}} = Hyper\+Stack\+Displayer(\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a71ea8dc42a01ea0648850cdd65648f3b}{model}}, \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a617f5d66f28e8fae3f6083552e442537}{selection\+Model}}, imp,\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a6a7a624c46fe97f013fca4856e133296}{ds}})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a5f13a62358ec9882e2036acbfb79fd6a}{spt\+\_\+m}} = model.\+get\+Spots()
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_ae4d404d4f78e8799a49620444edc68f2}{tracks\+\_\+found}} = model.\+get\+Track\+Model().track\+IDs(True)
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_aef53408d2e705478c275010005ca5f6d}{tot\+\_\+spts}} = spt\+\_\+m.\+get\+NSpots(True)
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_af044d3ea1b107de89bfe94f055c474ee}{fm}} = model.\+get\+Feature\+Model()
+\item 
+list \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_ad0dfbb840ea2a858c6c4da7c97b36c95}{header\+\_\+row}} = \mbox{[}header\+\_\+name for header\+\_\+name in \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a960b5baf3048211f47b84cb83c7befe4}{OUTPUT\+\_\+\+COLUMNS\+\_\+\+ORDER}}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a917c52bda2895ff93fc3ec9478b1beff}{collection\+\_\+spots\+\_\+per\+\_\+track}} = \mbox{[}\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_ad0dfbb840ea2a858c6c4da7c97b36c95}{header\+\_\+row}}\mbox{]}
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_ac9c1f164e9fd86e5248e7a93bc99cbd3}{track}} = model.\+get\+Track\+Model().track\+Spots(id)
+\item 
+int \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a5421cda6000b9f712ddca39e145e193d}{spot\+\_\+counter}} = 0
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a6dcaf19045b79f5610005c39c2c1441c}{sid}} = spot.\+ID()
+\item 
+int \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_af9058714d3ba6fa7f6d772ecdc504b4b}{spot\+\_\+label}} = \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a5421cda6000b9f712ddca39e145e193d}{spot\+\_\+counter}}
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_abe7efcbdff0790254480c7b3d57285e9}{spot\+\_\+\+ID}} = \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a6dcaf19045b79f5610005c39c2c1441c}{sid}}
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a9c48f74b14d85ab42b82954c60a7c78e}{track\+\_\+\+ID}} = id
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a60fdefe37b9b16e649d4f26b91355f86}{spot\+\_\+quality}} = spot.\+get\+Feature(\textquotesingle{}QUALITY\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_afed4d62df83f5d73eb85a5e54eceb18e}{spot\+\_\+x}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+X\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_af15d12193ce6c21ca54244d09780aaef}{spot\+\_\+y}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Y\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a4e9bec5b323dabb1947dc01a3f468dd9}{spot\+\_\+z}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Z\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a132f748a549906ad6a6c2ecb86ed651e}{spot\+\_\+t}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+T\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_af8a9bd29b44165c077f58e6a55f95560}{spot\+\_\+frame}} = spot.\+get\+Feature(\textquotesingle{}FRAME\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_adc8a320a4cb1055199b01b884fb9378a}{spot\+\_\+radius}} = spot.\+get\+Feature(\textquotesingle{}RADIUS\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_aa429e4eb3fb623a79908ed33488bceb3}{spot\+\_\+visibility}} = spot.\+get\+Feature(\textquotesingle{}VISIBILITY\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_afdabd62535840b92e0f81951a3d8d51d}{spot\+\_\+manual\+\_\+spot\+\_\+color}} = spot.\+get\+Feature(\textquotesingle{}MANUAL\+\_\+\+SPOT\+\_\+\+COLOR\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a2b4312951c856c4fb1f0f9bcbd04aa18}{spot\+\_\+mean\+\_\+intensity\+\_\+ch1}} = spot.\+get\+Feature(\textquotesingle{}MEAN\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a26d43d2e6aecb431a8617f885b2461e7}{spot\+\_\+median\+\_\+intensity\+\_\+ch1}} = spot.\+get\+Feature(\textquotesingle{}MEDIAN\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_ad3e9088c13e6b33b1ef80b6fda56bea8}{spot\+\_\+min\+\_\+intensity\+\_\+ch1}} = spot.\+get\+Feature(\textquotesingle{}MIN\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_af1751c64988d3493c603b406fd2d14f0}{spot\+\_\+max\+\_\+intensity\+\_\+ch1}} = spot.\+get\+Feature(\textquotesingle{}MAX\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a8936b9d83703963cfc93bf070d4cbb52}{spot\+\_\+total\+\_\+intensity\+\_\+ch1}} = spot.\+get\+Feature(\textquotesingle{}TOTAL\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a9ff5d926ce8215f3aa6c53dd906d85ed}{spot\+\_\+std\+\_\+intensity\+\_\+ch1}} = spot.\+get\+Feature(\textquotesingle{}STD\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a9daf232257e55a8d527677cd028bf4bf}{spot\+\_\+contrast\+\_\+ch1}} = spot.\+get\+Feature(\textquotesingle{}CONTRAST\+\_\+\+CH1\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a8b3e36df672b48fb388475d3f259ff6a}{spot\+\_\+snr\+\_\+ch1}} = spot.\+get\+Feature(\textquotesingle{}SNR\+\_\+\+CH1\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_ad0ac8801cdb1a7fedb938d599196b6c3}{writer}} = csv.\+writer(f,delimiter=\textquotesingle{},\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a4b09f1ae16a29982179ab750d48e242c}{start\+\_\+time}} = time.\+time()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a41f0c0289116421268fa710e9bb78003}\index{BP\_TRACKING@{BP\_TRACKING}!main@{main}}
+\index{main@{main}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{main()}{main()}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a41f0c0289116421268fa710e9bb78003} 
+BP\+\_\+\+TRACKING.\+main (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a484793024a8cc33d78eeeb2ecf32e291}\index{BP\_TRACKING@{BP\_TRACKING}!sorted\_alphanumeric@{sorted\_alphanumeric}}
+\index{sorted\_alphanumeric@{sorted\_alphanumeric}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{sorted\_alphanumeric()}{sorted\_alphanumeric()}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a484793024a8cc33d78eeeb2ecf32e291} 
+BP\+\_\+\+TRACKING.\+sorted\+\_\+alphanumeric (\begin{DoxyParamCaption}\item[{}]{data}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a0b991c79d8d322bbab0682f0b10eeffc}\index{BP\_TRACKING@{BP\_TRACKING}!tracking\_plus\_save@{tracking\_plus\_save}}
+\index{tracking\_plus\_save@{tracking\_plus\_save}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{tracking\_plus\_save()}{tracking\_plus\_save()}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a0b991c79d8d322bbab0682f0b10eeffc} 
+BP\+\_\+\+TRACKING.\+tracking\+\_\+plus\+\_\+save (\begin{DoxyParamCaption}\item[{}]{directory\+\_\+path}{, }\item[{}]{dir\+\_\+save}{, }\item[{}]{file\+\_\+path}{, }\item[{}]{file\+\_\+counter}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a917c52bda2895ff93fc3ec9478b1beff}\index{BP\_TRACKING@{BP\_TRACKING}!collection\_spots\_per\_track@{collection\_spots\_per\_track}}
+\index{collection\_spots\_per\_track@{collection\_spots\_per\_track}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{collection\_spots\_per\_track}{collection\_spots\_per\_track}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a917c52bda2895ff93fc3ec9478b1beff} 
+list BP\+\_\+\+TRACKING.\+collection\+\_\+spots\+\_\+per\+\_\+track = \mbox{[}\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_ad0dfbb840ea2a858c6c4da7c97b36c95}{header\+\_\+row}}\mbox{]}}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a49e61a64b8fea27a1e11a0fb0c737a07}\index{BP\_TRACKING@{BP\_TRACKING}!detectorFactory@{detectorFactory}}
+\index{detectorFactory@{detectorFactory}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{detectorFactory}{detectorFactory}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a49e61a64b8fea27a1e11a0fb0c737a07} 
+BP\+\_\+\+TRACKING.\+detector\+Factory}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a48c9ae9d9671904019bc8415cf432409}\index{BP\_TRACKING@{BP\_TRACKING}!detectorSettings@{detectorSettings}}
+\index{detectorSettings@{detectorSettings}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{detectorSettings}{detectorSettings}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a48c9ae9d9671904019bc8415cf432409} 
+BP\+\_\+\+TRACKING.\+detector\+Settings}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a3b6ddefc3e53eec5ea84c4e1286dc226}\index{BP\_TRACKING@{BP\_TRACKING}!DIRECTORY\_MOVIES@{DIRECTORY\_MOVIES}}
+\index{DIRECTORY\_MOVIES@{DIRECTORY\_MOVIES}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{DIRECTORY\_MOVIES}{DIRECTORY\_MOVIES}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a3b6ddefc3e53eec5ea84c4e1286dc226} 
+str BP\+\_\+\+TRACKING.\+DIRECTORY\+\_\+\+MOVIES = "{}/Volumes/Baljyot\+\_\+\+HD/SMT\+\_\+\+Olympus/RIF\+\_\+\+TREATMET\+\_\+\+LIVE/20230528/Movie"{}}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a0717dbe860857bc905dff42fcc56ddab}\index{BP\_TRACKING@{BP\_TRACKING}!DIRECTORY\_SAVE@{DIRECTORY\_SAVE}}
+\index{DIRECTORY\_SAVE@{DIRECTORY\_SAVE}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{DIRECTORY\_SAVE}{DIRECTORY\_SAVE}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a0717dbe860857bc905dff42fcc56ddab} 
+str BP\+\_\+\+TRACKING.\+DIRECTORY\+\_\+\+SAVE = "{}Analysis\+\_\+new"{}}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a998422c6353281a642ea9a41808f5ec9}\index{BP\_TRACKING@{BP\_TRACKING}!displayer@{displayer}}
+\index{displayer@{displayer}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{displayer}{displayer}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a998422c6353281a642ea9a41808f5ec9} 
+BP\+\_\+\+TRACKING.\+displayer = Hyper\+Stack\+Displayer(\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a71ea8dc42a01ea0648850cdd65648f3b}{model}}, \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a617f5d66f28e8fae3f6083552e442537}{selection\+Model}}, imp,\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a6a7a624c46fe97f013fca4856e133296}{ds}})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a6a7a624c46fe97f013fca4856e133296}\index{BP\_TRACKING@{BP\_TRACKING}!ds@{ds}}
+\index{ds@{ds}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{ds}{ds}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a6a7a624c46fe97f013fca4856e133296} 
+BP\+\_\+\+TRACKING.\+ds = Display\+Settings\+IO.\+read\+User\+Default()}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a7f96dbfd85b3cbe16815da9fc43c3cdd}\index{BP\_TRACKING@{BP\_TRACKING}!FILTERING\_PARAMETERS@{FILTERING\_PARAMETERS}}
+\index{FILTERING\_PARAMETERS@{FILTERING\_PARAMETERS}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{FILTERING\_PARAMETERS}{FILTERING\_PARAMETERS}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a7f96dbfd85b3cbe16815da9fc43c3cdd} 
+dict BP\+\_\+\+TRACKING.\+FILTERING\+\_\+\+PARAMETERS}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \{}
+\DoxyCodeLine{00002\ \ \ \ \ \textcolor{stringliteral}{"{}QUALITY"{}}:\ \textcolor{keywordtype}{None},}
+\DoxyCodeLine{00003\ \ \ \ \ \textcolor{stringliteral}{"{}MIN\_NUMBER\_SPOTS\_IN\_TRACK"{}}:\ \textcolor{keywordtype}{None},}
+\DoxyCodeLine{00004\ \ \ \ \ \textcolor{stringliteral}{"{}MAX\_NUMBER\_SPOTS\_IN\_TRACK"{}}:\ \textcolor{keywordtype}{None}}
+\DoxyCodeLine{00005\ \}}
+
+\end{DoxyCode}
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_af044d3ea1b107de89bfe94f055c474ee}\index{BP\_TRACKING@{BP\_TRACKING}!fm@{fm}}
+\index{fm@{fm}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{fm}{fm}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_af044d3ea1b107de89bfe94f055c474ee} 
+BP\+\_\+\+TRACKING.\+fm = model.\+get\+Feature\+Model()}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_ad0dfbb840ea2a858c6c4da7c97b36c95}\index{BP\_TRACKING@{BP\_TRACKING}!header\_row@{header\_row}}
+\index{header\_row@{header\_row}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{header\_row}{header\_row}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_ad0dfbb840ea2a858c6c4da7c97b36c95} 
+list BP\+\_\+\+TRACKING.\+header\+\_\+row = \mbox{[}header\+\_\+name for header\+\_\+name in \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a960b5baf3048211f47b84cb83c7befe4}{OUTPUT\+\_\+\+COLUMNS\+\_\+\+ORDER}}\mbox{]}}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a0f6b5ff9c02dd8656bbe1c8504419df9}\index{BP\_TRACKING@{BP\_TRACKING}!LINKING\_PARAMETERS@{LINKING\_PARAMETERS}}
+\index{LINKING\_PARAMETERS@{LINKING\_PARAMETERS}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{LINKING\_PARAMETERS}{LINKING\_PARAMETERS}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a0f6b5ff9c02dd8656bbe1c8504419df9} 
+dict BP\+\_\+\+TRACKING.\+LINKING\+\_\+\+PARAMETERS}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \{}
+\DoxyCodeLine{00002\ \ \ \ \ \textcolor{stringliteral}{'LINKING\_MAX\_DISTANCE'}:\ 5.0,}
+\DoxyCodeLine{00003\ \ \ \ \ \textcolor{stringliteral}{'GAP\_CLOSING\_MAX\_DISTANCE'}:\ 5.0,\ \ \ \ }
+\DoxyCodeLine{00004\ \ \ \ \ \textcolor{stringliteral}{'SPLITTING\_MAX\_DISTANCE'}:\ 0.0,}
+\DoxyCodeLine{00005\ \ \ \ \ \textcolor{stringliteral}{'MERGING\_MAX\_DISTANCE'}:\ 0.0,}
+\DoxyCodeLine{00006\ \ \ \ \ \textcolor{stringliteral}{'MAX\_FRAME\_GAP'}:\ 0,}
+\DoxyCodeLine{00007\ \ \ \ \ \textcolor{stringliteral}{'ALLOW\_TRACK\_SPLITTING'}:\ \textcolor{keyword}{False},}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{stringliteral}{'ALLOW\_TRACK\_MERGING'}:\ \textcolor{keyword}{False}}
+\DoxyCodeLine{00009\ \}}
+
+\end{DoxyCode}
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_ae95881061ffa7086eb0a7b741a21aaee}\index{BP\_TRACKING@{BP\_TRACKING}!LOCALIZATION\_PARAMETERS@{LOCALIZATION\_PARAMETERS}}
+\index{LOCALIZATION\_PARAMETERS@{LOCALIZATION\_PARAMETERS}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{LOCALIZATION\_PARAMETERS}{LOCALIZATION\_PARAMETERS}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_ae95881061ffa7086eb0a7b741a21aaee} 
+dict BP\+\_\+\+TRACKING.\+LOCALIZATION\+\_\+\+PARAMETERS}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \{}
+\DoxyCodeLine{00002\ \ \ \ \ \textcolor{stringliteral}{"{}DETECTOR\_FACTORY"{}}:\ LogDetectorFactory(),}
+\DoxyCodeLine{00003\ \ \ \ \ \textcolor{stringliteral}{'DO\_SUBPIXEL\_LOCALIZATION'}\ :\ \textcolor{keyword}{True},}
+\DoxyCodeLine{00004\ \ \ \ \ \textcolor{stringliteral}{'RADIUS'}\ :\ 2.0,}
+\DoxyCodeLine{00005\ \ \ \ \ \textcolor{stringliteral}{'TARGET\_CHANNEL'}\ :\ 1,}
+\DoxyCodeLine{00006\ \ \ \ \ \textcolor{stringliteral}{'THRESHOLD'}\ :\ 10.0,}
+\DoxyCodeLine{00007\ \ \ \ \ \textcolor{stringliteral}{'DO\_MEDIAN\_FILTERING'}\ :\ \textcolor{keyword}{True},}
+\DoxyCodeLine{00008\ \}}
+
+\end{DoxyCode}
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a71ea8dc42a01ea0648850cdd65648f3b}\index{BP\_TRACKING@{BP\_TRACKING}!model@{model}}
+\index{model@{model}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{model}{model}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a71ea8dc42a01ea0648850cdd65648f3b} 
+BP\+\_\+\+TRACKING.\+model = Model()}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a860f09610343a35eca9b8006e88ebc8d}\index{BP\_TRACKING@{BP\_TRACKING}!MOVIE\_BASE\_NAME@{MOVIE\_BASE\_NAME}}
+\index{MOVIE\_BASE\_NAME@{MOVIE\_BASE\_NAME}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{MOVIE\_BASE\_NAME}{MOVIE\_BASE\_NAME}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a860f09610343a35eca9b8006e88ebc8d} 
+str BP\+\_\+\+TRACKING.\+MOVIE\+\_\+\+BASE\+\_\+\+NAME = "{}nusa\+\_\+rif"{}}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a8aa6bf9eb9b0a24b389babc7c6f74ac9}\index{BP\_TRACKING@{BP\_TRACKING}!ok@{ok}}
+\index{ok@{ok}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{ok}{ok}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a8aa6bf9eb9b0a24b389babc7c6f74ac9} 
+BP\+\_\+\+TRACKING.\+ok = trackmate.\+check\+Input()}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_af9bb4c03499fa167be8fce227cc67727}\index{BP\_TRACKING@{BP\_TRACKING}!OUTPUT\_COLUMNS@{OUTPUT\_COLUMNS}}
+\index{OUTPUT\_COLUMNS@{OUTPUT\_COLUMNS}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{OUTPUT\_COLUMNS}{OUTPUT\_COLUMNS}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_af9bb4c03499fa167be8fce227cc67727} 
+dict BP\+\_\+\+TRACKING.\+OUTPUT\+\_\+\+COLUMNS}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \{}
+\DoxyCodeLine{00002\ \ \ \ \ \textcolor{stringliteral}{'LABEL'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00003\ \ \ \ \ \textcolor{stringliteral}{'ID'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00004\ \ \ \ \ \textcolor{stringliteral}{'TRACK\_ID'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00005\ \ \ \ \ \textcolor{stringliteral}{'QUALITY'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00006\ \ \ \ \ \textcolor{stringliteral}{'POSITION\_X'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00007\ \ \ \ \ \textcolor{stringliteral}{'POSITION\_Y'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00008\ \ \ \ \ \textcolor{stringliteral}{'POSITION\_Z'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{stringliteral}{'POSITION\_T'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{stringliteral}{'FRAME'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00011\ \ \ \ \ \textcolor{stringliteral}{'RADIUS'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00012\ \ \ \ \ \textcolor{stringliteral}{'VISIBILITY'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{stringliteral}{'MANUAL\_SPOT\_COLOR'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{stringliteral}{'MEAN\_INTENSITY\_CH1'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{stringliteral}{'MEDIAN\_INTENSITY\_CH1'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{stringliteral}{'MIN\_INTENSITY\_CH1'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{stringliteral}{'MAX\_INTENSITY\_CH1'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{stringliteral}{'TOTAL\_INTENSITY\_CH1'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{stringliteral}{'STD\_INTENSITY\_CH1'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{stringliteral}{'CONTRAST\_CH1'}:\textcolor{keyword}{True},}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{stringliteral}{'SNR\_CH1'}:\textcolor{keyword}{True}}
+\DoxyCodeLine{00022\ \}}
+
+\end{DoxyCode}
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a960b5baf3048211f47b84cb83c7befe4}\index{BP\_TRACKING@{BP\_TRACKING}!OUTPUT\_COLUMNS\_ORDER@{OUTPUT\_COLUMNS\_ORDER}}
+\index{OUTPUT\_COLUMNS\_ORDER@{OUTPUT\_COLUMNS\_ORDER}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{OUTPUT\_COLUMNS\_ORDER}{OUTPUT\_COLUMNS\_ORDER}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a960b5baf3048211f47b84cb83c7befe4} 
+list BP\+\_\+\+TRACKING.\+OUTPUT\+\_\+\+COLUMNS\+\_\+\+ORDER}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ [}
+\DoxyCodeLine{00002\ \ \ \ \ \textcolor{stringliteral}{'LABEL'},\ \textcolor{stringliteral}{'ID'},\ \textcolor{stringliteral}{'TRACK\_ID'},\ \textcolor{stringliteral}{'QUALITY'},\ \textcolor{stringliteral}{'POSITION\_X'},\ \textcolor{stringliteral}{'POSITION\_Y'},\ \textcolor{stringliteral}{'POSITION\_Z'},\ \textcolor{stringliteral}{'POSITION\_T'},\ \textcolor{stringliteral}{'FRAME'},}
+\DoxyCodeLine{00003\ \ \ \ \ \textcolor{stringliteral}{'RADIUS'},\ \textcolor{stringliteral}{'VISIBILITY'},\ \textcolor{stringliteral}{'MANUAL\_SPOT\_COLOR'},\ \textcolor{stringliteral}{'MEAN\_INTENSITY\_CH1'},\ \textcolor{stringliteral}{'MEDIAN\_INTENSITY\_CH1'},\ \textcolor{stringliteral}{'MIN\_INTENSITY\_CH1'},\ }
+\DoxyCodeLine{00004\ \ \ \ \ \textcolor{stringliteral}{'MAX\_INTENSITY\_CH1'},\ \textcolor{stringliteral}{'TOTAL\_INTENSITY\_CH1'},\ \textcolor{stringliteral}{'STD\_INTENSITY\_CH1'},\ \textcolor{stringliteral}{'CONTRAST\_CH1'},\ \textcolor{stringliteral}{'SNR\_CH1'}}
+\DoxyCodeLine{00005\ ]}
+
+\end{DoxyCode}
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a9b26bb22e4e2088a1959860abe3fd684}\index{BP\_TRACKING@{BP\_TRACKING}!PAD\_ROWS@{PAD\_ROWS}}
+\index{PAD\_ROWS@{PAD\_ROWS}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{PAD\_ROWS}{PAD\_ROWS}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a9b26bb22e4e2088a1959860abe3fd684} 
+int BP\+\_\+\+TRACKING.\+PAD\+\_\+\+ROWS = 3}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a617f5d66f28e8fae3f6083552e442537}\index{BP\_TRACKING@{BP\_TRACKING}!selectionModel@{selectionModel}}
+\index{selectionModel@{selectionModel}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{selectionModel}{selectionModel}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a617f5d66f28e8fae3f6083552e442537} 
+BP\+\_\+\+TRACKING.\+selection\+Model = Selection\+Model(\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a71ea8dc42a01ea0648850cdd65648f3b}{model}})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a0a6448645d368c45c35b3ccdb965ee97}\index{BP\_TRACKING@{BP\_TRACKING}!settings@{settings}}
+\index{settings@{settings}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{settings}{settings}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a0a6448645d368c45c35b3ccdb965ee97} 
+BP\+\_\+\+TRACKING.\+settings = Settings(imp)}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a6dcaf19045b79f5610005c39c2c1441c}\index{BP\_TRACKING@{BP\_TRACKING}!sid@{sid}}
+\index{sid@{sid}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{sid}{sid}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a6dcaf19045b79f5610005c39c2c1441c} 
+BP\+\_\+\+TRACKING.\+sid = spot.\+ID()}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a9daf232257e55a8d527677cd028bf4bf}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_contrast\_ch1@{spot\_contrast\_ch1}}
+\index{spot\_contrast\_ch1@{spot\_contrast\_ch1}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_contrast\_ch1}{spot\_contrast\_ch1}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a9daf232257e55a8d527677cd028bf4bf} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+contrast\+\_\+ch1 = spot.\+get\+Feature(\textquotesingle{}CONTRAST\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a5421cda6000b9f712ddca39e145e193d}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_counter@{spot\_counter}}
+\index{spot\_counter@{spot\_counter}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_counter}{spot\_counter}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a5421cda6000b9f712ddca39e145e193d} 
+int BP\+\_\+\+TRACKING.\+spot\+\_\+counter = 0}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_af8a9bd29b44165c077f58e6a55f95560}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_frame@{spot\_frame}}
+\index{spot\_frame@{spot\_frame}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_frame}{spot\_frame}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_af8a9bd29b44165c077f58e6a55f95560} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+frame = spot.\+get\+Feature(\textquotesingle{}FRAME\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_abe7efcbdff0790254480c7b3d57285e9}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_ID@{spot\_ID}}
+\index{spot\_ID@{spot\_ID}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_ID}{spot\_ID}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_abe7efcbdff0790254480c7b3d57285e9} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+\+ID = \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a6dcaf19045b79f5610005c39c2c1441c}{sid}}}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_af9058714d3ba6fa7f6d772ecdc504b4b}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_label@{spot\_label}}
+\index{spot\_label@{spot\_label}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_label}{spot\_label}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_af9058714d3ba6fa7f6d772ecdc504b4b} 
+int BP\+\_\+\+TRACKING.\+spot\+\_\+label = \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a5421cda6000b9f712ddca39e145e193d}{spot\+\_\+counter}}}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_afdabd62535840b92e0f81951a3d8d51d}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_manual\_spot\_color@{spot\_manual\_spot\_color}}
+\index{spot\_manual\_spot\_color@{spot\_manual\_spot\_color}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_manual\_spot\_color}{spot\_manual\_spot\_color}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_afdabd62535840b92e0f81951a3d8d51d} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+manual\+\_\+spot\+\_\+color = spot.\+get\+Feature(\textquotesingle{}MANUAL\+\_\+\+SPOT\+\_\+\+COLOR\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_af1751c64988d3493c603b406fd2d14f0}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_max\_intensity\_ch1@{spot\_max\_intensity\_ch1}}
+\index{spot\_max\_intensity\_ch1@{spot\_max\_intensity\_ch1}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_max\_intensity\_ch1}{spot\_max\_intensity\_ch1}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_af1751c64988d3493c603b406fd2d14f0} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+max\+\_\+intensity\+\_\+ch1 = spot.\+get\+Feature(\textquotesingle{}MAX\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a2b4312951c856c4fb1f0f9bcbd04aa18}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_mean\_intensity\_ch1@{spot\_mean\_intensity\_ch1}}
+\index{spot\_mean\_intensity\_ch1@{spot\_mean\_intensity\_ch1}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_mean\_intensity\_ch1}{spot\_mean\_intensity\_ch1}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a2b4312951c856c4fb1f0f9bcbd04aa18} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+mean\+\_\+intensity\+\_\+ch1 = spot.\+get\+Feature(\textquotesingle{}MEAN\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a26d43d2e6aecb431a8617f885b2461e7}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_median\_intensity\_ch1@{spot\_median\_intensity\_ch1}}
+\index{spot\_median\_intensity\_ch1@{spot\_median\_intensity\_ch1}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_median\_intensity\_ch1}{spot\_median\_intensity\_ch1}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a26d43d2e6aecb431a8617f885b2461e7} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+median\+\_\+intensity\+\_\+ch1 = spot.\+get\+Feature(\textquotesingle{}MEDIAN\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_ad3e9088c13e6b33b1ef80b6fda56bea8}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_min\_intensity\_ch1@{spot\_min\_intensity\_ch1}}
+\index{spot\_min\_intensity\_ch1@{spot\_min\_intensity\_ch1}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_min\_intensity\_ch1}{spot\_min\_intensity\_ch1}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_ad3e9088c13e6b33b1ef80b6fda56bea8} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+min\+\_\+intensity\+\_\+ch1 = spot.\+get\+Feature(\textquotesingle{}MIN\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a60fdefe37b9b16e649d4f26b91355f86}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_quality@{spot\_quality}}
+\index{spot\_quality@{spot\_quality}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_quality}{spot\_quality}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a60fdefe37b9b16e649d4f26b91355f86} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+quality = spot.\+get\+Feature(\textquotesingle{}QUALITY\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_adc8a320a4cb1055199b01b884fb9378a}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_radius@{spot\_radius}}
+\index{spot\_radius@{spot\_radius}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_radius}{spot\_radius}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_adc8a320a4cb1055199b01b884fb9378a} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+radius = spot.\+get\+Feature(\textquotesingle{}RADIUS\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a8b3e36df672b48fb388475d3f259ff6a}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_snr\_ch1@{spot\_snr\_ch1}}
+\index{spot\_snr\_ch1@{spot\_snr\_ch1}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_snr\_ch1}{spot\_snr\_ch1}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a8b3e36df672b48fb388475d3f259ff6a} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+snr\+\_\+ch1 = spot.\+get\+Feature(\textquotesingle{}SNR\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a9ff5d926ce8215f3aa6c53dd906d85ed}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_std\_intensity\_ch1@{spot\_std\_intensity\_ch1}}
+\index{spot\_std\_intensity\_ch1@{spot\_std\_intensity\_ch1}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_std\_intensity\_ch1}{spot\_std\_intensity\_ch1}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a9ff5d926ce8215f3aa6c53dd906d85ed} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+std\+\_\+intensity\+\_\+ch1 = spot.\+get\+Feature(\textquotesingle{}STD\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a132f748a549906ad6a6c2ecb86ed651e}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_t@{spot\_t}}
+\index{spot\_t@{spot\_t}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_t}{spot\_t}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a132f748a549906ad6a6c2ecb86ed651e} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+t = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+T\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a8936b9d83703963cfc93bf070d4cbb52}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_total\_intensity\_ch1@{spot\_total\_intensity\_ch1}}
+\index{spot\_total\_intensity\_ch1@{spot\_total\_intensity\_ch1}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_total\_intensity\_ch1}{spot\_total\_intensity\_ch1}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a8936b9d83703963cfc93bf070d4cbb52} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+total\+\_\+intensity\+\_\+ch1 = spot.\+get\+Feature(\textquotesingle{}TOTAL\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_aa429e4eb3fb623a79908ed33488bceb3}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_visibility@{spot\_visibility}}
+\index{spot\_visibility@{spot\_visibility}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_visibility}{spot\_visibility}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_aa429e4eb3fb623a79908ed33488bceb3} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+visibility = spot.\+get\+Feature(\textquotesingle{}VISIBILITY\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_afed4d62df83f5d73eb85a5e54eceb18e}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_x@{spot\_x}}
+\index{spot\_x@{spot\_x}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_x}{spot\_x}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_afed4d62df83f5d73eb85a5e54eceb18e} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+x = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+X\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_af15d12193ce6c21ca54244d09780aaef}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_y@{spot\_y}}
+\index{spot\_y@{spot\_y}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_y}{spot\_y}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_af15d12193ce6c21ca54244d09780aaef} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+y = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Y\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a4e9bec5b323dabb1947dc01a3f468dd9}\index{BP\_TRACKING@{BP\_TRACKING}!spot\_z@{spot\_z}}
+\index{spot\_z@{spot\_z}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spot\_z}{spot\_z}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a4e9bec5b323dabb1947dc01a3f468dd9} 
+BP\+\_\+\+TRACKING.\+spot\+\_\+z = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Z\textquotesingle{})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a5f13a62358ec9882e2036acbfb79fd6a}\index{BP\_TRACKING@{BP\_TRACKING}!spt\_m@{spt\_m}}
+\index{spt\_m@{spt\_m}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{spt\_m}{spt\_m}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a5f13a62358ec9882e2036acbfb79fd6a} 
+BP\+\_\+\+TRACKING.\+spt\+\_\+m = model.\+get\+Spots()}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a4b09f1ae16a29982179ab750d48e242c}\index{BP\_TRACKING@{BP\_TRACKING}!start\_time@{start\_time}}
+\index{start\_time@{start\_time}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{start\_time}{start\_time}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a4b09f1ae16a29982179ab750d48e242c} 
+BP\+\_\+\+TRACKING.\+start\+\_\+time = time.\+time()}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_aef53408d2e705478c275010005ca5f6d}\index{BP\_TRACKING@{BP\_TRACKING}!tot\_spts@{tot\_spts}}
+\index{tot\_spts@{tot\_spts}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{tot\_spts}{tot\_spts}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_aef53408d2e705478c275010005ca5f6d} 
+BP\+\_\+\+TRACKING.\+tot\+\_\+spts = spt\+\_\+m.\+get\+NSpots(True)}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_ac9c1f164e9fd86e5248e7a93bc99cbd3}\index{BP\_TRACKING@{BP\_TRACKING}!track@{track}}
+\index{track@{track}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{track}{track}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_ac9c1f164e9fd86e5248e7a93bc99cbd3} 
+BP\+\_\+\+TRACKING.\+track = model.\+get\+Track\+Model().track\+Spots(id)}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a9c48f74b14d85ab42b82954c60a7c78e}\index{BP\_TRACKING@{BP\_TRACKING}!track\_ID@{track\_ID}}
+\index{track\_ID@{track\_ID}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{track\_ID}{track\_ID}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a9c48f74b14d85ab42b82954c60a7c78e} 
+BP\+\_\+\+TRACKING.\+track\+\_\+\+ID = id}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a02483951ededb615a5de2a198a1f81be}\index{BP\_TRACKING@{BP\_TRACKING}!trackerFactory@{trackerFactory}}
+\index{trackerFactory@{trackerFactory}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{trackerFactory}{trackerFactory}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a02483951ededb615a5de2a198a1f81be} 
+BP\+\_\+\+TRACKING.\+tracker\+Factory}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a5245cc36e8213f34c7e535ad5e196720}\index{BP\_TRACKING@{BP\_TRACKING}!trackerSettings@{trackerSettings}}
+\index{trackerSettings@{trackerSettings}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{trackerSettings}{trackerSettings}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a5245cc36e8213f34c7e535ad5e196720} 
+BP\+\_\+\+TRACKING.\+tracker\+Settings}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_a278da54401944acdfa03fbeecb444170}\index{BP\_TRACKING@{BP\_TRACKING}!trackmate@{trackmate}}
+\index{trackmate@{trackmate}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{trackmate}{trackmate}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_a278da54401944acdfa03fbeecb444170} 
+BP\+\_\+\+TRACKING.\+trackmate = Track\+Mate(\mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a71ea8dc42a01ea0648850cdd65648f3b}{model}}, \mbox{\hyperlink{namespace_b_p___t_r_a_c_k_i_n_g_a0a6448645d368c45c35b3ccdb965ee97}{settings}})}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_ae4d404d4f78e8799a49620444edc68f2}\index{BP\_TRACKING@{BP\_TRACKING}!tracks\_found@{tracks\_found}}
+\index{tracks\_found@{tracks\_found}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{tracks\_found}{tracks\_found}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_ae4d404d4f78e8799a49620444edc68f2} 
+BP\+\_\+\+TRACKING.\+tracks\+\_\+found = model.\+get\+Track\+Model().track\+IDs(True)}
+
+\Hypertarget{namespace_b_p___t_r_a_c_k_i_n_g_ad0ac8801cdb1a7fedb938d599196b6c3}\index{BP\_TRACKING@{BP\_TRACKING}!writer@{writer}}
+\index{writer@{writer}!BP\_TRACKING@{BP\_TRACKING}}
+\doxysubsubsection{\texorpdfstring{writer}{writer}}
+{\footnotesize\ttfamily \label{namespace_b_p___t_r_a_c_k_i_n_g_ad0ac8801cdb1a7fedb938d599196b6c3} 
+BP\+\_\+\+TRACKING.\+writer = csv.\+writer(f,delimiter=\textquotesingle{},\textquotesingle{})}
+

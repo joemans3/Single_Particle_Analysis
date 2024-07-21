@@ -1,0 +1,54 @@
+\doxysection{/\+Users/baljyot/\+Documents/\+CODE/\+Git\+Hub\+\_\+t2/\+PHD/\+Baljyot\+\_\+\+EXP\+\_\+\+RPOC/\+Scripts/\+SMT/\+SMT\+\_\+\+Analysis\+\_\+\+BP/fiji/\+OLD\+\_\+\+METHODS/trackmate\+\_\+exp.py File Reference}
+\hypertarget{trackmate__exp_8py}{}\label{trackmate__exp_8py}\index{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/fiji/OLD\_METHODS/trackmate\_exp.py@{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/fiji/OLD\_METHODS/trackmate\_exp.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacetrackmate__exp}{trackmate\+\_\+exp}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_aac7c8417d42523a128b3d2154feaf51d}{trackmate\+\_\+exp.\+imp}} = IJ.\+open\+Image(\textquotesingle{}/Users/baljyot/Desktop/Baljyot\+\_\+\+EXP\+\_\+\+RPOC/Scripts/0.tif\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{trackmate\+\_\+exp.\+model}} = Model()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a89680314031999d532fb5f89382e8192}{trackmate\+\_\+exp.\+settings}} = Settings()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a890101f2289fcee35a48aa345dcaebf3}{trackmate\+\_\+exp.\+detector\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a5b9d0267e84514ac29c7c04d94def1df}{trackmate\+\_\+exp.\+detector\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a15f98df151e1534bba647c9c2bb5211a}{trackmate\+\_\+exp.\+tracker\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a267767bc28a330a5e0095a0ce315a479}{trackmate\+\_\+exp.\+tracker\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a0cab64cfa3385977458614b8dee9ab4c}{trackmate\+\_\+exp.\+initial\+Spot\+Filter\+Value}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a8aba2b5ce80fb01e2d4d3a3c331a1c70}{trackmate\+\_\+exp.\+trackmate}} = Track\+Mate(\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}}, \mbox{\hyperlink{namespacetrackmate__exp_a89680314031999d532fb5f89382e8192}{settings}})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_afc0d5a3d4e5e987f4fd2e4f3f8976cfa}{trackmate\+\_\+exp.\+ok}} = trackmate.\+check\+Input()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a43746863c00a52d2419c0c35f2fab626}{trackmate\+\_\+exp.\+selection\+Model}} = Selection\+Model(\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_aac888519a6d4999cf449b83921c0cb55}{trackmate\+\_\+exp.\+displayer}} = Hyper\+Stack\+Displayer(\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}}, \mbox{\hyperlink{namespacetrackmate__exp_a43746863c00a52d2419c0c35f2fab626}{selection\+Model}}, \mbox{\hyperlink{namespacetrackmate__exp_aac7c8417d42523a128b3d2154feaf51d}{imp}})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_ab06ffd4c0712b4e5bcde32ba3f9ab218}{trackmate\+\_\+exp.\+fm}} = model.\+get\+Feature\+Model()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_af953986d630930e0d5c910769d2c3959}{trackmate\+\_\+exp.\+v}} = fm.\+get\+Track\+Feature(id, \textquotesingle{}TRACK\+\_\+\+MEAN\+\_\+\+SPEED\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a9d56e3cd4927746d6b21e66adb095cb1}{trackmate\+\_\+exp.\+track}} = model.\+get\+Track\+Model().track\+Spots(id)
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_aea375247c18023b990ea666379913f7d}{trackmate\+\_\+exp.\+sid}} = spot.\+ID()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a6d729bb99defedbc9232db914e847bfb}{trackmate\+\_\+exp.\+x}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+X\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_aae9053693a52168254bf4ac44b87c6e1}{trackmate\+\_\+exp.\+y}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Y\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_ab408d1ed5a25eea6b98d982497d49f83}{trackmate\+\_\+exp.\+t}} = spot.\+get\+Feature(\textquotesingle{}FRAME\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_af996929dffbc4a7545277d9df6c1d086}{trackmate\+\_\+exp.\+q}} = spot.\+get\+Feature(\textquotesingle{}QUALITY\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a9e9497636e1e32bcef3352c2e957e4a8}{trackmate\+\_\+exp.\+snr}} = spot.\+get\+Feature(\textquotesingle{}SNR\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_ab2dd0305f61e8812b7cf02969f14a4e9}{trackmate\+\_\+exp.\+mean}} = spot.\+get\+Feature(\textquotesingle{}MEAN\+\_\+\+INTENSITY\textquotesingle{})
+\end{DoxyCompactItemize}

@@ -1,0 +1,86 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Movie\+\_\+frame Class Reference}
+\hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame}{}\label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a26c3feceb8691acb56c5e0f1062d2b5d}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a1218bdf74035fe80f94bf7987d9800fb}{Movie\+\_\+\+ID}}, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_aae8bf9ff9442ba6c256a57e30f30f764}{Movie\+\_\+name}}, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a8382b2baff16c04c3aaae8cf31ba44fc}{Movie\+\_\+location}}=0, nucleoid\+\_\+location=0)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a1218bdf74035fe80f94bf7987d9800fb}{Movie\+\_\+\+ID}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_aae8bf9ff9442ba6c256a57e30f30f764}{Movie\+\_\+name}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a8382b2baff16c04c3aaae8cf31ba44fc}{Movie\+\_\+location}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_ac98be281450be17a871f9da82f6774c7}{Movie\+\_\+nucleoid}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_aa9d5f4e147e9244734be65b23ee85055}{Cells}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}    Frame of reference for one movie
+
+    Parameters
+    ----------
+    __init__:
+        Movie_ID: int
+            unique identifier for each movie
+        Movie_name: string
+            name of the movie, used to find the movie. This is the name of the movie file!
+        Movie_location: string or list of strings, optional (size is the number of frames \n 
+            (i.e 5 for 5 subframes from a 5000 frame movie with 1000 per subframe))
+            This is the sub segmented frames of the movie. This is just a list of strings that are the location of the frames images
+            nucleoid_location: string, optional
+            location of the image that shows the nucleoid, by default 0
+    Cells: dictionary
+        dictionary of Cell class objects belonging to this Movie, identified by a label (0,1,...,n)\end{DoxyVerb}
+ 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a26c3feceb8691acb56c5e0f1062d2b5d}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a26c3feceb8691acb56c5e0f1062d2b5d} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Movie\+\_\+frame.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{Movie\+\_\+\+ID}{, }\item[{}]{Movie\+\_\+name}{, }\item[{}]{Movie\+\_\+location}{ = {\ttfamily 0}, }\item[{}]{nucleoid\+\_\+location}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_aa9d5f4e147e9244734be65b23ee85055}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}!Cells@{Cells}}
+\index{Cells@{Cells}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}}
+\doxysubsubsection{\texorpdfstring{Cells}{Cells}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_aa9d5f4e147e9244734be65b23ee85055} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Movie\+\_\+frame.\+Cells}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a1218bdf74035fe80f94bf7987d9800fb}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}!Movie\_ID@{Movie\_ID}}
+\index{Movie\_ID@{Movie\_ID}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}}
+\doxysubsubsection{\texorpdfstring{Movie\_ID}{Movie\_ID}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a1218bdf74035fe80f94bf7987d9800fb} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Movie\+\_\+frame.\+Movie\+\_\+\+ID}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a8382b2baff16c04c3aaae8cf31ba44fc}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}!Movie\_location@{Movie\_location}}
+\index{Movie\_location@{Movie\_location}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}}
+\doxysubsubsection{\texorpdfstring{Movie\_location}{Movie\_location}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_a8382b2baff16c04c3aaae8cf31ba44fc} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Movie\+\_\+frame.\+Movie\+\_\+location}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_aae8bf9ff9442ba6c256a57e30f30f764}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}!Movie\_name@{Movie\_name}}
+\index{Movie\_name@{Movie\_name}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}}
+\doxysubsubsection{\texorpdfstring{Movie\_name}{Movie\_name}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_aae8bf9ff9442ba6c256a57e30f30f764} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Movie\+\_\+frame.\+Movie\+\_\+name}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_ac98be281450be17a871f9da82f6774c7}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}!Movie\_nucleoid@{Movie\_nucleoid}}
+\index{Movie\_nucleoid@{Movie\_nucleoid}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Movie\_frame}}
+\doxysubsubsection{\texorpdfstring{Movie\_nucleoid}{Movie\_nucleoid}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame_ac98be281450be17a871f9da82f6774c7} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Movie\+\_\+frame.\+Movie\+\_\+nucleoid}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/baljyot/\+Documents/\+CODE/\+Git\+Hub\+\_\+t2/\+PHD/\+Baljyot\+\_\+\+EXP\+\_\+\+RPOC/\+Scripts/\+SMT/\+SMT\+\_\+\+Analysis\+\_\+\+BP/databases/\mbox{\hyperlink{trajectory__analysis__script_8py}{trajectory\+\_\+analysis\+\_\+script.\+py}}\end{DoxyCompactItemize}

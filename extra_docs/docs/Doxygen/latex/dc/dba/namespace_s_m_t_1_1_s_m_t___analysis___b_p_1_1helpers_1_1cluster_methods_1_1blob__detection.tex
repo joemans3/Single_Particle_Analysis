@@ -1,0 +1,108 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+cluster\+Methods.\+blob\+\_\+detection Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection}\index{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_1_1blob__detection}{blob\+\_\+detection}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a832d1895ca0b3be1ec853c0c4381ef8d}{identity}} (x)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a55cadb22c1c076a7ab68efdcb5a47fff}{iso\+\_\+gaus}} (p, x, y, z)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a503e8faff6aad555b19e9b259ce65801}{residuals\+\_\+gaus2d}} (p, x, y, z, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_ab7ca0d4836ac8048fc405063b57276b4}{gaussian2D}} (x, y, cen\+\_\+x, cen\+\_\+y, sig\+\_\+x, sig\+\_\+y, offset, height, kwargs=\{\})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a5f8763de8b6600d8aded2af761584543}{FWHM\+\_\+\+FACTOR}} = 2.\texorpdfstring{$\ast$}{*}(np.\+log(2.+np.\+sqrt(3)))
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}Documentation for blob_detection.py
+
+This file contains the class blob_detection which is used to detect blobs in an image. It uses the skimage.blob_log() function to detect blobs in an image.
+It also has the option to fit the blobs with a 2D gaussian function.
+The class also has the option to fit the blobs with a 2D gaussian function. This is done by using the lmfit package to fit the blobs with a 2D gaussian function.
+Detection can be done using the skimage.blob_log() function or a custom function. The custom function is a modified version of the skimage.blob_log() function. Named blob_logv2()
+
+Classes:
+--------
+blob_detection: see class docstring for more info, this is the main class that is used to detect blobs in an image
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_ab7ca0d4836ac8048fc405063b57276b4}\index{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}!gaussian2D@{gaussian2D}}
+\index{gaussian2D@{gaussian2D}!SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}}
+\doxysubsubsection{\texorpdfstring{gaussian2D()}{gaussian2D()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_ab7ca0d4836ac8048fc405063b57276b4} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+cluster\+Methods.\+blob\+\_\+detection.\+gaussian2D (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{cen\+\_\+x}{, }\item[{}]{cen\+\_\+y}{, }\item[{}]{sig\+\_\+x}{, }\item[{}]{sig\+\_\+y}{, }\item[{}]{offset}{, }\item[{}]{height}{, }\item[{}]{kwargs}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} 2d gaussian anistropic \end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a832d1895ca0b3be1ec853c0c4381ef8d}\index{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}!identity@{identity}}
+\index{identity@{identity}!SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}}
+\doxysubsubsection{\texorpdfstring{identity()}{identity()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a832d1895ca0b3be1ec853c0c4381ef8d} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+cluster\+Methods.\+blob\+\_\+detection.\+identity (\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}identity function, returns the input
+
+Parameters:
+-----------
+x : any
+    input to be returned
+
+Returns:
+--------
+x : any
+    input
+
+Uses:
+-----
+identity(x) = x
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a55cadb22c1c076a7ab68efdcb5a47fff}\index{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}!iso\_gaus@{iso\_gaus}}
+\index{iso\_gaus@{iso\_gaus}!SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}}
+\doxysubsubsection{\texorpdfstring{iso\_gaus()}{iso\_gaus()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a55cadb22c1c076a7ab68efdcb5a47fff} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+cluster\+Methods.\+blob\+\_\+detection.\+iso\+\_\+gaus (\begin{DoxyParamCaption}\item[{}]{p}{, }\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{z}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a503e8faff6aad555b19e9b259ce65801}\index{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}!residuals\_gaus2d@{residuals\_gaus2d}}
+\index{residuals\_gaus2d@{residuals\_gaus2d}!SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}}
+\doxysubsubsection{\texorpdfstring{residuals\_gaus2d()}{residuals\_gaus2d()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a503e8faff6aad555b19e9b259ce65801} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+cluster\+Methods.\+blob\+\_\+detection.\+residuals\+\_\+gaus2d (\begin{DoxyParamCaption}\item[{}]{p}{, }\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{z}{, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Residual calculator for a 2D gaussian for lmfit.minimize
+
+Parameters
+----------
+p : Parameter() object
+    Parameters 
+x : independent variable
+    x values
+y : independent variable
+    y values
+z : z = f(x,y)
+    function values at x,y. Where function is the one we are trying to fit
+
+Returns
+-------
+array-like
+    residuals of the function z-f(x,y) (2D gaussian)
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a5f8763de8b6600d8aded2af761584543}\index{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}!FWHM\_FACTOR@{FWHM\_FACTOR}}
+\index{FWHM\_FACTOR@{FWHM\_FACTOR}!SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection@{SMT.SMT\_Analysis\_BP.helpers.clusterMethods.blob\_detection}}
+\doxysubsubsection{\texorpdfstring{FWHM\_FACTOR}{FWHM\_FACTOR}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1cluster_methods_1_1blob__detection_a5f8763de8b6600d8aded2af761584543} 
+int SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+cluster\+Methods.\+blob\+\_\+detection.\+FWHM\+\_\+\+FACTOR = 2.\texorpdfstring{$\ast$}{*}(np.\+log(2.+np.\+sqrt(3)))}
+

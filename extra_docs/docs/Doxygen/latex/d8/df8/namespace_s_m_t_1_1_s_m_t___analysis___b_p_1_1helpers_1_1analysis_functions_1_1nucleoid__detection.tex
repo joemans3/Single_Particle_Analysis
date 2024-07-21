@@ -1,0 +1,299 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+nucleoid\+\_\+detection Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a2f0029959265db2d96e4b9fcaa12c4f3}{find\+\_\+nuc}} (img, str typee, regions=True, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_ad72ba7cb2d925b8d7c8c081bb5160bb9}{get\+\_\+training\+\_\+set}} (img)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a890d45b26fc2c382ce3f422c11c906b1}{get\+\_\+region}} (image, type=regionprops, connectivity=2, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kawrgs)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a10a46d2ec6b1a4de37b62f90700ed2ef}{plot\+\_\+regions}} (regions, fig, ax, colorbar\+\_\+mappable, plot=False)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+dict \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a73aa4e24548e0285d8a3c19157e234f0}{TESTED\+\_\+\+DICT}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}This module contains the functions used to detect the nucleoids in the images
+
+It uses the Random Forest Classifier to detect the nucleoids in the images and then uses the regionprops function to get the properties of the nucleoids
+
+Author: Baljyot Singh Parmar
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a2f0029959265db2d96e4b9fcaa12c4f3}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}!find\_nuc@{find\_nuc}}
+\index{find\_nuc@{find\_nuc}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}}
+\doxysubsubsection{\texorpdfstring{find\_nuc()}{find\_nuc()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a2f0029959265db2d96e4b9fcaa12c4f3} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+nucleoid\+\_\+detection.\+find\+\_\+nuc (\begin{DoxyParamCaption}\item[{}]{img}{, }\item[{str}]{typee}{, }\item[{}]{regions}{ = {\ttfamily True}, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters:
+-----------
+img : 2D array-like
+    image to be segmented
+typee : str
+    type of image to be segmented. These should have keys in TESTED_DICT. If not then raise error that the "typee" is not supported
+regions : bool, default = True
+    if True then return the regionprops of the segmented image
+**kwargs : dict
+    keyword arguments to be passed to the function. These are:
+        connectivity : int, default = 2
+            connectivity of the image. This is passed to the regionprops function   
+        sigma_max : int, default = 10
+            maximum sigma value to be used in the multiscale_basic_features function
+        sigma_min : int, default = 1
+            minimum sigma value to be used in the multiscale_basic_features function
+        given_type : dict | str, default = None (dict if passing thresholds, str if passing Cell wise threshold)
+            dictionary containing the values of the thresholds. If not given then the values are taken from TESTED_DICT
+            if str:
+                if "Threshold_23" then use a cell wide threshold where nucleoid_threshold = (2/3)*max(img) and background_threshold = 2000
+                if "Threshold_12" then use a cell wide threshold where nucleoid_threshold = (1/2)*max(img) and background_threshold = 2000
+                if "Threshold_13" then use a cell wide threshold where nucleoid_threshold = (1/3)*max(img) and background_threshold = 2000
+                if "Threshold_34" then use a cell wide threshold where nucleoid_threshold = (3/4)*max(img) and background_threshold = 2000
+Returns:
+--------
+result : 2D array-like
+    segmented image. This is a mask with at max 3 values. 2 for background, 1 for nucleoid and 3 for rest of the cell
+region_result : list of RegionProperties
+    list of region properties of the segmented image. This is returned only if regions = True\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a890d45b26fc2c382ce3f422c11c906b1}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}!get\_region@{get\_region}}
+\index{get\_region@{get\_region}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}}
+\doxysubsubsection{\texorpdfstring{get\_region()}{get\_region()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a890d45b26fc2c382ce3f422c11c906b1} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+nucleoid\+\_\+detection.\+get\+\_\+region (\begin{DoxyParamCaption}\item[{}]{image}{, }\item[{}]{type}{ = {\ttfamily regionprops}, }\item[{}]{connectivity}{ = {\ttfamily 2}, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kawrgs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+image : 2D array-like
+    binary image (0,1) where 1 indicates the region to fit 
+type : functional, default = regionprops
+    the function type used to fit the image. Default assumes elliptical shapes
+
+Returns
+-------
+propertieslist of RegionProperties
+    Each item describes one labeled region, and can be accessed using the attributes listed below.
+
+Notes
+-----
+The following properties can be accessed as attributes or keys:
+
+areaint
+-------
+Number of pixels of the region.
+
+area_bboxint
+------------
+Number of pixels of bounding box.
+
+area_convexint
+--------------
+Number of pixels of convex hull image, which is the smallest convex polygon that encloses the region.
+
+area_filledint
+--------------
+Number of pixels of the region will all the holes filled in. Describes the area of the image_filled.
+
+axis_major_lengthfloat
+----------------------
+The length of the major axis of the ellipse that has the same normalized second central moments as the region.
+
+axis_minor_lengthfloat
+----------------------
+The length of the minor axis of the ellipse that has the same normalized second central moments as the region.
+
+bboxtuple
+---------
+Bounding box (min_row, min_col, max_row, max_col). Pixels belonging to the bounding box are in the half-open interval [min_row; max_row) and [min_col; max_col).
+
+centroidarray
+-------------
+Centroid coordinate tuple (row, col).
+
+centroid_localarray
+-------------------
+Centroid coordinate tuple (row, col), relative to region bounding box.
+
+centroid_weightedarray
+----------------------
+Centroid coordinate tuple (row, col) weighted with intensity image.
+
+centroid_weighted_localarray
+----------------------------
+Centroid coordinate tuple (row, col), relative to region bounding box, weighted with intensity image.
+
+coords(N, 2) ndarray
+Coordinate list (row, col) of the region.
+
+eccentricityfloat
+-----------------
+Eccentricity of the ellipse that has the same second-moments as the region. The eccentricity is the ratio of the focal distance (distance between focal points) over the major axis length. The value is in the interval [0, 1). When it is 0, the ellipse becomes a circle.
+
+equivalent_diameter_areafloat
+-----------------------------
+The diameter of a circle with the same area as the region.
+
+euler_numberint
+---------------
+Euler characteristic of the set of non-zero pixels. Computed as number of connected components subtracted by number of holes (input.ndim connectivity). In 3D, number of connected components plus number of holes subtracted by number of tunnels.
+
+extentfloat
+-----------
+Ratio of pixels in the region to pixels in the total bounding box. Computed as area / (rows * cols)
+
+feret_diameter_maxfloat
+-----------------------
+Maximum Feret’s diameter computed as the longest distance between points around a region’s convex hull contour as determined by find_contours. [5]
+
+image(H, J) ndarray
+Sliced binary region image which has the same size as bounding box.
+
+image_convex(H, J) ndarray
+Binary convex hull image which has the same size as bounding box.
+
+image_filled(H, J) ndarray
+Binary region image with filled holes which has the same size as bounding box.
+
+image_intensityndarray
+----------------------
+Image inside region bounding box.
+
+inertia_tensorndarray
+---------------------
+Inertia tensor of the region for the rotation around its mass.
+
+inertia_tensor_eigvalstuple
+---------------------------
+The eigenvalues of the inertia tensor in decreasing order.
+
+intensity_maxfloat
+------------------
+Value with the greatest intensity in the region.
+
+intensity_meanfloat
+-------------------
+Value with the mean intensity in the region.
+
+intensity_minfloat
+------------------
+Value with the least intensity in the region.
+
+labelint
+--------
+The label in the labeled input image.
+
+moments(3, 3) ndarray
+Spatial moments up to 3rd order:
+
+m_ij = sum{ array(row, col) * row^i * col^j }
+where the sum is over the row, col coordinates of the region.
+
+moments_central(3, 3) ndarray
+Central moments (translation invariant) up to 3rd order:
+
+mu_ij = sum{ array(row, col) * (row - row_c)^i * (col - col_c)^j }
+
+where the sum is over the row, col coordinates of the region, and row_c and col_c are the coordinates of the region’s centroid.
+
+moments_hutuple
+---------------
+Hu moments (translation, scale and rotation invariant).
+
+moments_normalized(3, 3) ndarray
+Normalized moments (translation and scale invariant) up to 3rd order:
+
+nu_ij = mu_ij / m_00^[(i+j)/2 + 1]
+
+where m_00 is the zeroth spatial moment.
+
+moments_weighted(3, 3) ndarray
+Spatial moments of intensity image up to 3rd order:
+
+wm_ij = sum{ array(row, col) * row^i * col^j }
+ 
+where the sum is over the row, col coordinates of the region.
+
+moments_weighted_central(3, 3) ndarray
+Central moments (translation invariant) of intensity image up to 3rd order:
+
+wmu_ij = sum{ array(row, col) * (row - row_c)^i * (col - col_c)^j }
+ 
+where the sum is over the row, col coordinates of the region, and row_c and col_c are the coordinates of the region’s weighted centroid.
+
+moments_weighted_hutuple
+------------------------
+Hu moments (translation, scale and rotation invariant) of intensity image.
+
+moments_weighted_normalized(3, 3) ndarray
+Normalized moments (translation and scale invariant) of intensity image up to 3rd order:
+
+wnu_ij = wmu_ij / wm_00^[(i+j)/2 + 1]
+ 
+where wm_00 is the zeroth spatial moment (intensity-weighted area).
+
+orientationfloat
+----------------
+Angle between the 0th axis (rows) and the major axis of the ellipse that has the same second moments as the region, ranging from -pi/2 to pi/2 counter-clockwise.
+
+perimeterfloat
+--------------
+Perimeter of object which approximates the contour as a line through the centers of border pixels using a 4-connectivity.
+
+perimeter_croftonfloat
+----------------------
+Perimeter of object approximated by the Crofton formula in 4 directions.
+
+slicetuple of slices
+--------------------
+A slice to extract the object from the source image.
+
+solidityfloat
+-------------
+Ratio of pixels in the region to pixels of the convex hull image.
+
+Each region also supports iteration, so that you can do:
+
+for prop in region:
+    print(prop, region[prop])
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_ad72ba7cb2d925b8d7c8c081bb5160bb9}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}!get\_training\_set@{get\_training\_set}}
+\index{get\_training\_set@{get\_training\_set}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}}
+\doxysubsubsection{\texorpdfstring{get\_training\_set()}{get\_training\_set()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_ad72ba7cb2d925b8d7c8c081bb5160bb9} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+nucleoid\+\_\+detection.\+get\+\_\+training\+\_\+set (\begin{DoxyParamCaption}\item[{}]{img}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a10a46d2ec6b1a4de37b62f90700ed2ef}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}!plot\_regions@{plot\_regions}}
+\index{plot\_regions@{plot\_regions}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}}
+\doxysubsubsection{\texorpdfstring{plot\_regions()}{plot\_regions()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a10a46d2ec6b1a4de37b62f90700ed2ef} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+nucleoid\+\_\+detection.\+plot\+\_\+regions (\begin{DoxyParamCaption}\item[{}]{regions}{, }\item[{}]{fig}{, }\item[{}]{ax}{, }\item[{}]{colorbar\+\_\+mappable}{, }\item[{}]{plot}{ = {\ttfamily False}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+regions : list, output from regionprops
+    takes the output of the regionprops from sklearn
+fig : plt.figure object
+    figure object to plot onto
+ax : axis object
+    axis object on which to plot to
+colorbar_mappable : colobar mappable
+    colorbar_mappable opbject 
+
+Returns
+-------\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a73aa4e24548e0285d8a3c19157e234f0}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}!TESTED\_DICT@{TESTED\_DICT}}
+\index{TESTED\_DICT@{TESTED\_DICT}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.nucleoid\_detection}}
+\doxysubsubsection{\texorpdfstring{TESTED\_DICT}{TESTED\_DICT}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1nucleoid__detection_a73aa4e24548e0285d8a3c19157e234f0} 
+dict SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+nucleoid\+\_\+detection.\+TESTED\+\_\+\+DICT}
+

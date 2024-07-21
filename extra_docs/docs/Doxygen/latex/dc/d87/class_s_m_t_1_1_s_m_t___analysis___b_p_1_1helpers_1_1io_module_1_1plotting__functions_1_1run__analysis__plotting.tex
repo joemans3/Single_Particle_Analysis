@@ -1,0 +1,122 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+run\+\_\+analysis\+\_\+plotting Class Reference}
+\hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting}{}\label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+None \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting_a161f38868ab1093a070be20dc6ac7f4e}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting_a813084b5b86ac710896b1e6d11f819b5}{draw\+\_\+item}} (which\+\_\+object, plots=1, all\+\_\+tracks=False, movie\+\_\+\+ID=\textquotesingle{}0\textquotesingle{}, cell\+\_\+\+ID=\mbox{[}\textquotesingle{}0\textquotesingle{}, \textquotesingle{}1\textquotesingle{}\mbox{]}, movie\+\_\+frame\+\_\+index=3)
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting_aad24e7b57b9c2e45cf596c841315b9fa}{plot\+\_\+img}} (which\+\_\+object, plots=1, movie\+\_\+\+ID=\textquotesingle{}0\textquotesingle{}, cell\+\_\+\+ID=\textquotesingle{}0\textquotesingle{}, movie\+\_\+frame\+\_\+index=3)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting_a161f38868ab1093a070be20dc6ac7f4e}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting_a161f38868ab1093a070be20dc6ac7f4e} 
+ None SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+run\+\_\+analysis\+\_\+plotting.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting_a813084b5b86ac710896b1e6d11f819b5}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting}!draw\_item@{draw\_item}}
+\index{draw\_item@{draw\_item}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting}}
+\doxysubsubsection{\texorpdfstring{draw\_item()}{draw\_item()}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting_a813084b5b86ac710896b1e6d11f819b5} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+run\+\_\+analysis\+\_\+plotting.\+draw\+\_\+item (\begin{DoxyParamCaption}\item[{}]{which\+\_\+object}{, }\item[{}]{plots}{ = {\ttfamily 1}, }\item[{}]{all\+\_\+tracks}{ = {\ttfamily False}, }\item[{}]{movie\+\_\+\+ID}{ = {\ttfamily \textquotesingle{}0\textquotesingle{}}, }\item[{}]{cell\+\_\+\+ID}{ = {\ttfamily \mbox{[}\textquotesingle{}0\textquotesingle{},\textquotesingle{}1\textquotesingle{}\mbox{]}}, }\item[{}]{movie\+\_\+frame\+\_\+index}{ = {\ttfamily 3}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\begin{DoxyVerb}Plot the projected frame (movie_frame_index) of a movie (movie_ID) with specific cells (cell_ID, can be
+marray of cells). 
+If plots == 1, plot only one subfigure, else plot a hard coded identicle set of subplots (2,3)
+If all_tracks == True use the raw_tracks variable for each cell (all possible localization)
+
+
+Parameters
+----------
+which_object : run_analysis object from trajectory_analysis_script.py
+    eg. rp_ez,nusa_ez,ll_ez
+plots : int, tuple (n,m)
+    number of total subplots
+    if 1 plot only one subplot
+    else plot (n,m)
+all_tracks : bool
+    if true use all raw_tracks localizations
+    else use only "viable" tracks
+movie_ID : str
+    key identifier of the movie in this dataset
+cell_ID : str, array-like of str
+    key identifier of the cell in this movie
+    if array plot multiple cell attributes
+movie_frame_index : int
+    the subframe of the movie (usually 0-4 for 5 total subframes) 
+
+RETURNS
+-------
+
+Array-like 
+    [x,y,fig,ax]
+    x : float
+        x coordinates of all tracks used
+    y : float
+        y coordinates of all tracks used
+    fig : figure object
+        the figure object which defines the plotting
+    ax :  Axes object
+        All the sub_plot ax (if plots == 1, this is a single ax, else it is of shape (n,m))
+\end{DoxyVerb}
+ \Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting_aad24e7b57b9c2e45cf596c841315b9fa}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting}!plot\_img@{plot\_img}}
+\index{plot\_img@{plot\_img}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions.run\_analysis\_plotting}}
+\doxysubsubsection{\texorpdfstring{plot\_img()}{plot\_img()}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting_aad24e7b57b9c2e45cf596c841315b9fa} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+run\+\_\+analysis\+\_\+plotting.\+plot\+\_\+img (\begin{DoxyParamCaption}\item[{}]{which\+\_\+object}{, }\item[{}]{plots}{ = {\ttfamily 1}, }\item[{}]{movie\+\_\+\+ID}{ = {\ttfamily \textquotesingle{}0\textquotesingle{}}, }\item[{}]{cell\+\_\+\+ID}{ = {\ttfamily \textquotesingle{}0\textquotesingle{}}, }\item[{}]{movie\+\_\+frame\+\_\+index}{ = {\ttfamily 3}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+\begin{DoxyVerb}Given the location of the image in our dataset, plot it given the plotting rules and return the figure/axis objects
+
+Parameters
+----------
+which_object : run_analysis object from trajectory_analysis_script.py
+    eg. rp_ez,nusa_ez,ll_ez
+plots : int, tuple (n,m)
+    number of total subplots
+    if 1 plot only one subplot
+    else plot (n,m)
+movie_ID : str
+    key identifier of the movie in this dataset
+cell_ID : str, array-like of str
+    key identifier of the cell in this movie
+    if array plot multiple cell attributes
+movie_frame_index : int
+    the subframe of the movie (usually 0-4 for 5 total subframes) 
+
+Returns
+-------
+array-like of figure,ax objects
+    returns the object of the figure and axis created by the plotting of the image
+
+Notes 
+-----
+squeeze is used in plt.subplots(... ,squeeze) to change the shape of the ax objects created
+
+
+squeeze : bool, default: True
+    - If True, extra dimensions are squeezed out from the returned
+    array of `~matplotlib.axes.Axes`:
+    - if only one subplot is constructed (nrows=ncols=1), the
+        resulting single Axes object is returned as a scalar.
+    - for Nx1 or 1xM subplots, the returned object is a 1D numpy
+        object array of Axes objects.
+    - for NxM, subplots with N>1 and M>1 are returned as a 2D array.
+    - If False, no squeezing at all is done: the returned Axes object is
+    always a 2D array containing Axes instances, even if it ends up
+    being 1x1.
+\end{DoxyVerb}
+ 
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/baljyot/\+Documents/\+CODE/\+Git\+Hub\+\_\+t2/\+PHD/\+Baljyot\+\_\+\+EXP\+\_\+\+RPOC/\+Scripts/\+SMT/\+SMT\+\_\+\+Analysis\+\_\+\+BP/helpers/io\+Module/\mbox{\hyperlink{plotting__functions_8py}{plotting\+\_\+functions.\+py}}\end{DoxyCompactItemize}

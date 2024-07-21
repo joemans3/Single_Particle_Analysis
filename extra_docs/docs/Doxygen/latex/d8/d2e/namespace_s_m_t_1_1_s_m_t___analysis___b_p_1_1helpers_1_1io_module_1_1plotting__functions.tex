@@ -1,0 +1,218 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_1_1run__analysis__plotting}{run\+\_\+analysis\+\_\+plotting}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a3f8cf22caeeb7ce793cf4ff8a5542f18}{circles}} (x, y, s, c=\textquotesingle{}b\textquotesingle{}, vmin=None, vmax=None, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_acfce951b52909d7333c9ece2a4f1ac4d}{create\+\_\+circle\+\_\+obj}} (dims, fill=False)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_afbe3d42bbebf7c1b170165acf5bc6ec4}{create\+\_\+box\+\_\+plot}} (box\+\_\+data, tick\+\_\+list, y\+\_\+label="{}"{}, x\+\_\+label="{}"{}, y\+\_\+lim=(), title="{}"{}, show=False)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a6206959864046a3e8230a4292b2fe949}{read\+\_\+imag}} (path, fig=False, ax=False, show=True)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a6ef676068c779b905920ac486d690994}{contour\+\_\+intens}} (img, fig=False, ax=False, show=True, seg=True, perc=95)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_acef734d38adbc90aa20e7a82c090fd16}{spacialplot\+\_\+msd}} (op, fig=False, ax=False, show=True)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_ac69b2631a3277964e75e18ffe1eb1ea7}{other\+\_\+plot}} (op, fig=False, ax=False, show=True)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_ab6d4744b146322cb3e3b5d782b3b8843}{animate}} (\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}, ax)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a693f5994d841020cff3e4490db975e65}{circular\+\_\+hist}} (ax, x, bins=16, density=True, offset=0, gaps=True, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_aca7b29cdfa5d3edad6db1320328bb034}{create\+\_\+circular\+\_\+mask}} (h, w, center=None, radius=None)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a4d60b55e6c61a620aac626211e8ca74f}{plot\+\_\+stacked\+\_\+bar}} (data, series\+\_\+labels, category\+\_\+labels=None, show\+\_\+values=False, value\+\_\+format="{}\{\}"{}, y\+\_\+label=None, colors=None, grid=True, reverse=False)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}This script contains all the plotting functions used in the trajectory_analysis_script.py
+
+Author: Baljyot Singh Parmar\end{DoxyVerb}
+ 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_ab6d4744b146322cb3e3b5d782b3b8843}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!animate@{animate}}
+\index{animate@{animate}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{animate()}{animate()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_ab6d4744b146322cb3e3b5d782b3b8843} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+animate (\begin{DoxyParamCaption}\item[{}]{i}{, }\item[{}]{ax}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a3f8cf22caeeb7ce793cf4ff8a5542f18}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!circles@{circles}}
+\index{circles@{circles}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{circles()}{circles()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a3f8cf22caeeb7ce793cf4ff8a5542f18} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+circles (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{s}{, }\item[{}]{c}{ = {\ttfamily \textquotesingle{}b\textquotesingle{}}, }\item[{}]{vmin}{ = {\ttfamily None}, }\item[{}]{vmax}{ = {\ttfamily None}, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Make a scatter of circles plot of x vs y, where x and y are sequence 
+like objects of the same lengths. The size of circles are in data scale.
+
+Parameters
+----------
+x,y : scalar or array_like, shape (n, )
+    Input data
+s : scalar or array_like, shape (n, ) 
+    Radius of circle in data unit.
+c : color or sequence of color, optional, default : 'b'
+    `c` can be a single color format string, or a sequence of color
+    specifications of length `N`, or a sequence of `N` numbers to be
+    mapped to colors using the `cmap` and `norm` specified via kwargs.
+    Note that `c` should not be a single numeric RGB or RGBA sequence 
+    because that is indistinguishable from an array of values
+    to be colormapped. (If you insist, use `color` instead.)  
+    `c` can be a 2-D array in which the rows are RGB or RGBA, however. 
+vmin, vmax : scalar, optional, default: None
+    `vmin` and `vmax` are used in conjunction with `norm` to normalize
+    luminance data.  If either are `None`, the min and max of the
+    color array is used.
+kwargs : `~matplotlib.collections.Collection` properties
+    Eg. alpha, edgecolor(ec), facecolor(fc), linewidth(lw), linestyle(ls), 
+    norm, cmap, transform, etc.
+
+Returns
+-------
+paths : `~matplotlib.collections.PathCollection`
+
+Examples
+--------
+a = np.arange(11)
+circles(a, a, a*0.2, c=a, alpha=0.5, edgecolor='none')
+plt.colorbar()
+
+License
+--------
+This code is under [The BSD 3-Clause License]
+(http://opensource.org/licenses/BSD-3-Clause)
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a693f5994d841020cff3e4490db975e65}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!circular\_hist@{circular\_hist}}
+\index{circular\_hist@{circular\_hist}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{circular\_hist()}{circular\_hist()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a693f5994d841020cff3e4490db975e65} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+circular\+\_\+hist (\begin{DoxyParamCaption}\item[{}]{ax}{, }\item[{}]{x}{, }\item[{}]{bins}{ = {\ttfamily 16}, }\item[{}]{density}{ = {\ttfamily True}, }\item[{}]{offset}{ = {\ttfamily 0}, }\item[{}]{gaps}{ = {\ttfamily True}, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Produce a circular histogram of angles on ax.
+
+Parameters
+----------
+ax : matplotlib.axes._subplots.PolarAxesSubplot
+    axis instance created with subplot_kw=dict(projection='polar').
+
+x : array
+    Angles to plot, expected in units of radians.
+
+bins : int, optional
+    Defines the number of equal-width bins in the range. The default is 16.
+
+density : bool, optional
+    If True plot frequency proportional to area. If False plot frequency
+    proportional to radius. The default is True.
+
+offset : float, optional
+    Sets the offset for the location of the 0 direction in units of
+    radians. The default is 0.
+
+gaps : bool, optional
+    Whether to allow gaps between bins. When gaps = False the bins are
+    forced to partition the entire [-pi, pi] range. The default is True.
+
+**kwargs : type
+    Other arguments are passed directly to `matplotlib.axes.Axes.bar`.
+
+Returns
+-------
+n : array or list of arrays
+    The number of values in each bin.
+
+bins : array
+    The edges of the bins.
+
+patches : `.BarContainer` or list of a single `.Polygon`
+    Container of individual artists used to create the histogram
+    or list of such containers if there are multiple input datasets.
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a6ef676068c779b905920ac486d690994}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!contour\_intens@{contour\_intens}}
+\index{contour\_intens@{contour\_intens}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{contour\_intens()}{contour\_intens()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a6ef676068c779b905920ac486d690994} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+contour\+\_\+intens (\begin{DoxyParamCaption}\item[{}]{img}{, }\item[{}]{fig}{ = {\ttfamily False}, }\item[{}]{ax}{ = {\ttfamily False}, }\item[{}]{show}{ = {\ttfamily True}, }\item[{}]{seg}{ = {\ttfamily True}, }\item[{}]{perc}{ = {\ttfamily 95}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_afbe3d42bbebf7c1b170165acf5bc6ec4}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!create\_box\_plot@{create\_box\_plot}}
+\index{create\_box\_plot@{create\_box\_plot}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{create\_box\_plot()}{create\_box\_plot()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_afbe3d42bbebf7c1b170165acf5bc6ec4} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+create\+\_\+box\+\_\+plot (\begin{DoxyParamCaption}\item[{}]{box\+\_\+data}{, }\item[{}]{tick\+\_\+list}{, }\item[{}]{y\+\_\+label}{ = {\ttfamily "{}"{}}, }\item[{}]{x\+\_\+label}{ = {\ttfamily "{}"{}}, }\item[{}]{y\+\_\+lim}{ = {\ttfamily ()}, }\item[{}]{title}{ = {\ttfamily "{}"{}}, }\item[{}]{show}{ = {\ttfamily False}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_acfce951b52909d7333c9ece2a4f1ac4d}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!create\_circle\_obj@{create\_circle\_obj}}
+\index{create\_circle\_obj@{create\_circle\_obj}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{create\_circle\_obj()}{create\_circle\_obj()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_acfce951b52909d7333c9ece2a4f1ac4d} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+create\+\_\+circle\+\_\+obj (\begin{DoxyParamCaption}\item[{}]{dims}{, }\item[{}]{fill}{ = {\ttfamily False}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}INPUTS:
+dims = array-like
+    [x,y,r] 
+    x = x coordinate of center of circle
+    y = y coordinate of center of circle
+    r = radius of circle
+
+RETURNS:
+Circle object to be used in ax.add_artist
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_aca7b29cdfa5d3edad6db1320328bb034}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!create\_circular\_mask@{create\_circular\_mask}}
+\index{create\_circular\_mask@{create\_circular\_mask}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{create\_circular\_mask()}{create\_circular\_mask()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_aca7b29cdfa5d3edad6db1320328bb034} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+create\+\_\+circular\+\_\+mask (\begin{DoxyParamCaption}\item[{}]{h}{, }\item[{}]{w}{, }\item[{}]{center}{ = {\ttfamily None}, }\item[{}]{radius}{ = {\ttfamily None}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} h,w are the dimensions of the image\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_ac69b2631a3277964e75e18ffe1eb1ea7}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!other\_plot@{other\_plot}}
+\index{other\_plot@{other\_plot}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{other\_plot()}{other\_plot()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_ac69b2631a3277964e75e18ffe1eb1ea7} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+other\+\_\+plot (\begin{DoxyParamCaption}\item[{}]{op}{, }\item[{}]{fig}{ = {\ttfamily False}, }\item[{}]{ax}{ = {\ttfamily False}, }\item[{}]{show}{ = {\ttfamily True}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a4d60b55e6c61a620aac626211e8ca74f}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!plot\_stacked\_bar@{plot\_stacked\_bar}}
+\index{plot\_stacked\_bar@{plot\_stacked\_bar}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{plot\_stacked\_bar()}{plot\_stacked\_bar()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a4d60b55e6c61a620aac626211e8ca74f} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+plot\+\_\+stacked\+\_\+bar (\begin{DoxyParamCaption}\item[{}]{data}{, }\item[{}]{series\+\_\+labels}{, }\item[{}]{category\+\_\+labels}{ = {\ttfamily None}, }\item[{}]{show\+\_\+values}{ = {\ttfamily False}, }\item[{}]{value\+\_\+format}{ = {\ttfamily "{}\{\}"{}}, }\item[{}]{y\+\_\+label}{ = {\ttfamily None}, }\item[{}]{colors}{ = {\ttfamily None}, }\item[{}]{grid}{ = {\ttfamily True}, }\item[{}]{reverse}{ = {\ttfamily False}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Plots a stacked bar chart with the data and labels provided.
+
+Keyword arguments:
+data            -- 2-dimensional numpy array or nested list
+                   containing data for each series in rows
+series_labels   -- list of series labels (these appear in
+                   the legend)
+category_labels -- list of category labels (these appear
+                   on the x-axis)
+show_values     -- If True then numeric value labels will 
+                   be shown on each bar
+value_format    -- Format string for numeric value labels
+                   (default is "{}")
+y_label         -- Label for y-axis (str)
+colors          -- List of color labels
+grid            -- If True display grid
+reverse         -- If True reverse the order that the
+                   series are displayed (left-to-right
+                   or right-to-left)
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a6206959864046a3e8230a4292b2fe949}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!read\_imag@{read\_imag}}
+\index{read\_imag@{read\_imag}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{read\_imag()}{read\_imag()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_a6206959864046a3e8230a4292b2fe949} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+read\+\_\+imag (\begin{DoxyParamCaption}\item[{}]{path}{, }\item[{}]{fig}{ = {\ttfamily False}, }\item[{}]{ax}{ = {\ttfamily False}, }\item[{}]{show}{ = {\ttfamily True}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_acef734d38adbc90aa20e7a82c090fd16}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}!spacialplot\_msd@{spacialplot\_msd}}
+\index{spacialplot\_msd@{spacialplot\_msd}!SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions@{SMT.SMT\_Analysis\_BP.helpers.ioModule.plotting\_functions}}
+\doxysubsubsection{\texorpdfstring{spacialplot\_msd()}{spacialplot\_msd()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1plotting__functions_acef734d38adbc90aa20e7a82c090fd16} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+plotting\+\_\+functions.\+spacialplot\+\_\+msd (\begin{DoxyParamCaption}\item[{}]{op}{, }\item[{}]{fig}{ = {\ttfamily False}, }\item[{}]{ax}{ = {\ttfamily False}, }\item[{}]{show}{ = {\ttfamily True}}\end{DoxyParamCaption})}
+

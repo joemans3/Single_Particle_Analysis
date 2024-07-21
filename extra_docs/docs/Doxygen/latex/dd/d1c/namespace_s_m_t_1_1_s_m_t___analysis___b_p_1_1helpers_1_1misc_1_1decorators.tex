@@ -1,0 +1,115 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_1_1_count_calls}{Count\+Calls}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a67dc363d0a1664f757acb6a1af41ef97}{deprecated}} (reason)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_abf23108b285d4f06905a123ea42ec8df}{timer}} (func)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a2d78bfaeb63d4a620c831f9dd0ed5e4b}{debug}} (func)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a6ebc8d17328be5720b6e6baddf225d02}{slow\+\_\+down}} (\+\_\+func=None, \texorpdfstring{$\ast$}{*}, rate=1)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a60bd90af22d3683e2b96852e6dfaf3a6}{repeat}} (\+\_\+func=None, \texorpdfstring{$\ast$}{*}, num\+\_\+times=2)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a7541ce1cbdb3ded06a578fc58031afb4}{singleton}} (cls)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_aafb924628fc6ad86a65fe1abd9a9e96e}{cache}} (func)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a00873bb6c231060dff66aa404aab4fe1}{set\+\_\+unit}} (unit)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+tuple \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a8510a4a090d0f33518b89ef3d08a3f5e}{string\+\_\+types}} = (type(b\textquotesingle{}\textquotesingle{}), type(u\textquotesingle{}\textquotesingle{}))
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_aafb924628fc6ad86a65fe1abd9a9e96e}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}!cache@{cache}}
+\index{cache@{cache}!SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection{\texorpdfstring{cache()}{cache()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_aafb924628fc6ad86a65fe1abd9a9e96e} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators.\+cache (\begin{DoxyParamCaption}\item[{}]{func}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Keep a cache of previous function calls\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a2d78bfaeb63d4a620c831f9dd0ed5e4b}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}!debug@{debug}}
+\index{debug@{debug}!SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection{\texorpdfstring{debug()}{debug()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a2d78bfaeb63d4a620c831f9dd0ed5e4b} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators.\+debug (\begin{DoxyParamCaption}\item[{}]{func}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Print the function signature and return value
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a67dc363d0a1664f757acb6a1af41ef97}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}!deprecated@{deprecated}}
+\index{deprecated@{deprecated}!SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection{\texorpdfstring{deprecated()}{deprecated()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a67dc363d0a1664f757acb6a1af41ef97} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators.\+deprecated (\begin{DoxyParamCaption}\item[{}]{reason}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}This is a decorator which can be used to mark functions
+as deprecated. It will result in a warning being emitted
+when the function is used.
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a60bd90af22d3683e2b96852e6dfaf3a6}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}!repeat@{repeat}}
+\index{repeat@{repeat}!SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection{\texorpdfstring{repeat()}{repeat()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a60bd90af22d3683e2b96852e6dfaf3a6} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators.\+repeat (\begin{DoxyParamCaption}\item[{}]{\+\_\+func}{ = {\ttfamily None}, }\item[{\texorpdfstring{$\ast$}{*}}]{}{, }\item[{}]{num\+\_\+times}{ = {\ttfamily 2}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Repeat the function a number of times
+
+Parameters:
+-----------
+num_times : int
+    number of times to repeat the function
+
+Returns:
+--------
+decorator_repeat : function
+    decorator function
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a00873bb6c231060dff66aa404aab4fe1}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}!set\_unit@{set\_unit}}
+\index{set\_unit@{set\_unit}!SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection{\texorpdfstring{set\_unit()}{set\_unit()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a00873bb6c231060dff66aa404aab4fe1} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators.\+set\+\_\+unit (\begin{DoxyParamCaption}\item[{}]{unit}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Register a unit on a function\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a7541ce1cbdb3ded06a578fc58031afb4}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}!singleton@{singleton}}
+\index{singleton@{singleton}!SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection{\texorpdfstring{singleton()}{singleton()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a7541ce1cbdb3ded06a578fc58031afb4} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators.\+singleton (\begin{DoxyParamCaption}\item[{}]{cls}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Make a class a Singleton class (only one instance)\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a6ebc8d17328be5720b6e6baddf225d02}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}!slow\_down@{slow\_down}}
+\index{slow\_down@{slow\_down}!SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection{\texorpdfstring{slow\_down()}{slow\_down()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a6ebc8d17328be5720b6e6baddf225d02} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators.\+slow\+\_\+down (\begin{DoxyParamCaption}\item[{}]{\+\_\+func}{ = {\ttfamily None}, }\item[{\texorpdfstring{$\ast$}{*}}]{}{, }\item[{}]{rate}{ = {\ttfamily 1}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Sleep given amount of seconds before calling the function\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_abf23108b285d4f06905a123ea42ec8df}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}!timer@{timer}}
+\index{timer@{timer}!SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection{\texorpdfstring{timer()}{timer()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_abf23108b285d4f06905a123ea42ec8df} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators.\+timer (\begin{DoxyParamCaption}\item[{}]{func}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Print the runtime of the decorated function
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a8510a4a090d0f33518b89ef3d08a3f5e}\index{SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}!string\_types@{string\_types}}
+\index{string\_types@{string\_types}!SMT.SMT\_Analysis\_BP.helpers.misc.decorators@{SMT.SMT\_Analysis\_BP.helpers.misc.decorators}}
+\doxysubsubsection{\texorpdfstring{string\_types}{string\_types}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1decorators_a8510a4a090d0f33518b89ef3d08a3f5e} 
+tuple SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+decorators.\+string\+\_\+types = (type(b\textquotesingle{}\textquotesingle{}), type(u\textquotesingle{}\textquotesingle{}))}
+

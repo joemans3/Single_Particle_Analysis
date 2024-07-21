@@ -1,0 +1,100 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+angle\+\_\+between\+\_\+vectors Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_1_1_angle___storage}{Angle\+\_\+\+Storage}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_1_1_track___calculations}{Track\+\_\+\+Calculations}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vecto0dbe5b1ea098a0e33a8df9923e786ff2}{Track\+\_\+\+Calculations\+\_\+\+Individual\+\_\+\+Dict}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+dict \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_ad674f6b61c87a98284d383b312f87497}{Angle\+\_\+track}} (dict tracks, conversion\+\_\+factor=None, tau\+\_\+conversion\+\_\+factor=None, min\+\_\+track\+\_\+length=3, max\+\_\+track\+\_\+length=100, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+np.\+ndarray \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_a4f8f8eebe144ce786c1a929441002c33}{trajectory\+\_\+angles}} (np.\+ndarray trajectory)
+\item 
+float \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_ae9a66f5d4527f4401be53ffde0efcfe9}{asymmetry\+\_\+metric}} (np.\+ndarray angle\+\_\+distribution, np.\+ndarray forward\+\_\+angle\+\_\+range, np.\+ndarray backward\+\_\+angle\+\_\+range)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_ad674f6b61c87a98284d383b312f87497}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors}!Angle\_track@{Angle\_track}}
+\index{Angle\_track@{Angle\_track}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors}}
+\doxysubsubsection{\texorpdfstring{Angle\_track()}{Angle\_track()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_ad674f6b61c87a98284d383b312f87497} 
+dict SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+angle\+\_\+between\+\_\+vectors.\+Angle\+\_\+track (\begin{DoxyParamCaption}\item[{dict}]{tracks}{, }\item[{}]{conversion\+\_\+factor}{ = {\ttfamily None}, }\item[{}]{tau\+\_\+conversion\+\_\+factor}{ = {\ttfamily None}, }\item[{}]{min\+\_\+track\+\_\+length}{ = {\ttfamily 3}, }\item[{}]{max\+\_\+track\+\_\+length}{ = {\ttfamily 100}, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Documentation for Angle_track
+
+Parameters:
+-----------
+tracks : dict
+    dictionary of tracks, key = track ID, value = [[x,y],...] of coordinates
+conversion_factor : float (default = None)
+    if conversion_factor != None then the coordinates are converted to the desired units before the MSD is calculated
+tau_conversion_factor : float (default = None)
+    if tau_conversion_factor != None then the time lags are converted to the desired units before the MSD is calculated
+    units are for [0->n] (int) -> seconds (1 = 0.02 seconds)
+min_track_length : int (default = 2)
+    the minimum length of a track to be included in the MSD calculation
+max_track_length : int (default = 100)
+    the maximum length of a track to be included in the MSD calculation
+
+Returns:
+--------
+return_dict : dict
+    dictionary of angles for each track, key = track ID, value = dictionary of angles of the trajectory at each time lag, key = time lag, value = angles
+    This has two keys, "ensemble_angles" and "track_angles" which are the ensemble angles and the angles for each track respectively
+    Final structure is:
+    return_dict = {
+        "ensemble_angles":{time_lag:angles,...},
+        "track_angles":{track_ID:{time_lag:angles,...},...}
+        "track_storage":{track_ID:[[x,y],...],...}
+    }
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_ae9a66f5d4527f4401be53ffde0efcfe9}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors}!asymmetry\_metric@{asymmetry\_metric}}
+\index{asymmetry\_metric@{asymmetry\_metric}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors}}
+\doxysubsubsection{\texorpdfstring{asymmetry\_metric()}{asymmetry\_metric()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_ae9a66f5d4527f4401be53ffde0efcfe9} 
+ float SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+angle\+\_\+between\+\_\+vectors.\+asymmetry\+\_\+metric (\begin{DoxyParamCaption}\item[{np.\+ndarray}]{angle\+\_\+distribution}{, }\item[{np.\+ndarray}]{forward\+\_\+angle\+\_\+range}{, }\item[{np.\+ndarray}]{backward\+\_\+angle\+\_\+range}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Calculates the asymmetry metric for the forward and backward angle distributions. 
+Defined as the difference between the percentage of angles in the forward and backward angle ranges. This metric is bounded by 
+-1 and 1, where -1 indicates that all angles are in the backward angle range and 1 indicates that all angles are in the forward angle range.
+
+Parameters:
+-----------
+angle_distribution: 1D array
+    Array of angles between the vectors of the trajectory
+forward_angle_range: 1D array of length 2
+    Range of angles to consider for the forward angle distribution (in radians)
+backward_angle_range: 1D array of length 2
+    Range of angles to consider for the backward angle distribution (in radians)
+
+Returns:
+--------
+asymmetry: float
+    Asymmetry metric for the forward and backward angle distributions
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_a4f8f8eebe144ce786c1a929441002c33}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors}!trajectory\_angles@{trajectory\_angles}}
+\index{trajectory\_angles@{trajectory\_angles}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.angle\_between\_vectors}}
+\doxysubsubsection{\texorpdfstring{trajectory\_angles()}{trajectory\_angles()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1angle__between__vectors_a4f8f8eebe144ce786c1a929441002c33} 
+ np.\+ndarray SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+angle\+\_\+between\+\_\+vectors.\+trajectory\+\_\+angles (\begin{DoxyParamCaption}\item[{np.\+ndarray}]{trajectory}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Calculates the angles between the vectors of a trajectory. (using the cosine rule)
+
+Parameters:
+-----------
+trajectory: 2D array
+    Array of x and y coordinates of a trajectory (in the form [[x1, y1], [x2, y2], ...])
+
+Returns:
+--------
+angles: 1D array
+    Array of angles between the vectors of the trajectory (in radians)
+\end{DoxyVerb}
+ 

@@ -1,0 +1,76 @@
+\doxysection{localization\+\_\+merger Namespace Reference}
+\hypertarget{namespacelocalization__merger}{}\label{namespacelocalization__merger}\index{localization\_merger@{localization\_merger}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+pd.\+Data\+Frame \mbox{\hyperlink{namespacelocalization__merger_a81c86510a864fe2077d0f084bf2b79fb}{merge\+\_\+localization}} (pd.\+Data\+Frame tracks, max\+\_\+dist=1, max\+\_\+frame\+\_\+gap=1)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+list \mbox{\hyperlink{namespacelocalization__merger_ac2e379c2fbaa2e0c1d16fd6af8313917}{COL\+\_\+\+NAMES\+\_\+\+THUNDERSTORM}} = \mbox{[}\textquotesingle{}id\textquotesingle{}, \textquotesingle{}frame\textquotesingle{}, \textquotesingle{}x \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}y \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}sigma \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}intensity \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}offset \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}bkgstd \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}chi2\textquotesingle{}, \textquotesingle{}uncertainty \mbox{[}nm\mbox{]}\textquotesingle{}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacelocalization__merger_a6d580568b1ab59c30667afb2fdaba13c}{NEW\+\_\+\+COL\+\_\+\+NAMES}} = \mbox{[}\textquotesingle{}id\textquotesingle{}, \textquotesingle{}frame\textquotesingle{}, \textquotesingle{}x \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}y \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}sigma \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}intensity \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}offset \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}bkgstd \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}chi2\textquotesingle{}, \textquotesingle{}uncertainty \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}merged\textquotesingle{}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}ThunderSTORM localization merger  TODO THIS DOES NOT WORK YET
+=============================================================
+
+This module contains the function to merge localizations from ThunderSTORM .csv file.
+The structure of the .csv file is the following:
+id, frame,  x [nm], y [nm], sigma [nm], intensity [photon], offset [photon],    bkgstd [photon],    chi2,   uncertainty [nm]
+
+id: the id of the localization
+frame: the frame number
+x [nm]: the x coordinate of the localization in nanometers
+y [nm]: the y coordinate of the localization in nanometers
+sigma [nm]: the sigma of the localization in nanometers
+intensity [photon]: the intensity of the localization in photon
+offset [photon]: the offset of the localization in photon
+bkgstd [photon]: the background standard deviation of the localization in photon
+chi2: the chi2 of the localization
+uncertainty [nm]: the uncertainty of the localization in nanometers\end{DoxyVerb}
+ 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacelocalization__merger_a81c86510a864fe2077d0f084bf2b79fb}\index{localization\_merger@{localization\_merger}!merge\_localization@{merge\_localization}}
+\index{merge\_localization@{merge\_localization}!localization\_merger@{localization\_merger}}
+\doxysubsubsection{\texorpdfstring{merge\_localization()}{merge\_localization()}}
+{\footnotesize\ttfamily \label{namespacelocalization__merger_a81c86510a864fe2077d0f084bf2b79fb} 
+pd.\+Data\+Frame localization\+\_\+merger.\+merge\+\_\+localization (\begin{DoxyParamCaption}\item[{pd.\+Data\+Frame}]{tracks}{, }\item[{}]{max\+\_\+dist}{ = {\ttfamily 1}, }\item[{}]{max\+\_\+frame\+\_\+gap}{ = {\ttfamily 1}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Merge localizations into one localization given a maximum distance and a maximum frame gap.
+The function merge_localization() takes as input a DataFrame containing the localizations to be merged and returns a DataFrame containing the merged localizations.
+There is a new column at the end called 'merged' which contains the number of the merged localization produced for each new localization.
+
+Parameters:
+-----------
+tracks : pandas.DataFrame
+    DataFrame containing the localizations to be merged. (this is the output of ThunderSTORM .csv file, see doc for details)
+max_dist : float (nm - nanometers, default = 1)
+    Maximum distance between two localizations to be merged (in nanometers)
+max_frame_gap : int (default = 0, no frame gap)
+    Maximum frame gap between two localizations to be merged (in frames)
+
+Returns:
+--------
+merged_tracks : pandas.DataFrame
+    DataFrame containing the merged localizations with a new column 'merged' containing the number of the merged localization produced for each new localization.
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacelocalization__merger_ac2e379c2fbaa2e0c1d16fd6af8313917}\index{localization\_merger@{localization\_merger}!COL\_NAMES\_THUNDERSTORM@{COL\_NAMES\_THUNDERSTORM}}
+\index{COL\_NAMES\_THUNDERSTORM@{COL\_NAMES\_THUNDERSTORM}!localization\_merger@{localization\_merger}}
+\doxysubsubsection{\texorpdfstring{COL\_NAMES\_THUNDERSTORM}{COL\_NAMES\_THUNDERSTORM}}
+{\footnotesize\ttfamily \label{namespacelocalization__merger_ac2e379c2fbaa2e0c1d16fd6af8313917} 
+list localization\+\_\+merger.\+COL\+\_\+\+NAMES\+\_\+\+THUNDERSTORM = \mbox{[}\textquotesingle{}id\textquotesingle{}, \textquotesingle{}frame\textquotesingle{}, \textquotesingle{}x \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}y \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}sigma \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}intensity \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}offset \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}bkgstd \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}chi2\textquotesingle{}, \textquotesingle{}uncertainty \mbox{[}nm\mbox{]}\textquotesingle{}\mbox{]}}
+
+\Hypertarget{namespacelocalization__merger_a6d580568b1ab59c30667afb2fdaba13c}\index{localization\_merger@{localization\_merger}!NEW\_COL\_NAMES@{NEW\_COL\_NAMES}}
+\index{NEW\_COL\_NAMES@{NEW\_COL\_NAMES}!localization\_merger@{localization\_merger}}
+\doxysubsubsection{\texorpdfstring{NEW\_COL\_NAMES}{NEW\_COL\_NAMES}}
+{\footnotesize\ttfamily \label{namespacelocalization__merger_a6d580568b1ab59c30667afb2fdaba13c} 
+list localization\+\_\+merger.\+NEW\+\_\+\+COL\+\_\+\+NAMES = \mbox{[}\textquotesingle{}id\textquotesingle{}, \textquotesingle{}frame\textquotesingle{}, \textquotesingle{}x \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}y \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}sigma \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}intensity \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}offset \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}bkgstd \mbox{[}photon\mbox{]}\textquotesingle{}, \textquotesingle{}chi2\textquotesingle{}, \textquotesingle{}uncertainty \mbox{[}nm\mbox{]}\textquotesingle{}, \textquotesingle{}merged\textquotesingle{}\mbox{]}}
+

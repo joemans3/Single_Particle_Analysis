@@ -1,0 +1,65 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+NND Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d_1_1_test_nearest_neighbour_distances2_d}{Test\+Nearest\+Neighbour\+Distances2D}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d_1_1_test_pairwise_array}{Test\+Pairwise\+Array}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d_abbabedfb622da7f1a29224c851c30460}{pairwise\+\_\+array}} (n)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d_a195b4ad2ff27ed4ea56baf654184ca7e}{nearest\+\_\+neighbour\+\_\+distances\+\_\+2d}} (x0, y0, x1, y1, verbose\+\_\+return=False, conversion\+\_\+factor=0.\+13)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d_a195b4ad2ff27ed4ea56baf654184ca7e}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND}!nearest\_neighbour\_distances\_2d@{nearest\_neighbour\_distances\_2d}}
+\index{nearest\_neighbour\_distances\_2d@{nearest\_neighbour\_distances\_2d}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND}}
+\doxysubsubsection{\texorpdfstring{nearest\_neighbour\_distances\_2d()}{nearest\_neighbour\_distances\_2d()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d_a195b4ad2ff27ed4ea56baf654184ca7e} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+NND.\+nearest\+\_\+neighbour\+\_\+distances\+\_\+2d (\begin{DoxyParamCaption}\item[{}]{x0}{, }\item[{}]{y0}{, }\item[{}]{x1}{, }\item[{}]{y1}{, }\item[{}]{verbose\+\_\+return}{ = {\ttfamily False}, }\item[{}]{conversion\+\_\+factor}{ = {\ttfamily 0.13}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for nearest_neighbour_distances_2d
+finds the nearest neighbour distances for two time points
+
+Parameters:
+-----------
+x0: array-like
+    x coordinates for the first time point
+y0: array-like
+    y coordinates for the first time point
+x1: array-like
+    x coordinates for the second time point
+y1: array-like  
+    y coordinates for the second time point
+verbose_return: bool
+    if True, returns a dictionary with the nearest neighbour distances for x and y
+conversion_factor: float
+    conversion factor to convert to a certain unit. Default is 0.13, which is the conversion factor for the 100x objective pixel size to microns
+
+Returns:
+--------
+nearest_neighbour_distances: array-like
+    nearest neighbour distances for the two time points
+nearest_neighbour_distances_x: array-like
+    nearest neighbour distances for the two time points in the x direction
+nearest_neighbour_distances_y: array-like
+    nearest neighbour distances for the two time points in the y direction
+
+Notes:
+------
+1. If verbose_return is True, the function returns a dictionary with the nearest neighbour distances for x and y and r
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d_abbabedfb622da7f1a29224c851c30460}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND}!pairwise\_array@{pairwise\_array}}
+\index{pairwise\_array@{pairwise\_array}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.NND}}
+\doxysubsubsection{\texorpdfstring{pairwise\_array()}{pairwise\_array()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_n_n_d_abbabedfb622da7f1a29224c851c30460} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+NND.\+pairwise\+\_\+array (\begin{DoxyParamCaption}\item[{}]{n}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Generates the pairwise array of consecutive integers from 0 to n-1.
+\end{DoxyVerb}
+ 

@@ -1,0 +1,199 @@
+\doxysection{sim\+\_\+track\+\_\+diff Namespace Reference}
+\hypertarget{namespacesim__track__diff}{}\label{namespacesim__track__diff}\index{sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a60ea2072fdc8f70e77cf3764889e29e0}{d\+\_\+rand}} (l)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a489910b087a609eacc20f9865af1185e}{random\+\_\+scale}} (minv, maxv)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a137dcf436a8918a75a977ec4500a5cdb}{make\+\_\+grid}} (size)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a4285b6695542837bf52682c32afd79c2}{crw}} (\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}, \mbox{\hyperlink{namespacesim__track__diff_a3314b0241de1de9553a879a1a1ab4965}{length}}, diff, start, time\+\_\+end)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_aea812b0762d31b61c77e33c384eb7bbb}{track\+\_\+generator}} (\mbox{\hyperlink{namespacesim__track__diff_a3314b0241de1de9553a879a1a1ab4965}{length}}, diff\+\_\+coef, start\+\_\+loc, bleach\+\_\+time=20, amount=100, subdiffusion=False, hurst=0.\+5)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a456306709fce96b0dc529e68b76be7b2}{run\+\_\+flow}} (difs, amounts, places, lengths, movie\+\_\+length, subdiffusion=False, hurst=0.\+5)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a90bd10aec527bd7d8698c2915beb0bd2}{add\+\_\+noise}} (movie, base\+\_\+int, gaussian\+\_\+blurr\+\_\+v=1)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{namespacesim__track__diff_aa994b1253ff7f4d5ecfa7c49473a70b1}{y\+\_\+min}} = 0.
+\item 
+int \mbox{\hyperlink{namespacesim__track__diff_a829c9e8502f02621ab0f60a187bf0388}{y\+\_\+max}} = 4.
+\item 
+int \mbox{\hyperlink{namespacesim__track__diff_ad6c86a01bc1c5aee9c4da7c96fc63826}{x\+\_\+min}} = 0.
+\item 
+int \mbox{\hyperlink{namespacesim__track__diff_a1efc033c03dfcb75ccfb171b15ce6729}{x\+\_\+max}} = 2.
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_af886fcac7eed4a42507279ba968283fb}{diffusion\+\_\+coeff}} = np.\+array(\mbox{[}0.\+01,0.\+1,1\mbox{]})
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a9d7f51514a627c6287fb34925845020e}{all\+\_\+hold}} = \mbox{\hyperlink{namespacesim__track__diff_a456306709fce96b0dc529e68b76be7b2}{run\+\_\+flow}}(\mbox{[}0.\+1\mbox{]},\mbox{[}200\mbox{]},\mbox{[}14\mbox{]},\mbox{[}100\mbox{]},1000,subdiffusion = \mbox{[}True\mbox{]}, hurst = \mbox{[}0.\+2\mbox{]})
+\item 
+str \mbox{\hyperlink{namespacesim__track__diff_ab70452ab3cd12eff9830fbb171c3c3da}{name}} = "{}0.\+001-\/0.\+01-\/0.\+1\+\_\+100-\/100-\/100\+\_\+r-\/r\+\_\+10-\/10-\/10\+\_\+1000\+\_\+\+SD\+\_\+0.\+5\+\_\+test"{}
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a4bb3b315bc65e3505778a3a69596caa7}{image}} = np.\+zeros(np.\+shape(\mbox{\hyperlink{namespacesim__track__diff_a9d7f51514a627c6287fb34925845020e}{all\+\_\+hold}}\mbox{[}0\mbox{]}\mbox{[}0\mbox{]}\mbox{[}4\mbox{]}))
+\item 
+list \mbox{\hyperlink{namespacesim__track__diff_ab0c28e3d524e533b42c344bef0f08ab0}{temp}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_aa3c89026337baddb88f9cea7ba9c1b30}{xy\+\_\+data}}
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_ab99c7c8c1dc45fdf30994dccdae2b157}{new\+\_\+image}} = \mbox{\hyperlink{namespacesim__track__diff_a90bd10aec527bd7d8698c2915beb0bd2}{add\+\_\+noise}}(\mbox{\hyperlink{namespacesim__track__diff_a4bb3b315bc65e3505778a3a69596caa7}{image}},100,3)
+\item 
+float \mbox{\hyperlink{namespacesim__track__diff_ac90106ff40534185024c31d021dd8c5d}{stack\+\_\+step}} = 5.\+0
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a3314b0241de1de9553a879a1a1ab4965}{length}} = int(len(\mbox{\hyperlink{namespacesim__track__diff_ab99c7c8c1dc45fdf30994dccdae2b157}{new\+\_\+image}})/\mbox{\hyperlink{namespacesim__track__diff_ac90106ff40534185024c31d021dd8c5d}{stack\+\_\+step}})
+\item 
+list \mbox{\hyperlink{namespacesim__track__diff_a520833c5a32eec2c208ec120eec9e4bf}{hold\+\_\+img}} = \mbox{[}$\,$\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacesim__track__diff_a27aa1750251575c93cf380d272e78693}{hold\+\_\+name}} = \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacesim__track__diff_a90bd10aec527bd7d8698c2915beb0bd2}\index{sim\_track\_diff@{sim\_track\_diff}!add\_noise@{add\_noise}}
+\index{add\_noise@{add\_noise}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{add\_noise()}{add\_noise()}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a90bd10aec527bd7d8698c2915beb0bd2} 
+sim\+\_\+track\+\_\+diff.\+add\+\_\+noise (\begin{DoxyParamCaption}\item[{}]{movie}{, }\item[{}]{base\+\_\+int}{, }\item[{}]{gaussian\+\_\+blurr\+\_\+v}{ = {\ttfamily 1}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespacesim__track__diff_a4285b6695542837bf52682c32afd79c2}\index{sim\_track\_diff@{sim\_track\_diff}!crw@{crw}}
+\index{crw@{crw}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{crw()}{crw()}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a4285b6695542837bf52682c32afd79c2} 
+sim\+\_\+track\+\_\+diff.\+crw (\begin{DoxyParamCaption}\item[{}]{a}{, }\item[{}]{length}{, }\item[{}]{diff}{, }\item[{}]{start}{, }\item[{}]{time\+\_\+end}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespacesim__track__diff_a60ea2072fdc8f70e77cf3764889e29e0}\index{sim\_track\_diff@{sim\_track\_diff}!d\_rand@{d\_rand}}
+\index{d\_rand@{d\_rand}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{d\_rand()}{d\_rand()}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a60ea2072fdc8f70e77cf3764889e29e0} 
+sim\+\_\+track\+\_\+diff.\+d\+\_\+rand (\begin{DoxyParamCaption}\item[{}]{l}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespacesim__track__diff_a137dcf436a8918a75a977ec4500a5cdb}\index{sim\_track\_diff@{sim\_track\_diff}!make\_grid@{make\_grid}}
+\index{make\_grid@{make\_grid}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{make\_grid()}{make\_grid()}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a137dcf436a8918a75a977ec4500a5cdb} 
+sim\+\_\+track\+\_\+diff.\+make\+\_\+grid (\begin{DoxyParamCaption}\item[{}]{size}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}    Takes size measurements of a rectantuglar grid and returns a zero-array of shape 'size'.\end{DoxyVerb}
+ \Hypertarget{namespacesim__track__diff_a489910b087a609eacc20f9865af1185e}\index{sim\_track\_diff@{sim\_track\_diff}!random\_scale@{random\_scale}}
+\index{random\_scale@{random\_scale}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{random\_scale()}{random\_scale()}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a489910b087a609eacc20f9865af1185e} 
+sim\+\_\+track\+\_\+diff.\+random\+\_\+scale (\begin{DoxyParamCaption}\item[{}]{minv}{, }\item[{}]{maxv}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespacesim__track__diff_a456306709fce96b0dc529e68b76be7b2}\index{sim\_track\_diff@{sim\_track\_diff}!run\_flow@{run\_flow}}
+\index{run\_flow@{run\_flow}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{run\_flow()}{run\_flow()}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a456306709fce96b0dc529e68b76be7b2} 
+sim\+\_\+track\+\_\+diff.\+run\+\_\+flow (\begin{DoxyParamCaption}\item[{}]{difs}{, }\item[{}]{amounts}{, }\item[{}]{places}{, }\item[{}]{lengths}{, }\item[{}]{movie\+\_\+length}{, }\item[{}]{subdiffusion}{ = {\ttfamily False}, }\item[{}]{hurst}{ = {\ttfamily 0.5}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespacesim__track__diff_aea812b0762d31b61c77e33c384eb7bbb}\index{sim\_track\_diff@{sim\_track\_diff}!track\_generator@{track\_generator}}
+\index{track\_generator@{track\_generator}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{track\_generator()}{track\_generator()}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_aea812b0762d31b61c77e33c384eb7bbb} 
+sim\+\_\+track\+\_\+diff.\+track\+\_\+generator (\begin{DoxyParamCaption}\item[{}]{length}{, }\item[{}]{diff\+\_\+coef}{, }\item[{}]{start\+\_\+loc}{, }\item[{}]{bleach\+\_\+time}{ = {\ttfamily 20}, }\item[{}]{amount}{ = {\ttfamily 100}, }\item[{}]{subdiffusion}{ = {\ttfamily False}, }\item[{}]{hurst}{ = {\ttfamily 0.5}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}    INPUT:
+    length = average length of the tracks with exponential distribution -> from data
+    diff_coed = average diffusion coefficient with gaussian coefficient -> from data
+    start_loc = location of where the track will start (2-4 DNA loci, or randomly on this grid.) -> 2D-gaussain distribution around this.
+
+
+    RETURN:
+    1-D array of track localization (float)\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacesim__track__diff_a9d7f51514a627c6287fb34925845020e}\index{sim\_track\_diff@{sim\_track\_diff}!all\_hold@{all\_hold}}
+\index{all\_hold@{all\_hold}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{all\_hold}{all\_hold}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a9d7f51514a627c6287fb34925845020e} 
+sim\+\_\+track\+\_\+diff.\+all\+\_\+hold = \mbox{\hyperlink{namespacesim__track__diff_a456306709fce96b0dc529e68b76be7b2}{run\+\_\+flow}}(\mbox{[}0.\+1\mbox{]},\mbox{[}200\mbox{]},\mbox{[}14\mbox{]},\mbox{[}100\mbox{]},1000,subdiffusion = \mbox{[}True\mbox{]}, hurst = \mbox{[}0.\+2\mbox{]})}
+
+\Hypertarget{namespacesim__track__diff_af886fcac7eed4a42507279ba968283fb}\index{sim\_track\_diff@{sim\_track\_diff}!diffusion\_coeff@{diffusion\_coeff}}
+\index{diffusion\_coeff@{diffusion\_coeff}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{diffusion\_coeff}{diffusion\_coeff}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_af886fcac7eed4a42507279ba968283fb} 
+sim\+\_\+track\+\_\+diff.\+diffusion\+\_\+coeff = np.\+array(\mbox{[}0.\+01,0.\+1,1\mbox{]})}
+
+\Hypertarget{namespacesim__track__diff_a520833c5a32eec2c208ec120eec9e4bf}\index{sim\_track\_diff@{sim\_track\_diff}!hold\_img@{hold\_img}}
+\index{hold\_img@{hold\_img}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{hold\_img}{hold\_img}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a520833c5a32eec2c208ec120eec9e4bf} 
+list sim\+\_\+track\+\_\+diff.\+hold\+\_\+img = \mbox{[}$\,$\mbox{]}}
+
+\Hypertarget{namespacesim__track__diff_a27aa1750251575c93cf380d272e78693}\index{sim\_track\_diff@{sim\_track\_diff}!hold\_name@{hold\_name}}
+\index{hold\_name@{hold\_name}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{hold\_name}{hold\_name}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a27aa1750251575c93cf380d272e78693} 
+list sim\+\_\+track\+\_\+diff.\+hold\+\_\+name = \mbox{[}$\,$\mbox{]}}
+
+\Hypertarget{namespacesim__track__diff_a4bb3b315bc65e3505778a3a69596caa7}\index{sim\_track\_diff@{sim\_track\_diff}!image@{image}}
+\index{image@{image}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{image}{image}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a4bb3b315bc65e3505778a3a69596caa7} 
+sim\+\_\+track\+\_\+diff.\+image = np.\+zeros(np.\+shape(\mbox{\hyperlink{namespacesim__track__diff_a9d7f51514a627c6287fb34925845020e}{all\+\_\+hold}}\mbox{[}0\mbox{]}\mbox{[}0\mbox{]}\mbox{[}4\mbox{]}))}
+
+\Hypertarget{namespacesim__track__diff_a3314b0241de1de9553a879a1a1ab4965}\index{sim\_track\_diff@{sim\_track\_diff}!length@{length}}
+\index{length@{length}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{length}{length}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a3314b0241de1de9553a879a1a1ab4965} 
+sim\+\_\+track\+\_\+diff.\+length = int(len(\mbox{\hyperlink{namespacesim__track__diff_ab99c7c8c1dc45fdf30994dccdae2b157}{new\+\_\+image}})/\mbox{\hyperlink{namespacesim__track__diff_ac90106ff40534185024c31d021dd8c5d}{stack\+\_\+step}})}
+
+\Hypertarget{namespacesim__track__diff_ab70452ab3cd12eff9830fbb171c3c3da}\index{sim\_track\_diff@{sim\_track\_diff}!name@{name}}
+\index{name@{name}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{name}{name}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_ab70452ab3cd12eff9830fbb171c3c3da} 
+str sim\+\_\+track\+\_\+diff.\+name = "{}0.\+001-\/0.\+01-\/0.\+1\+\_\+100-\/100-\/100\+\_\+r-\/r\+\_\+10-\/10-\/10\+\_\+1000\+\_\+\+SD\+\_\+0.\+5\+\_\+test"{}}
+
+\Hypertarget{namespacesim__track__diff_ab99c7c8c1dc45fdf30994dccdae2b157}\index{sim\_track\_diff@{sim\_track\_diff}!new\_image@{new\_image}}
+\index{new\_image@{new\_image}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{new\_image}{new\_image}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_ab99c7c8c1dc45fdf30994dccdae2b157} 
+sim\+\_\+track\+\_\+diff.\+new\+\_\+image = \mbox{\hyperlink{namespacesim__track__diff_a90bd10aec527bd7d8698c2915beb0bd2}{add\+\_\+noise}}(\mbox{\hyperlink{namespacesim__track__diff_a4bb3b315bc65e3505778a3a69596caa7}{image}},100,3)}
+
+\Hypertarget{namespacesim__track__diff_ac90106ff40534185024c31d021dd8c5d}\index{sim\_track\_diff@{sim\_track\_diff}!stack\_step@{stack\_step}}
+\index{stack\_step@{stack\_step}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{stack\_step}{stack\_step}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_ac90106ff40534185024c31d021dd8c5d} 
+float sim\+\_\+track\+\_\+diff.\+stack\+\_\+step = 5.\+0}
+
+\Hypertarget{namespacesim__track__diff_ab0c28e3d524e533b42c344bef0f08ab0}\index{sim\_track\_diff@{sim\_track\_diff}!temp@{temp}}
+\index{temp@{temp}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{temp}{temp}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_ab0c28e3d524e533b42c344bef0f08ab0} 
+sim\+\_\+track\+\_\+diff.\+temp = \mbox{[}$\,$\mbox{]}}
+
+\Hypertarget{namespacesim__track__diff_a1efc033c03dfcb75ccfb171b15ce6729}\index{sim\_track\_diff@{sim\_track\_diff}!x\_max@{x\_max}}
+\index{x\_max@{x\_max}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{x\_max}{x\_max}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a1efc033c03dfcb75ccfb171b15ce6729} 
+int sim\+\_\+track\+\_\+diff.\+x\+\_\+max = 2.}
+
+\Hypertarget{namespacesim__track__diff_ad6c86a01bc1c5aee9c4da7c96fc63826}\index{sim\_track\_diff@{sim\_track\_diff}!x\_min@{x\_min}}
+\index{x\_min@{x\_min}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{x\_min}{x\_min}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_ad6c86a01bc1c5aee9c4da7c96fc63826} 
+int sim\+\_\+track\+\_\+diff.\+x\+\_\+min = 0.}
+
+\Hypertarget{namespacesim__track__diff_aa3c89026337baddb88f9cea7ba9c1b30}\index{sim\_track\_diff@{sim\_track\_diff}!xy\_data@{xy\_data}}
+\index{xy\_data@{xy\_data}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{xy\_data}{xy\_data}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_aa3c89026337baddb88f9cea7ba9c1b30} 
+sim\+\_\+track\+\_\+diff.\+xy\+\_\+data}
+
+\Hypertarget{namespacesim__track__diff_a829c9e8502f02621ab0f60a187bf0388}\index{sim\_track\_diff@{sim\_track\_diff}!y\_max@{y\_max}}
+\index{y\_max@{y\_max}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{y\_max}{y\_max}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_a829c9e8502f02621ab0f60a187bf0388} 
+int sim\+\_\+track\+\_\+diff.\+y\+\_\+max = 4.}
+
+\Hypertarget{namespacesim__track__diff_aa994b1253ff7f4d5ecfa7c49473a70b1}\index{sim\_track\_diff@{sim\_track\_diff}!y\_min@{y\_min}}
+\index{y\_min@{y\_min}!sim\_track\_diff@{sim\_track\_diff}}
+\doxysubsubsection{\texorpdfstring{y\_min}{y\_min}}
+{\footnotesize\ttfamily \label{namespacesim__track__diff_aa994b1253ff7f4d5ecfa7c49473a70b1} 
+int sim\+\_\+track\+\_\+diff.\+y\+\_\+min = 0.}
+

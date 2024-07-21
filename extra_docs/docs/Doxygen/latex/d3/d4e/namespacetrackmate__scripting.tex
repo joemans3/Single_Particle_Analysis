@@ -1,0 +1,192 @@
+\doxysection{trackmate\+\_\+scripting Namespace Reference}
+\hypertarget{namespacetrackmate__scripting}{}\label{namespacetrackmate__scripting}\index{trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_ae19119441a2906ca1c34db4eaea82f90}{imp}} = IJ.\+open\+Image(\textquotesingle{}https\+://fiji.\+sc/samples/Fake\+Tracks.\+tif\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a35b280d6a7ff7cf9632ac72540ff00ca}{model}} = Model()
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_ad062e4013d4908e881ed9b95a9f64586}{settings}} = Settings(\mbox{\hyperlink{namespacetrackmate__scripting_ae19119441a2906ca1c34db4eaea82f90}{imp}})
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a8e4b4da447628c148315171b3c9302ba}{detector\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_add45c9b05911499187ab612ed2cee312}{detector\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a7272c876b481f6674c8e5fcc1d93dfe2}{tracker\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a6a01cfcd03c7f5161f3807ad9ab45f5c}{tracker\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_affc5a65fc5da185856fdd1bc0eedc93f}{initial\+Spot\+Filter\+Value}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a249384386241f618a56b4311c7ddd45c}{trackmate}} = Track\+Mate(\mbox{\hyperlink{namespacetrackmate__scripting_a35b280d6a7ff7cf9632ac72540ff00ca}{model}}, \mbox{\hyperlink{namespacetrackmate__scripting_ad062e4013d4908e881ed9b95a9f64586}{settings}})
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a715f9dbee9b5538fc5b38297552d01db}{ok}} = trackmate.\+check\+Input()
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a73f111ce627b22c6aef490b974e99578}{sm}} = Selection\+Model( \mbox{\hyperlink{namespacetrackmate__scripting_a35b280d6a7ff7cf9632ac72540ff00ca}{model}} )
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a98f20402801f5842274466d2eaf199a7}{ds}} = Display\+Settings\+IO.\+read\+User\+Default()
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a65b217df3b1d45206af227a65812eb58}{displayer}} = Hyper\+Stack\+Displayer( \mbox{\hyperlink{namespacetrackmate__scripting_a35b280d6a7ff7cf9632ac72540ff00ca}{model}}, \mbox{\hyperlink{namespacetrackmate__scripting_a73f111ce627b22c6aef490b974e99578}{sm}}, \mbox{\hyperlink{namespacetrackmate__scripting_ae19119441a2906ca1c34db4eaea82f90}{imp}}, \mbox{\hyperlink{namespacetrackmate__scripting_a98f20402801f5842274466d2eaf199a7}{ds}} )
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a61e102621b896c932d992ef97b73aeef}{fm}} = model.\+get\+Feature\+Model()
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_af8877cbc7aee9592a6f456364f689554}{v}} = fm.\+get\+Track\+Feature(id, \textquotesingle{}TRACK\+\_\+\+MEAN\+\_\+\+SPEED\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_ad81148908e6e5ce69807ddd0ce20a61d}{track}} = model.\+get\+Track\+Model().track\+Spots(id)
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_ae9e0f5819dea4232a3544a7803ace7d5}{sid}} = spot.\+ID()
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_ac1f73738effdc3a4d53235415a02309a}{x}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+X\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a5964671093fa9ca808a9df6fb4e629ff}{y}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Y\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a4b2ae9c367bcb0753f9360494f757342}{t}} = spot.\+get\+Feature(\textquotesingle{}FRAME\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_ab1b0b5849fd1c4f218350e348e455047}{q}} = spot.\+get\+Feature(\textquotesingle{}QUALITY\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a1b39087a8316cf002b29ada590c3db29}{snr}} = spot.\+get\+Feature(\textquotesingle{}SNR\+\_\+\+CH1\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__scripting_a70f40723f1320234117a29884f9a83ce}{mean}} = spot.\+get\+Feature(\textquotesingle{}MEAN\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacetrackmate__scripting_a8e4b4da447628c148315171b3c9302ba}\index{trackmate\_scripting@{trackmate\_scripting}!detectorFactory@{detectorFactory}}
+\index{detectorFactory@{detectorFactory}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{detectorFactory}{detectorFactory}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a8e4b4da447628c148315171b3c9302ba} 
+trackmate\+\_\+scripting.\+detector\+Factory}
+
+\Hypertarget{namespacetrackmate__scripting_add45c9b05911499187ab612ed2cee312}\index{trackmate\_scripting@{trackmate\_scripting}!detectorSettings@{detectorSettings}}
+\index{detectorSettings@{detectorSettings}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{detectorSettings}{detectorSettings}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_add45c9b05911499187ab612ed2cee312} 
+trackmate\+\_\+scripting.\+detector\+Settings}
+
+\Hypertarget{namespacetrackmate__scripting_a65b217df3b1d45206af227a65812eb58}\index{trackmate\_scripting@{trackmate\_scripting}!displayer@{displayer}}
+\index{displayer@{displayer}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{displayer}{displayer}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a65b217df3b1d45206af227a65812eb58} 
+trackmate\+\_\+scripting.\+displayer = Hyper\+Stack\+Displayer( \mbox{\hyperlink{namespacetrackmate__scripting_a35b280d6a7ff7cf9632ac72540ff00ca}{model}}, \mbox{\hyperlink{namespacetrackmate__scripting_a73f111ce627b22c6aef490b974e99578}{sm}}, \mbox{\hyperlink{namespacetrackmate__scripting_ae19119441a2906ca1c34db4eaea82f90}{imp}}, \mbox{\hyperlink{namespacetrackmate__scripting_a98f20402801f5842274466d2eaf199a7}{ds}} )}
+
+\Hypertarget{namespacetrackmate__scripting_a98f20402801f5842274466d2eaf199a7}\index{trackmate\_scripting@{trackmate\_scripting}!ds@{ds}}
+\index{ds@{ds}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{ds}{ds}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a98f20402801f5842274466d2eaf199a7} 
+trackmate\+\_\+scripting.\+ds = Display\+Settings\+IO.\+read\+User\+Default()}
+
+\Hypertarget{namespacetrackmate__scripting_a61e102621b896c932d992ef97b73aeef}\index{trackmate\_scripting@{trackmate\_scripting}!fm@{fm}}
+\index{fm@{fm}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{fm}{fm}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a61e102621b896c932d992ef97b73aeef} 
+trackmate\+\_\+scripting.\+fm = model.\+get\+Feature\+Model()}
+
+\Hypertarget{namespacetrackmate__scripting_ae19119441a2906ca1c34db4eaea82f90}\index{trackmate\_scripting@{trackmate\_scripting}!imp@{imp}}
+\index{imp@{imp}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{imp}{imp}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_ae19119441a2906ca1c34db4eaea82f90} 
+trackmate\+\_\+scripting.\+imp = IJ.\+open\+Image(\textquotesingle{}https\+://fiji.\+sc/samples/Fake\+Tracks.\+tif\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__scripting_affc5a65fc5da185856fdd1bc0eedc93f}\index{trackmate\_scripting@{trackmate\_scripting}!initialSpotFilterValue@{initialSpotFilterValue}}
+\index{initialSpotFilterValue@{initialSpotFilterValue}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{initialSpotFilterValue}{initialSpotFilterValue}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_affc5a65fc5da185856fdd1bc0eedc93f} 
+trackmate\+\_\+scripting.\+initial\+Spot\+Filter\+Value}
+
+\Hypertarget{namespacetrackmate__scripting_a70f40723f1320234117a29884f9a83ce}\index{trackmate\_scripting@{trackmate\_scripting}!mean@{mean}}
+\index{mean@{mean}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{mean}{mean}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a70f40723f1320234117a29884f9a83ce} 
+trackmate\+\_\+scripting.\+mean = spot.\+get\+Feature(\textquotesingle{}MEAN\+\_\+\+INTENSITY\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__scripting_a35b280d6a7ff7cf9632ac72540ff00ca}\index{trackmate\_scripting@{trackmate\_scripting}!model@{model}}
+\index{model@{model}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{model}{model}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a35b280d6a7ff7cf9632ac72540ff00ca} 
+trackmate\+\_\+scripting.\+model = Model()}
+
+\Hypertarget{namespacetrackmate__scripting_a715f9dbee9b5538fc5b38297552d01db}\index{trackmate\_scripting@{trackmate\_scripting}!ok@{ok}}
+\index{ok@{ok}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{ok}{ok}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a715f9dbee9b5538fc5b38297552d01db} 
+trackmate\+\_\+scripting.\+ok = trackmate.\+check\+Input()}
+
+\Hypertarget{namespacetrackmate__scripting_ab1b0b5849fd1c4f218350e348e455047}\index{trackmate\_scripting@{trackmate\_scripting}!q@{q}}
+\index{q@{q}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{q}{q}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_ab1b0b5849fd1c4f218350e348e455047} 
+trackmate\+\_\+scripting.\+q = spot.\+get\+Feature(\textquotesingle{}QUALITY\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__scripting_ad062e4013d4908e881ed9b95a9f64586}\index{trackmate\_scripting@{trackmate\_scripting}!settings@{settings}}
+\index{settings@{settings}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{settings}{settings}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_ad062e4013d4908e881ed9b95a9f64586} 
+trackmate\+\_\+scripting.\+settings = Settings(\mbox{\hyperlink{namespacetrackmate__scripting_ae19119441a2906ca1c34db4eaea82f90}{imp}})}
+
+\Hypertarget{namespacetrackmate__scripting_ae9e0f5819dea4232a3544a7803ace7d5}\index{trackmate\_scripting@{trackmate\_scripting}!sid@{sid}}
+\index{sid@{sid}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{sid}{sid}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_ae9e0f5819dea4232a3544a7803ace7d5} 
+trackmate\+\_\+scripting.\+sid = spot.\+ID()}
+
+\Hypertarget{namespacetrackmate__scripting_a73f111ce627b22c6aef490b974e99578}\index{trackmate\_scripting@{trackmate\_scripting}!sm@{sm}}
+\index{sm@{sm}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{sm}{sm}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a73f111ce627b22c6aef490b974e99578} 
+trackmate\+\_\+scripting.\+sm = Selection\+Model( \mbox{\hyperlink{namespacetrackmate__scripting_a35b280d6a7ff7cf9632ac72540ff00ca}{model}} )}
+
+\Hypertarget{namespacetrackmate__scripting_a1b39087a8316cf002b29ada590c3db29}\index{trackmate\_scripting@{trackmate\_scripting}!snr@{snr}}
+\index{snr@{snr}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{snr}{snr}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a1b39087a8316cf002b29ada590c3db29} 
+trackmate\+\_\+scripting.\+snr = spot.\+get\+Feature(\textquotesingle{}SNR\+\_\+\+CH1\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__scripting_a4b2ae9c367bcb0753f9360494f757342}\index{trackmate\_scripting@{trackmate\_scripting}!t@{t}}
+\index{t@{t}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{t}{t}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a4b2ae9c367bcb0753f9360494f757342} 
+trackmate\+\_\+scripting.\+t = spot.\+get\+Feature(\textquotesingle{}FRAME\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__scripting_ad81148908e6e5ce69807ddd0ce20a61d}\index{trackmate\_scripting@{trackmate\_scripting}!track@{track}}
+\index{track@{track}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{track}{track}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_ad81148908e6e5ce69807ddd0ce20a61d} 
+trackmate\+\_\+scripting.\+track = model.\+get\+Track\+Model().track\+Spots(id)}
+
+\Hypertarget{namespacetrackmate__scripting_a7272c876b481f6674c8e5fcc1d93dfe2}\index{trackmate\_scripting@{trackmate\_scripting}!trackerFactory@{trackerFactory}}
+\index{trackerFactory@{trackerFactory}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{trackerFactory}{trackerFactory}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a7272c876b481f6674c8e5fcc1d93dfe2} 
+trackmate\+\_\+scripting.\+tracker\+Factory}
+
+\Hypertarget{namespacetrackmate__scripting_a6a01cfcd03c7f5161f3807ad9ab45f5c}\index{trackmate\_scripting@{trackmate\_scripting}!trackerSettings@{trackerSettings}}
+\index{trackerSettings@{trackerSettings}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{trackerSettings}{trackerSettings}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a6a01cfcd03c7f5161f3807ad9ab45f5c} 
+trackmate\+\_\+scripting.\+tracker\+Settings}
+
+\Hypertarget{namespacetrackmate__scripting_a249384386241f618a56b4311c7ddd45c}\index{trackmate\_scripting@{trackmate\_scripting}!trackmate@{trackmate}}
+\index{trackmate@{trackmate}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{trackmate}{trackmate}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a249384386241f618a56b4311c7ddd45c} 
+trackmate\+\_\+scripting.\+trackmate = Track\+Mate(\mbox{\hyperlink{namespacetrackmate__scripting_a35b280d6a7ff7cf9632ac72540ff00ca}{model}}, \mbox{\hyperlink{namespacetrackmate__scripting_ad062e4013d4908e881ed9b95a9f64586}{settings}})}
+
+\Hypertarget{namespacetrackmate__scripting_af8877cbc7aee9592a6f456364f689554}\index{trackmate\_scripting@{trackmate\_scripting}!v@{v}}
+\index{v@{v}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{v}{v}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_af8877cbc7aee9592a6f456364f689554} 
+trackmate\+\_\+scripting.\+v = fm.\+get\+Track\+Feature(id, \textquotesingle{}TRACK\+\_\+\+MEAN\+\_\+\+SPEED\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__scripting_ac1f73738effdc3a4d53235415a02309a}\index{trackmate\_scripting@{trackmate\_scripting}!x@{x}}
+\index{x@{x}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_ac1f73738effdc3a4d53235415a02309a} 
+trackmate\+\_\+scripting.\+x = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+X\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__scripting_a5964671093fa9ca808a9df6fb4e629ff}\index{trackmate\_scripting@{trackmate\_scripting}!y@{y}}
+\index{y@{y}!trackmate\_scripting@{trackmate\_scripting}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily \label{namespacetrackmate__scripting_a5964671093fa9ca808a9df6fb4e629ff} 
+trackmate\+\_\+scripting.\+y = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Y\textquotesingle{})}
+

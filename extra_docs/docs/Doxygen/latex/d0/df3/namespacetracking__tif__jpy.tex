@@ -1,0 +1,224 @@
+\doxysection{tracking\+\_\+tif\+\_\+jpy Namespace Reference}
+\hypertarget{namespacetracking__tif__jpy}{}\label{namespacetracking__tif__jpy}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespacetracking__tif__jpy_add0093e42ff392cc5b5bf545c70f7980}{dir\+\_\+tiff}} = \textquotesingle{}/Users/baljyot/Documents/2019-\/2020/RNAP\+\_\+\+PAPER/Baljyot\+\_\+\+EXP\+\_\+\+RPOC/DATA/new\+\_\+days/20190527/ll\+\_\+ez/segmented\textquotesingle{}
+\item 
+list \mbox{\hyperlink{namespacetracking__tif__jpy_aacf9b6228c7cefd0054a4e59087aeaa1}{files}} = \mbox{[} fi for fi in files if fi.\+endswith("{}seg.\+tif"{}) \mbox{]}
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a4d4599251374e06a6f73f9c2d5b62cb9}{num\+\_\+files}} = len(\mbox{\hyperlink{namespacetracking__tif__jpy_aacf9b6228c7cefd0054a4e59087aeaa1}{files}})
+\item 
+str \mbox{\hyperlink{namespacetracking__tif__jpy_a64a0d4515c246c913562f2638b41087c}{save\+\_\+analysis\+\_\+dir}} = \mbox{\hyperlink{namespacetracking__tif__jpy_add0093e42ff392cc5b5bf545c70f7980}{dir\+\_\+tiff}} + \textquotesingle{}/\textquotesingle{} + \textquotesingle{}Analysis\textquotesingle{}
+\item 
+str \mbox{\hyperlink{namespacetracking__tif__jpy_a326e71961baba180cd89b8a7a3e2b3cf}{str\+\_\+name\+\_\+fil}} = root + \textquotesingle{}/\textquotesingle{} + \mbox{\hyperlink{namespacetracking__tif__jpy_aacf9b6228c7cefd0054a4e59087aeaa1}{files}} \mbox{[}z\mbox{]}
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_ad2d95a1db7b811bc1e7ecc1205dade94}{imp}} = IJ.\+open\+Image(\mbox{\hyperlink{namespacetracking__tif__jpy_a326e71961baba180cd89b8a7a3e2b3cf}{str\+\_\+name\+\_\+fil}})
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a2c484e5e32fdf2478baa12332cbe7612}{model}} = Model()
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_af116e036f844cc2ab7a381d759833db3}{settings}} = Settings()
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a56f4be3d861d0d017177e19255a68b3e}{detector\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a54299e566ffbe8b4d05578d646d001be}{detector\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a3faf980194b36956da276a92b55d2ef8}{tracker\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_ad4233a8849a598e2de17ddb16987c12c}{tracker\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_aa5db68696bc59a52d87dd9cc8356fd99}{trackmate}} = Track\+Mate(\mbox{\hyperlink{namespacetracking__tif__jpy_a2c484e5e32fdf2478baa12332cbe7612}{model}}, \mbox{\hyperlink{namespacetracking__tif__jpy_af116e036f844cc2ab7a381d759833db3}{settings}})
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a3357c6d9d86b178dc615321a8bb8ac9e}{ok}} = trackmate.\+check\+Input()
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_afc3c8e8d83fc27d9883a8b160b544c3c}{selection\+Model}} = Selection\+Model(\mbox{\hyperlink{namespacetracking__tif__jpy_a2c484e5e32fdf2478baa12332cbe7612}{model}})
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a449392fa3d40d64919e6c680289fab99}{displayer}} = Hyper\+Stack\+Displayer(\mbox{\hyperlink{namespacetracking__tif__jpy_a2c484e5e32fdf2478baa12332cbe7612}{model}}, \mbox{\hyperlink{namespacetracking__tif__jpy_afc3c8e8d83fc27d9883a8b160b544c3c}{selection\+Model}}, \mbox{\hyperlink{namespacetracking__tif__jpy_ad2d95a1db7b811bc1e7ecc1205dade94}{imp}})
+\item 
+int \mbox{\hyperlink{namespacetracking__tif__jpy_a54244f541e0b1216bf44618f49d21a4e}{go}} = 0
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a23d7d2947e34680b15d2e6c65e5e6318}{fm}} = model.\+get\+Feature\+Model()
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_ae577781aec85f04909c54300e45382cf}{a}} = model.\+get\+Spots().iterator(True)
+\item 
+str \mbox{\hyperlink{namespacetracking__tif__jpy_a7560c871104aeee5ffb6f72a48f253cb}{cd}} = "{}D\+:\textbackslash{}\textbackslash{}\+Baljyot\+\_\+\+Experiments\textbackslash{}\textbackslash{}20190524\textbackslash{}\textbackslash{}rpoc\textbackslash{}\textbackslash{}segmented"{}
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a70375a98f1a6005a89aeeae57a7aefbe}{x}} = i.\+get\+Feature("{}POSITION\+\_\+\+X"{})
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a2c21312cb06152162d7dbeb7a328b033}{y}} = i.\+get\+Feature("{}POSITION\+\_\+\+Y"{})
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_ac662e367015aa42adbf24e974ccc522f}{std}} = i.\+get\+Feature("{}STANDARD\+\_\+\+DEVIATION"{})
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a51712c3b69fdb6e6c6d9ec47cb4fbba2}{rad}} = i.\+get\+Feature("{}RADIUS"{})
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_adcbb6986021fdcd4c95e1d422c2bc991}{ed}} = i.\+get\+Feature("{}ESTIMATED\+\_\+\+DIAMETER"{})
+\item 
+str \mbox{\hyperlink{namespacetracking__tif__jpy_a6c259e4bbaef522a3af9335adc9e4875}{dir\+\_\+name\+\_\+save\+\_\+inten}} = \mbox{\hyperlink{namespacetracking__tif__jpy_a64a0d4515c246c913562f2638b41087c}{save\+\_\+analysis\+\_\+dir}} + \textquotesingle{}/\textquotesingle{} + \mbox{\hyperlink{namespacetracking__tif__jpy_aacf9b6228c7cefd0054a4e59087aeaa1}{files}}\mbox{[}z\mbox{]} + \textquotesingle{}\+\_\+\textquotesingle{} + \textquotesingle{}spots\textquotesingle{} +\textquotesingle{}.csv\textquotesingle{}
+\item 
+\mbox{\hyperlink{namespacetracking__tif__jpy_a82e5cd2cc4bcfab25b87a5ef630ad4b3}{spam\+Writer}} = csv.\+writer(f, delimiter=\textquotesingle{},\textquotesingle{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacetracking__tif__jpy_ae577781aec85f04909c54300e45382cf}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!a@{a}}
+\index{a@{a}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{a}{a}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_ae577781aec85f04909c54300e45382cf} 
+tracking\+\_\+tif\+\_\+jpy.\+a = model.\+get\+Spots().iterator(True)}
+
+\Hypertarget{namespacetracking__tif__jpy_a7560c871104aeee5ffb6f72a48f253cb}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!cd@{cd}}
+\index{cd@{cd}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{cd}{cd}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a7560c871104aeee5ffb6f72a48f253cb} 
+str tracking\+\_\+tif\+\_\+jpy.\+cd = "{}D\+:\textbackslash{}\textbackslash{}\+Baljyot\+\_\+\+Experiments\textbackslash{}\textbackslash{}20190524\textbackslash{}\textbackslash{}rpoc\textbackslash{}\textbackslash{}segmented"{}}
+
+\Hypertarget{namespacetracking__tif__jpy_a56f4be3d861d0d017177e19255a68b3e}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!detectorFactory@{detectorFactory}}
+\index{detectorFactory@{detectorFactory}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{detectorFactory}{detectorFactory}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a56f4be3d861d0d017177e19255a68b3e} 
+tracking\+\_\+tif\+\_\+jpy.\+detector\+Factory}
+
+\Hypertarget{namespacetracking__tif__jpy_a54299e566ffbe8b4d05578d646d001be}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!detectorSettings@{detectorSettings}}
+\index{detectorSettings@{detectorSettings}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{detectorSettings}{detectorSettings}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a54299e566ffbe8b4d05578d646d001be} 
+tracking\+\_\+tif\+\_\+jpy.\+detector\+Settings}
+
+\Hypertarget{namespacetracking__tif__jpy_a6c259e4bbaef522a3af9335adc9e4875}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!dir\_name\_save\_inten@{dir\_name\_save\_inten}}
+\index{dir\_name\_save\_inten@{dir\_name\_save\_inten}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{dir\_name\_save\_inten}{dir\_name\_save\_inten}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a6c259e4bbaef522a3af9335adc9e4875} 
+str tracking\+\_\+tif\+\_\+jpy.\+dir\+\_\+name\+\_\+save\+\_\+inten = \mbox{\hyperlink{namespacetracking__tif__jpy_a64a0d4515c246c913562f2638b41087c}{save\+\_\+analysis\+\_\+dir}} + \textquotesingle{}/\textquotesingle{} + \mbox{\hyperlink{namespacetracking__tif__jpy_aacf9b6228c7cefd0054a4e59087aeaa1}{files}}\mbox{[}z\mbox{]} + \textquotesingle{}\+\_\+\textquotesingle{} + \textquotesingle{}spots\textquotesingle{} +\textquotesingle{}.csv\textquotesingle{}}
+
+\Hypertarget{namespacetracking__tif__jpy_add0093e42ff392cc5b5bf545c70f7980}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!dir\_tiff@{dir\_tiff}}
+\index{dir\_tiff@{dir\_tiff}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{dir\_tiff}{dir\_tiff}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_add0093e42ff392cc5b5bf545c70f7980} 
+str tracking\+\_\+tif\+\_\+jpy.\+dir\+\_\+tiff = \textquotesingle{}/Users/baljyot/Documents/2019-\/2020/RNAP\+\_\+\+PAPER/Baljyot\+\_\+\+EXP\+\_\+\+RPOC/DATA/new\+\_\+days/20190527/ll\+\_\+ez/segmented\textquotesingle{}}
+
+\Hypertarget{namespacetracking__tif__jpy_a449392fa3d40d64919e6c680289fab99}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!displayer@{displayer}}
+\index{displayer@{displayer}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{displayer}{displayer}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a449392fa3d40d64919e6c680289fab99} 
+tracking\+\_\+tif\+\_\+jpy.\+displayer = Hyper\+Stack\+Displayer(\mbox{\hyperlink{namespacetracking__tif__jpy_a2c484e5e32fdf2478baa12332cbe7612}{model}}, \mbox{\hyperlink{namespacetracking__tif__jpy_afc3c8e8d83fc27d9883a8b160b544c3c}{selection\+Model}}, \mbox{\hyperlink{namespacetracking__tif__jpy_ad2d95a1db7b811bc1e7ecc1205dade94}{imp}})}
+
+\Hypertarget{namespacetracking__tif__jpy_adcbb6986021fdcd4c95e1d422c2bc991}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!ed@{ed}}
+\index{ed@{ed}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{ed}{ed}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_adcbb6986021fdcd4c95e1d422c2bc991} 
+tracking\+\_\+tif\+\_\+jpy.\+ed = i.\+get\+Feature("{}ESTIMATED\+\_\+\+DIAMETER"{})}
+
+\Hypertarget{namespacetracking__tif__jpy_aacf9b6228c7cefd0054a4e59087aeaa1}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!files@{files}}
+\index{files@{files}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{files}{files}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_aacf9b6228c7cefd0054a4e59087aeaa1} 
+list tracking\+\_\+tif\+\_\+jpy.\+files = \mbox{[} fi for fi in files if fi.\+endswith("{}seg.\+tif"{}) \mbox{]}}
+
+\Hypertarget{namespacetracking__tif__jpy_a23d7d2947e34680b15d2e6c65e5e6318}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!fm@{fm}}
+\index{fm@{fm}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{fm}{fm}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a23d7d2947e34680b15d2e6c65e5e6318} 
+tracking\+\_\+tif\+\_\+jpy.\+fm = model.\+get\+Feature\+Model()}
+
+\Hypertarget{namespacetracking__tif__jpy_a54244f541e0b1216bf44618f49d21a4e}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!go@{go}}
+\index{go@{go}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{go}{go}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a54244f541e0b1216bf44618f49d21a4e} 
+int tracking\+\_\+tif\+\_\+jpy.\+go = 0}
+
+\Hypertarget{namespacetracking__tif__jpy_ad2d95a1db7b811bc1e7ecc1205dade94}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!imp@{imp}}
+\index{imp@{imp}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{imp}{imp}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_ad2d95a1db7b811bc1e7ecc1205dade94} 
+tracking\+\_\+tif\+\_\+jpy.\+imp = IJ.\+open\+Image(\mbox{\hyperlink{namespacetracking__tif__jpy_a326e71961baba180cd89b8a7a3e2b3cf}{str\+\_\+name\+\_\+fil}})}
+
+\Hypertarget{namespacetracking__tif__jpy_a2c484e5e32fdf2478baa12332cbe7612}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!model@{model}}
+\index{model@{model}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{model}{model}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a2c484e5e32fdf2478baa12332cbe7612} 
+tracking\+\_\+tif\+\_\+jpy.\+model = Model()}
+
+\Hypertarget{namespacetracking__tif__jpy_a4d4599251374e06a6f73f9c2d5b62cb9}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!num\_files@{num\_files}}
+\index{num\_files@{num\_files}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{num\_files}{num\_files}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a4d4599251374e06a6f73f9c2d5b62cb9} 
+tracking\+\_\+tif\+\_\+jpy.\+num\+\_\+files = len(\mbox{\hyperlink{namespacetracking__tif__jpy_aacf9b6228c7cefd0054a4e59087aeaa1}{files}})}
+
+\Hypertarget{namespacetracking__tif__jpy_a3357c6d9d86b178dc615321a8bb8ac9e}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!ok@{ok}}
+\index{ok@{ok}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{ok}{ok}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a3357c6d9d86b178dc615321a8bb8ac9e} 
+tracking\+\_\+tif\+\_\+jpy.\+ok = trackmate.\+check\+Input()}
+
+\Hypertarget{namespacetracking__tif__jpy_a51712c3b69fdb6e6c6d9ec47cb4fbba2}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!rad@{rad}}
+\index{rad@{rad}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{rad}{rad}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a51712c3b69fdb6e6c6d9ec47cb4fbba2} 
+tracking\+\_\+tif\+\_\+jpy.\+rad = i.\+get\+Feature("{}RADIUS"{})}
+
+\Hypertarget{namespacetracking__tif__jpy_a64a0d4515c246c913562f2638b41087c}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!save\_analysis\_dir@{save\_analysis\_dir}}
+\index{save\_analysis\_dir@{save\_analysis\_dir}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{save\_analysis\_dir}{save\_analysis\_dir}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a64a0d4515c246c913562f2638b41087c} 
+str tracking\+\_\+tif\+\_\+jpy.\+save\+\_\+analysis\+\_\+dir = \mbox{\hyperlink{namespacetracking__tif__jpy_add0093e42ff392cc5b5bf545c70f7980}{dir\+\_\+tiff}} + \textquotesingle{}/\textquotesingle{} + \textquotesingle{}Analysis\textquotesingle{}}
+
+\Hypertarget{namespacetracking__tif__jpy_afc3c8e8d83fc27d9883a8b160b544c3c}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!selectionModel@{selectionModel}}
+\index{selectionModel@{selectionModel}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{selectionModel}{selectionModel}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_afc3c8e8d83fc27d9883a8b160b544c3c} 
+tracking\+\_\+tif\+\_\+jpy.\+selection\+Model = Selection\+Model(\mbox{\hyperlink{namespacetracking__tif__jpy_a2c484e5e32fdf2478baa12332cbe7612}{model}})}
+
+\Hypertarget{namespacetracking__tif__jpy_af116e036f844cc2ab7a381d759833db3}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!settings@{settings}}
+\index{settings@{settings}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{settings}{settings}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_af116e036f844cc2ab7a381d759833db3} 
+tracking\+\_\+tif\+\_\+jpy.\+settings = Settings()}
+
+\Hypertarget{namespacetracking__tif__jpy_a82e5cd2cc4bcfab25b87a5ef630ad4b3}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!spamWriter@{spamWriter}}
+\index{spamWriter@{spamWriter}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{spamWriter}{spamWriter}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a82e5cd2cc4bcfab25b87a5ef630ad4b3} 
+tracking\+\_\+tif\+\_\+jpy.\+spam\+Writer = csv.\+writer(f, delimiter=\textquotesingle{},\textquotesingle{})}
+
+\Hypertarget{namespacetracking__tif__jpy_ac662e367015aa42adbf24e974ccc522f}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!std@{std}}
+\index{std@{std}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{std}{std}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_ac662e367015aa42adbf24e974ccc522f} 
+tracking\+\_\+tif\+\_\+jpy.\+std = i.\+get\+Feature("{}STANDARD\+\_\+\+DEVIATION"{})}
+
+\Hypertarget{namespacetracking__tif__jpy_a326e71961baba180cd89b8a7a3e2b3cf}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!str\_name\_fil@{str\_name\_fil}}
+\index{str\_name\_fil@{str\_name\_fil}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{str\_name\_fil}{str\_name\_fil}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a326e71961baba180cd89b8a7a3e2b3cf} 
+str tracking\+\_\+tif\+\_\+jpy.\+str\+\_\+name\+\_\+fil = root + \textquotesingle{}/\textquotesingle{} + \mbox{\hyperlink{namespacetracking__tif__jpy_aacf9b6228c7cefd0054a4e59087aeaa1}{files}} \mbox{[}z\mbox{]}}
+
+\Hypertarget{namespacetracking__tif__jpy_a3faf980194b36956da276a92b55d2ef8}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!trackerFactory@{trackerFactory}}
+\index{trackerFactory@{trackerFactory}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{trackerFactory}{trackerFactory}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a3faf980194b36956da276a92b55d2ef8} 
+tracking\+\_\+tif\+\_\+jpy.\+tracker\+Factory}
+
+\Hypertarget{namespacetracking__tif__jpy_ad4233a8849a598e2de17ddb16987c12c}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!trackerSettings@{trackerSettings}}
+\index{trackerSettings@{trackerSettings}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{trackerSettings}{trackerSettings}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_ad4233a8849a598e2de17ddb16987c12c} 
+tracking\+\_\+tif\+\_\+jpy.\+tracker\+Settings}
+
+\Hypertarget{namespacetracking__tif__jpy_aa5db68696bc59a52d87dd9cc8356fd99}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!trackmate@{trackmate}}
+\index{trackmate@{trackmate}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{trackmate}{trackmate}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_aa5db68696bc59a52d87dd9cc8356fd99} 
+tracking\+\_\+tif\+\_\+jpy.\+trackmate = Track\+Mate(\mbox{\hyperlink{namespacetracking__tif__jpy_a2c484e5e32fdf2478baa12332cbe7612}{model}}, \mbox{\hyperlink{namespacetracking__tif__jpy_af116e036f844cc2ab7a381d759833db3}{settings}})}
+
+\Hypertarget{namespacetracking__tif__jpy_a70375a98f1a6005a89aeeae57a7aefbe}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!x@{x}}
+\index{x@{x}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a70375a98f1a6005a89aeeae57a7aefbe} 
+tracking\+\_\+tif\+\_\+jpy.\+x = i.\+get\+Feature("{}POSITION\+\_\+\+X"{})}
+
+\Hypertarget{namespacetracking__tif__jpy_a2c21312cb06152162d7dbeb7a328b033}\index{tracking\_tif\_jpy@{tracking\_tif\_jpy}!y@{y}}
+\index{y@{y}!tracking\_tif\_jpy@{tracking\_tif\_jpy}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily \label{namespacetracking__tif__jpy_a2c21312cb06152162d7dbeb7a328b033} 
+tracking\+\_\+tif\+\_\+jpy.\+y = i.\+get\+Feature("{}POSITION\+\_\+\+Y"{})}
+

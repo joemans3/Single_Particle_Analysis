@@ -1,0 +1,184 @@
+\doxysection{trackmate\+\_\+exp Namespace Reference}
+\hypertarget{namespacetrackmate__exp}{}\label{namespacetrackmate__exp}\index{trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_aac7c8417d42523a128b3d2154feaf51d}{imp}} = IJ.\+open\+Image(\textquotesingle{}/Users/baljyot/Desktop/Baljyot\+\_\+\+EXP\+\_\+\+RPOC/Scripts/0.tif\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}} = Model()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a89680314031999d532fb5f89382e8192}{settings}} = Settings()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a890101f2289fcee35a48aa345dcaebf3}{detector\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a5b9d0267e84514ac29c7c04d94def1df}{detector\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a15f98df151e1534bba647c9c2bb5211a}{tracker\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a267767bc28a330a5e0095a0ce315a479}{tracker\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a0cab64cfa3385977458614b8dee9ab4c}{initial\+Spot\+Filter\+Value}}
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a8aba2b5ce80fb01e2d4d3a3c331a1c70}{trackmate}} = Track\+Mate(\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}}, \mbox{\hyperlink{namespacetrackmate__exp_a89680314031999d532fb5f89382e8192}{settings}})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_afc0d5a3d4e5e987f4fd2e4f3f8976cfa}{ok}} = trackmate.\+check\+Input()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a43746863c00a52d2419c0c35f2fab626}{selection\+Model}} = Selection\+Model(\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_aac888519a6d4999cf449b83921c0cb55}{displayer}} = Hyper\+Stack\+Displayer(\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}}, \mbox{\hyperlink{namespacetrackmate__exp_a43746863c00a52d2419c0c35f2fab626}{selection\+Model}}, \mbox{\hyperlink{namespacetrackmate__exp_aac7c8417d42523a128b3d2154feaf51d}{imp}})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_ab06ffd4c0712b4e5bcde32ba3f9ab218}{fm}} = model.\+get\+Feature\+Model()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_af953986d630930e0d5c910769d2c3959}{v}} = fm.\+get\+Track\+Feature(id, \textquotesingle{}TRACK\+\_\+\+MEAN\+\_\+\+SPEED\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a9d56e3cd4927746d6b21e66adb095cb1}{track}} = model.\+get\+Track\+Model().track\+Spots(id)
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_aea375247c18023b990ea666379913f7d}{sid}} = spot.\+ID()
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a6d729bb99defedbc9232db914e847bfb}{x}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+X\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_aae9053693a52168254bf4ac44b87c6e1}{y}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Y\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_ab408d1ed5a25eea6b98d982497d49f83}{t}} = spot.\+get\+Feature(\textquotesingle{}FRAME\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_af996929dffbc4a7545277d9df6c1d086}{q}} = spot.\+get\+Feature(\textquotesingle{}QUALITY\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_a9e9497636e1e32bcef3352c2e957e4a8}{snr}} = spot.\+get\+Feature(\textquotesingle{}SNR\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetrackmate__exp_ab2dd0305f61e8812b7cf02969f14a4e9}{mean}} = spot.\+get\+Feature(\textquotesingle{}MEAN\+\_\+\+INTENSITY\textquotesingle{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacetrackmate__exp_a890101f2289fcee35a48aa345dcaebf3}\index{trackmate\_exp@{trackmate\_exp}!detectorFactory@{detectorFactory}}
+\index{detectorFactory@{detectorFactory}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{detectorFactory}{detectorFactory}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a890101f2289fcee35a48aa345dcaebf3} 
+trackmate\+\_\+exp.\+detector\+Factory}
+
+\Hypertarget{namespacetrackmate__exp_a5b9d0267e84514ac29c7c04d94def1df}\index{trackmate\_exp@{trackmate\_exp}!detectorSettings@{detectorSettings}}
+\index{detectorSettings@{detectorSettings}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{detectorSettings}{detectorSettings}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a5b9d0267e84514ac29c7c04d94def1df} 
+trackmate\+\_\+exp.\+detector\+Settings}
+
+\Hypertarget{namespacetrackmate__exp_aac888519a6d4999cf449b83921c0cb55}\index{trackmate\_exp@{trackmate\_exp}!displayer@{displayer}}
+\index{displayer@{displayer}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{displayer}{displayer}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_aac888519a6d4999cf449b83921c0cb55} 
+trackmate\+\_\+exp.\+displayer = Hyper\+Stack\+Displayer(\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}}, \mbox{\hyperlink{namespacetrackmate__exp_a43746863c00a52d2419c0c35f2fab626}{selection\+Model}}, \mbox{\hyperlink{namespacetrackmate__exp_aac7c8417d42523a128b3d2154feaf51d}{imp}})}
+
+\Hypertarget{namespacetrackmate__exp_ab06ffd4c0712b4e5bcde32ba3f9ab218}\index{trackmate\_exp@{trackmate\_exp}!fm@{fm}}
+\index{fm@{fm}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{fm}{fm}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_ab06ffd4c0712b4e5bcde32ba3f9ab218} 
+trackmate\+\_\+exp.\+fm = model.\+get\+Feature\+Model()}
+
+\Hypertarget{namespacetrackmate__exp_aac7c8417d42523a128b3d2154feaf51d}\index{trackmate\_exp@{trackmate\_exp}!imp@{imp}}
+\index{imp@{imp}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{imp}{imp}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_aac7c8417d42523a128b3d2154feaf51d} 
+trackmate\+\_\+exp.\+imp = IJ.\+open\+Image(\textquotesingle{}/Users/baljyot/Desktop/Baljyot\+\_\+\+EXP\+\_\+\+RPOC/Scripts/0.tif\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__exp_a0cab64cfa3385977458614b8dee9ab4c}\index{trackmate\_exp@{trackmate\_exp}!initialSpotFilterValue@{initialSpotFilterValue}}
+\index{initialSpotFilterValue@{initialSpotFilterValue}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{initialSpotFilterValue}{initialSpotFilterValue}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a0cab64cfa3385977458614b8dee9ab4c} 
+trackmate\+\_\+exp.\+initial\+Spot\+Filter\+Value}
+
+\Hypertarget{namespacetrackmate__exp_ab2dd0305f61e8812b7cf02969f14a4e9}\index{trackmate\_exp@{trackmate\_exp}!mean@{mean}}
+\index{mean@{mean}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{mean}{mean}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_ab2dd0305f61e8812b7cf02969f14a4e9} 
+trackmate\+\_\+exp.\+mean = spot.\+get\+Feature(\textquotesingle{}MEAN\+\_\+\+INTENSITY\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}\index{trackmate\_exp@{trackmate\_exp}!model@{model}}
+\index{model@{model}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{model}{model}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0} 
+trackmate\+\_\+exp.\+model = Model()}
+
+\Hypertarget{namespacetrackmate__exp_afc0d5a3d4e5e987f4fd2e4f3f8976cfa}\index{trackmate\_exp@{trackmate\_exp}!ok@{ok}}
+\index{ok@{ok}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{ok}{ok}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_afc0d5a3d4e5e987f4fd2e4f3f8976cfa} 
+trackmate\+\_\+exp.\+ok = trackmate.\+check\+Input()}
+
+\Hypertarget{namespacetrackmate__exp_af996929dffbc4a7545277d9df6c1d086}\index{trackmate\_exp@{trackmate\_exp}!q@{q}}
+\index{q@{q}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{q}{q}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_af996929dffbc4a7545277d9df6c1d086} 
+trackmate\+\_\+exp.\+q = spot.\+get\+Feature(\textquotesingle{}QUALITY\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__exp_a43746863c00a52d2419c0c35f2fab626}\index{trackmate\_exp@{trackmate\_exp}!selectionModel@{selectionModel}}
+\index{selectionModel@{selectionModel}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{selectionModel}{selectionModel}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a43746863c00a52d2419c0c35f2fab626} 
+trackmate\+\_\+exp.\+selection\+Model = Selection\+Model(\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}})}
+
+\Hypertarget{namespacetrackmate__exp_a89680314031999d532fb5f89382e8192}\index{trackmate\_exp@{trackmate\_exp}!settings@{settings}}
+\index{settings@{settings}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{settings}{settings}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a89680314031999d532fb5f89382e8192} 
+trackmate\+\_\+exp.\+settings = Settings()}
+
+\Hypertarget{namespacetrackmate__exp_aea375247c18023b990ea666379913f7d}\index{trackmate\_exp@{trackmate\_exp}!sid@{sid}}
+\index{sid@{sid}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{sid}{sid}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_aea375247c18023b990ea666379913f7d} 
+trackmate\+\_\+exp.\+sid = spot.\+ID()}
+
+\Hypertarget{namespacetrackmate__exp_a9e9497636e1e32bcef3352c2e957e4a8}\index{trackmate\_exp@{trackmate\_exp}!snr@{snr}}
+\index{snr@{snr}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{snr}{snr}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a9e9497636e1e32bcef3352c2e957e4a8} 
+trackmate\+\_\+exp.\+snr = spot.\+get\+Feature(\textquotesingle{}SNR\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__exp_ab408d1ed5a25eea6b98d982497d49f83}\index{trackmate\_exp@{trackmate\_exp}!t@{t}}
+\index{t@{t}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{t}{t}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_ab408d1ed5a25eea6b98d982497d49f83} 
+trackmate\+\_\+exp.\+t = spot.\+get\+Feature(\textquotesingle{}FRAME\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__exp_a9d56e3cd4927746d6b21e66adb095cb1}\index{trackmate\_exp@{trackmate\_exp}!track@{track}}
+\index{track@{track}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{track}{track}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a9d56e3cd4927746d6b21e66adb095cb1} 
+trackmate\+\_\+exp.\+track = model.\+get\+Track\+Model().track\+Spots(id)}
+
+\Hypertarget{namespacetrackmate__exp_a15f98df151e1534bba647c9c2bb5211a}\index{trackmate\_exp@{trackmate\_exp}!trackerFactory@{trackerFactory}}
+\index{trackerFactory@{trackerFactory}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{trackerFactory}{trackerFactory}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a15f98df151e1534bba647c9c2bb5211a} 
+trackmate\+\_\+exp.\+tracker\+Factory}
+
+\Hypertarget{namespacetrackmate__exp_a267767bc28a330a5e0095a0ce315a479}\index{trackmate\_exp@{trackmate\_exp}!trackerSettings@{trackerSettings}}
+\index{trackerSettings@{trackerSettings}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{trackerSettings}{trackerSettings}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a267767bc28a330a5e0095a0ce315a479} 
+trackmate\+\_\+exp.\+tracker\+Settings}
+
+\Hypertarget{namespacetrackmate__exp_a8aba2b5ce80fb01e2d4d3a3c331a1c70}\index{trackmate\_exp@{trackmate\_exp}!trackmate@{trackmate}}
+\index{trackmate@{trackmate}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{trackmate}{trackmate}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a8aba2b5ce80fb01e2d4d3a3c331a1c70} 
+trackmate\+\_\+exp.\+trackmate = Track\+Mate(\mbox{\hyperlink{namespacetrackmate__exp_a49b290fac3faf902492863b5722411f0}{model}}, \mbox{\hyperlink{namespacetrackmate__exp_a89680314031999d532fb5f89382e8192}{settings}})}
+
+\Hypertarget{namespacetrackmate__exp_af953986d630930e0d5c910769d2c3959}\index{trackmate\_exp@{trackmate\_exp}!v@{v}}
+\index{v@{v}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{v}{v}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_af953986d630930e0d5c910769d2c3959} 
+trackmate\+\_\+exp.\+v = fm.\+get\+Track\+Feature(id, \textquotesingle{}TRACK\+\_\+\+MEAN\+\_\+\+SPEED\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__exp_a6d729bb99defedbc9232db914e847bfb}\index{trackmate\_exp@{trackmate\_exp}!x@{x}}
+\index{x@{x}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_a6d729bb99defedbc9232db914e847bfb} 
+trackmate\+\_\+exp.\+x = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+X\textquotesingle{})}
+
+\Hypertarget{namespacetrackmate__exp_aae9053693a52168254bf4ac44b87c6e1}\index{trackmate\_exp@{trackmate\_exp}!y@{y}}
+\index{y@{y}!trackmate\_exp@{trackmate\_exp}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily \label{namespacetrackmate__exp_aae9053693a52168254bf4ac44b87c6e1} 
+trackmate\+\_\+exp.\+y = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Y\textquotesingle{})}
+

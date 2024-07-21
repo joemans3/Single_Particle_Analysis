@@ -1,0 +1,288 @@
+\doxysection{testing\+\_\+new\+\_\+script Namespace Reference}
+\hypertarget{namespacetesting__new__script}{}\label{namespacetesting__new__script}\index{testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespacetesting__new__script_aaa18e9cdbeecfe26b555ceadb140986d}{dir\+\_\+tiff}} = \textquotesingle{}/Volumes/Baljyot\+\_\+\+HD/SMT\+\_\+\+Olympus/Baljyot\+\_\+temp/12/rpoc\+\_\+m9\textquotesingle{}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a8ade2d08504edefda3debe991a9fc296}{files}} = glob.\+glob(\mbox{\hyperlink{namespacetesting__new__script_aaa18e9cdbeecfe26b555ceadb140986d}{dir\+\_\+tiff}} + \textquotesingle{}/\textquotesingle{} +\textquotesingle{}\texorpdfstring{$\ast$}{*}seg.\+tif\textquotesingle{})
+\item 
+str \mbox{\hyperlink{namespacetesting__new__script_a09b7fd446e1be167e4049922e83e9138}{root}} = \mbox{\hyperlink{namespacetesting__new__script_aaa18e9cdbeecfe26b555ceadb140986d}{dir\+\_\+tiff}}
+\item 
+str \mbox{\hyperlink{namespacetesting__new__script_a155714dfd332c6319d71bd59147139a0}{save\+\_\+analysis\+\_\+dir}} = \mbox{\hyperlink{namespacetesting__new__script_aaa18e9cdbeecfe26b555ceadb140986d}{dir\+\_\+tiff}} + \textquotesingle{}/\textquotesingle{} + \textquotesingle{}Analysis\+\_\+test\textquotesingle{}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a835e59a1427685a68bcf9b58c04f4fc4}{str\+\_\+name\+\_\+fil}} = \mbox{\hyperlink{namespacetesting__new__script_a8ade2d08504edefda3debe991a9fc296}{files}}\mbox{[}z\mbox{]}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a6668764f0d9a10c092ed4beb85ab1ea1}{imp}} = IJ.\+open\+Image(\mbox{\hyperlink{namespacetesting__new__script_a835e59a1427685a68bcf9b58c04f4fc4}{str\+\_\+name\+\_\+fil}})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a0e09e7524303c2561ec27d7af932d824}{dims}} = imp.\+get\+Dimensions();
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a9c102a1326a175112814591b5cb70602}{model}} = Model()
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a981f1145c00b88404f3ec9412ebc494d}{logger}} = Logger.\+IJ\+\_\+\+LOGGER
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_ade7247cbd304b222525bf0cd334c803f}{settings}} = Settings(\mbox{\hyperlink{namespacetesting__new__script_a6668764f0d9a10c092ed4beb85ab1ea1}{imp}})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_aa53caf8bcb7ac1c953284cbbc61bedf5}{detector\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_af407e10ad8e50d5b1110dc54f8681132}{detector\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a3ff47c128b7170fa2cc06826abbf22a2}{tracker\+Factory}}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_af1b5aac0dfb80e49e08818fb236563cd}{tracker\+Settings}}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a06b5bf95973061ff5f73aa650251dff6}{initial\+Spot\+Filter\+Value}}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a8b51ee729c10d355c300c7da2179e39d}{trackmate}} = Track\+Mate(\mbox{\hyperlink{namespacetesting__new__script_a9c102a1326a175112814591b5cb70602}{model}}, \mbox{\hyperlink{namespacetesting__new__script_ade7247cbd304b222525bf0cd334c803f}{settings}})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a5c36ffc1b367b41d9cc481ba9d068902}{ok}} = trackmate.\+check\+Input()
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a75174539b2551fe7847878313f0730dd}{selection\+Model}} = Selection\+Model(\mbox{\hyperlink{namespacetesting__new__script_a9c102a1326a175112814591b5cb70602}{model}})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a1ebf9b2c1c1342493210a9801d9f0308}{displayer}} = Hyper\+Stack\+Displayer(\mbox{\hyperlink{namespacetesting__new__script_a9c102a1326a175112814591b5cb70602}{model}}, \mbox{\hyperlink{namespacetesting__new__script_a75174539b2551fe7847878313f0730dd}{selection\+Model}}, \mbox{\hyperlink{namespacetesting__new__script_a6668764f0d9a10c092ed4beb85ab1ea1}{imp}})
+\item 
+int \mbox{\hyperlink{namespacetesting__new__script_a826e6d9b51400b1795ed93cbf663cd97}{go}} = 0
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_aec8896aac287003a3d9aeae2a0eb3444}{fm}} = model.\+get\+Feature\+Model()
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a50d713df40b4cbe91797fef8ebe84279}{a}} = model.\+get\+Spots().iterator(True)
+\item 
+str \mbox{\hyperlink{namespacetesting__new__script_a9042235dedcff102f7580f77439601c0}{cd}} = \mbox{\hyperlink{namespacetesting__new__script_a09b7fd446e1be167e4049922e83e9138}{root}}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a4a625061dc884e102aba7ba8588027db}{v}} = fm.\+get\+Track\+Feature(id, \textquotesingle{}TRACK\+\_\+\+MEAN\+\_\+\+SPEED\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a64e2a07614887e57c5418e087f6f1eb4}{track}} = model.\+get\+Track\+Model().track\+Spots(id)
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a73101f90a7dc6974f777bc1f4c766f16}{sid}} = spot.\+ID()
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a2bc47eb998dfa538af2eea2f6505cdeb}{x}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+X\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_ab0f9f04e6544e08cdae48066e9a36dad}{y}} = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Y\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a9fc4d54994932dcbb3b3d571c96b48a1}{t}} = spot.\+get\+Feature(\textquotesingle{}FRAME\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a2170e94b1dab94cd3d7456e4c173161d}{rad}} = spot.\+get\+Feature(\textquotesingle{}RADIUS\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_ac7c2cfbc56bca5b8db085d2aaf03e264}{q}} = spot.\+get\+Feature(\textquotesingle{}QUALITY\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a680906e38e00f2bdfa7fe31590fa0c9c}{snr}} = spot.\+get\+Feature(\textquotesingle{}SNR\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_aaf0d4c43fed23d53ad84fce74130ed3e}{mean}} = spot.\+get\+Feature(\textquotesingle{}MEAN\+\_\+\+INTENSITY\textquotesingle{})
+\item 
+str \mbox{\hyperlink{namespacetesting__new__script_ab153a4aaa5e4c512d7efab89058cfbdf}{dir\+\_\+name\+\_\+save\+\_\+inten}} = \mbox{\hyperlink{namespacetesting__new__script_a155714dfd332c6319d71bd59147139a0}{save\+\_\+analysis\+\_\+dir}} + \textquotesingle{}/\textquotesingle{} + \mbox{\hyperlink{namespacetesting__new__script_a8ade2d08504edefda3debe991a9fc296}{files}}\mbox{[}z\mbox{]}\mbox{[}\+:-\/4\mbox{]} + \textquotesingle{}.tif\+\_\+spots\textquotesingle{} +\textquotesingle{}.csv\textquotesingle{}
+\item 
+\mbox{\hyperlink{namespacetesting__new__script_a7acc7d379ecff8ff7688938e70fa1f4c}{spam\+Writer}} = csv.\+writer(f, delimiter=\textquotesingle{},\textquotesingle{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacetesting__new__script_a50d713df40b4cbe91797fef8ebe84279}\index{testing\_new\_script@{testing\_new\_script}!a@{a}}
+\index{a@{a}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{a}{a}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a50d713df40b4cbe91797fef8ebe84279} 
+testing\+\_\+new\+\_\+script.\+a = model.\+get\+Spots().iterator(True)}
+
+\Hypertarget{namespacetesting__new__script_a9042235dedcff102f7580f77439601c0}\index{testing\_new\_script@{testing\_new\_script}!cd@{cd}}
+\index{cd@{cd}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{cd}{cd}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a9042235dedcff102f7580f77439601c0} 
+str testing\+\_\+new\+\_\+script.\+cd = \mbox{\hyperlink{namespacetesting__new__script_a09b7fd446e1be167e4049922e83e9138}{root}}}
+
+\Hypertarget{namespacetesting__new__script_aa53caf8bcb7ac1c953284cbbc61bedf5}\index{testing\_new\_script@{testing\_new\_script}!detectorFactory@{detectorFactory}}
+\index{detectorFactory@{detectorFactory}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{detectorFactory}{detectorFactory}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_aa53caf8bcb7ac1c953284cbbc61bedf5} 
+testing\+\_\+new\+\_\+script.\+detector\+Factory}
+
+\Hypertarget{namespacetesting__new__script_af407e10ad8e50d5b1110dc54f8681132}\index{testing\_new\_script@{testing\_new\_script}!detectorSettings@{detectorSettings}}
+\index{detectorSettings@{detectorSettings}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{detectorSettings}{detectorSettings}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_af407e10ad8e50d5b1110dc54f8681132} 
+testing\+\_\+new\+\_\+script.\+detector\+Settings}
+
+\Hypertarget{namespacetesting__new__script_a0e09e7524303c2561ec27d7af932d824}\index{testing\_new\_script@{testing\_new\_script}!dims@{dims}}
+\index{dims@{dims}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{dims}{dims}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a0e09e7524303c2561ec27d7af932d824} 
+testing\+\_\+new\+\_\+script.\+dims = imp.\+get\+Dimensions();}
+
+\Hypertarget{namespacetesting__new__script_ab153a4aaa5e4c512d7efab89058cfbdf}\index{testing\_new\_script@{testing\_new\_script}!dir\_name\_save\_inten@{dir\_name\_save\_inten}}
+\index{dir\_name\_save\_inten@{dir\_name\_save\_inten}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{dir\_name\_save\_inten}{dir\_name\_save\_inten}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_ab153a4aaa5e4c512d7efab89058cfbdf} 
+str testing\+\_\+new\+\_\+script.\+dir\+\_\+name\+\_\+save\+\_\+inten = \mbox{\hyperlink{namespacetesting__new__script_a155714dfd332c6319d71bd59147139a0}{save\+\_\+analysis\+\_\+dir}} + \textquotesingle{}/\textquotesingle{} + \mbox{\hyperlink{namespacetesting__new__script_a8ade2d08504edefda3debe991a9fc296}{files}}\mbox{[}z\mbox{]}\mbox{[}\+:-\/4\mbox{]} + \textquotesingle{}.tif\+\_\+spots\textquotesingle{} +\textquotesingle{}.csv\textquotesingle{}}
+
+\Hypertarget{namespacetesting__new__script_aaa18e9cdbeecfe26b555ceadb140986d}\index{testing\_new\_script@{testing\_new\_script}!dir\_tiff@{dir\_tiff}}
+\index{dir\_tiff@{dir\_tiff}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{dir\_tiff}{dir\_tiff}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_aaa18e9cdbeecfe26b555ceadb140986d} 
+str testing\+\_\+new\+\_\+script.\+dir\+\_\+tiff = \textquotesingle{}/Volumes/Baljyot\+\_\+\+HD/SMT\+\_\+\+Olympus/Baljyot\+\_\+temp/12/rpoc\+\_\+m9\textquotesingle{}}
+
+\Hypertarget{namespacetesting__new__script_a1ebf9b2c1c1342493210a9801d9f0308}\index{testing\_new\_script@{testing\_new\_script}!displayer@{displayer}}
+\index{displayer@{displayer}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{displayer}{displayer}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a1ebf9b2c1c1342493210a9801d9f0308} 
+testing\+\_\+new\+\_\+script.\+displayer = Hyper\+Stack\+Displayer(\mbox{\hyperlink{namespacetesting__new__script_a9c102a1326a175112814591b5cb70602}{model}}, \mbox{\hyperlink{namespacetesting__new__script_a75174539b2551fe7847878313f0730dd}{selection\+Model}}, \mbox{\hyperlink{namespacetesting__new__script_a6668764f0d9a10c092ed4beb85ab1ea1}{imp}})}
+
+\Hypertarget{namespacetesting__new__script_a8ade2d08504edefda3debe991a9fc296}\index{testing\_new\_script@{testing\_new\_script}!files@{files}}
+\index{files@{files}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{files}{files}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a8ade2d08504edefda3debe991a9fc296} 
+testing\+\_\+new\+\_\+script.\+files = glob.\+glob(\mbox{\hyperlink{namespacetesting__new__script_aaa18e9cdbeecfe26b555ceadb140986d}{dir\+\_\+tiff}} + \textquotesingle{}/\textquotesingle{} +\textquotesingle{}\texorpdfstring{$\ast$}{*}seg.\+tif\textquotesingle{})}
+
+\Hypertarget{namespacetesting__new__script_aec8896aac287003a3d9aeae2a0eb3444}\index{testing\_new\_script@{testing\_new\_script}!fm@{fm}}
+\index{fm@{fm}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{fm}{fm}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_aec8896aac287003a3d9aeae2a0eb3444} 
+testing\+\_\+new\+\_\+script.\+fm = model.\+get\+Feature\+Model()}
+
+\Hypertarget{namespacetesting__new__script_a826e6d9b51400b1795ed93cbf663cd97}\index{testing\_new\_script@{testing\_new\_script}!go@{go}}
+\index{go@{go}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{go}{go}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a826e6d9b51400b1795ed93cbf663cd97} 
+int testing\+\_\+new\+\_\+script.\+go = 0}
+
+\Hypertarget{namespacetesting__new__script_a6668764f0d9a10c092ed4beb85ab1ea1}\index{testing\_new\_script@{testing\_new\_script}!imp@{imp}}
+\index{imp@{imp}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{imp}{imp}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a6668764f0d9a10c092ed4beb85ab1ea1} 
+testing\+\_\+new\+\_\+script.\+imp = IJ.\+open\+Image(\mbox{\hyperlink{namespacetesting__new__script_a835e59a1427685a68bcf9b58c04f4fc4}{str\+\_\+name\+\_\+fil}})}
+
+\Hypertarget{namespacetesting__new__script_a06b5bf95973061ff5f73aa650251dff6}\index{testing\_new\_script@{testing\_new\_script}!initialSpotFilterValue@{initialSpotFilterValue}}
+\index{initialSpotFilterValue@{initialSpotFilterValue}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{initialSpotFilterValue}{initialSpotFilterValue}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a06b5bf95973061ff5f73aa650251dff6} 
+testing\+\_\+new\+\_\+script.\+initial\+Spot\+Filter\+Value}
+
+\Hypertarget{namespacetesting__new__script_a981f1145c00b88404f3ec9412ebc494d}\index{testing\_new\_script@{testing\_new\_script}!logger@{logger}}
+\index{logger@{logger}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{logger}{logger}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a981f1145c00b88404f3ec9412ebc494d} 
+testing\+\_\+new\+\_\+script.\+logger = Logger.\+IJ\+\_\+\+LOGGER}
+
+\Hypertarget{namespacetesting__new__script_aaf0d4c43fed23d53ad84fce74130ed3e}\index{testing\_new\_script@{testing\_new\_script}!mean@{mean}}
+\index{mean@{mean}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{mean}{mean}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_aaf0d4c43fed23d53ad84fce74130ed3e} 
+testing\+\_\+new\+\_\+script.\+mean = spot.\+get\+Feature(\textquotesingle{}MEAN\+\_\+\+INTENSITY\textquotesingle{})}
+
+\Hypertarget{namespacetesting__new__script_a9c102a1326a175112814591b5cb70602}\index{testing\_new\_script@{testing\_new\_script}!model@{model}}
+\index{model@{model}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{model}{model}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a9c102a1326a175112814591b5cb70602} 
+testing\+\_\+new\+\_\+script.\+model = Model()}
+
+\Hypertarget{namespacetesting__new__script_a5c36ffc1b367b41d9cc481ba9d068902}\index{testing\_new\_script@{testing\_new\_script}!ok@{ok}}
+\index{ok@{ok}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{ok}{ok}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a5c36ffc1b367b41d9cc481ba9d068902} 
+testing\+\_\+new\+\_\+script.\+ok = trackmate.\+check\+Input()}
+
+\Hypertarget{namespacetesting__new__script_ac7c2cfbc56bca5b8db085d2aaf03e264}\index{testing\_new\_script@{testing\_new\_script}!q@{q}}
+\index{q@{q}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{q}{q}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_ac7c2cfbc56bca5b8db085d2aaf03e264} 
+testing\+\_\+new\+\_\+script.\+q = spot.\+get\+Feature(\textquotesingle{}QUALITY\textquotesingle{})}
+
+\Hypertarget{namespacetesting__new__script_a2170e94b1dab94cd3d7456e4c173161d}\index{testing\_new\_script@{testing\_new\_script}!rad@{rad}}
+\index{rad@{rad}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{rad}{rad}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a2170e94b1dab94cd3d7456e4c173161d} 
+testing\+\_\+new\+\_\+script.\+rad = spot.\+get\+Feature(\textquotesingle{}RADIUS\textquotesingle{})}
+
+\Hypertarget{namespacetesting__new__script_a09b7fd446e1be167e4049922e83e9138}\index{testing\_new\_script@{testing\_new\_script}!root@{root}}
+\index{root@{root}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{root}{root}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a09b7fd446e1be167e4049922e83e9138} 
+str testing\+\_\+new\+\_\+script.\+root = \mbox{\hyperlink{namespacetesting__new__script_aaa18e9cdbeecfe26b555ceadb140986d}{dir\+\_\+tiff}}}
+
+\Hypertarget{namespacetesting__new__script_a155714dfd332c6319d71bd59147139a0}\index{testing\_new\_script@{testing\_new\_script}!save\_analysis\_dir@{save\_analysis\_dir}}
+\index{save\_analysis\_dir@{save\_analysis\_dir}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{save\_analysis\_dir}{save\_analysis\_dir}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a155714dfd332c6319d71bd59147139a0} 
+str testing\+\_\+new\+\_\+script.\+save\+\_\+analysis\+\_\+dir = \mbox{\hyperlink{namespacetesting__new__script_aaa18e9cdbeecfe26b555ceadb140986d}{dir\+\_\+tiff}} + \textquotesingle{}/\textquotesingle{} + \textquotesingle{}Analysis\+\_\+test\textquotesingle{}}
+
+\Hypertarget{namespacetesting__new__script_a75174539b2551fe7847878313f0730dd}\index{testing\_new\_script@{testing\_new\_script}!selectionModel@{selectionModel}}
+\index{selectionModel@{selectionModel}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{selectionModel}{selectionModel}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a75174539b2551fe7847878313f0730dd} 
+testing\+\_\+new\+\_\+script.\+selection\+Model = Selection\+Model(\mbox{\hyperlink{namespacetesting__new__script_a9c102a1326a175112814591b5cb70602}{model}})}
+
+\Hypertarget{namespacetesting__new__script_ade7247cbd304b222525bf0cd334c803f}\index{testing\_new\_script@{testing\_new\_script}!settings@{settings}}
+\index{settings@{settings}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{settings}{settings}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_ade7247cbd304b222525bf0cd334c803f} 
+testing\+\_\+new\+\_\+script.\+settings = Settings(\mbox{\hyperlink{namespacetesting__new__script_a6668764f0d9a10c092ed4beb85ab1ea1}{imp}})}
+
+\Hypertarget{namespacetesting__new__script_a73101f90a7dc6974f777bc1f4c766f16}\index{testing\_new\_script@{testing\_new\_script}!sid@{sid}}
+\index{sid@{sid}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{sid}{sid}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a73101f90a7dc6974f777bc1f4c766f16} 
+testing\+\_\+new\+\_\+script.\+sid = spot.\+ID()}
+
+\Hypertarget{namespacetesting__new__script_a680906e38e00f2bdfa7fe31590fa0c9c}\index{testing\_new\_script@{testing\_new\_script}!snr@{snr}}
+\index{snr@{snr}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{snr}{snr}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a680906e38e00f2bdfa7fe31590fa0c9c} 
+testing\+\_\+new\+\_\+script.\+snr = spot.\+get\+Feature(\textquotesingle{}SNR\textquotesingle{})}
+
+\Hypertarget{namespacetesting__new__script_a7acc7d379ecff8ff7688938e70fa1f4c}\index{testing\_new\_script@{testing\_new\_script}!spamWriter@{spamWriter}}
+\index{spamWriter@{spamWriter}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{spamWriter}{spamWriter}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a7acc7d379ecff8ff7688938e70fa1f4c} 
+testing\+\_\+new\+\_\+script.\+spam\+Writer = csv.\+writer(f, delimiter=\textquotesingle{},\textquotesingle{})}
+
+\Hypertarget{namespacetesting__new__script_a835e59a1427685a68bcf9b58c04f4fc4}\index{testing\_new\_script@{testing\_new\_script}!str\_name\_fil@{str\_name\_fil}}
+\index{str\_name\_fil@{str\_name\_fil}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{str\_name\_fil}{str\_name\_fil}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a835e59a1427685a68bcf9b58c04f4fc4} 
+testing\+\_\+new\+\_\+script.\+str\+\_\+name\+\_\+fil = \mbox{\hyperlink{namespacetesting__new__script_a8ade2d08504edefda3debe991a9fc296}{files}}\mbox{[}z\mbox{]}}
+
+\Hypertarget{namespacetesting__new__script_a9fc4d54994932dcbb3b3d571c96b48a1}\index{testing\_new\_script@{testing\_new\_script}!t@{t}}
+\index{t@{t}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{t}{t}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a9fc4d54994932dcbb3b3d571c96b48a1} 
+testing\+\_\+new\+\_\+script.\+t = spot.\+get\+Feature(\textquotesingle{}FRAME\textquotesingle{})}
+
+\Hypertarget{namespacetesting__new__script_a64e2a07614887e57c5418e087f6f1eb4}\index{testing\_new\_script@{testing\_new\_script}!track@{track}}
+\index{track@{track}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{track}{track}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a64e2a07614887e57c5418e087f6f1eb4} 
+testing\+\_\+new\+\_\+script.\+track = model.\+get\+Track\+Model().track\+Spots(id)}
+
+\Hypertarget{namespacetesting__new__script_a3ff47c128b7170fa2cc06826abbf22a2}\index{testing\_new\_script@{testing\_new\_script}!trackerFactory@{trackerFactory}}
+\index{trackerFactory@{trackerFactory}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{trackerFactory}{trackerFactory}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a3ff47c128b7170fa2cc06826abbf22a2} 
+testing\+\_\+new\+\_\+script.\+tracker\+Factory}
+
+\Hypertarget{namespacetesting__new__script_af1b5aac0dfb80e49e08818fb236563cd}\index{testing\_new\_script@{testing\_new\_script}!trackerSettings@{trackerSettings}}
+\index{trackerSettings@{trackerSettings}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{trackerSettings}{trackerSettings}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_af1b5aac0dfb80e49e08818fb236563cd} 
+testing\+\_\+new\+\_\+script.\+tracker\+Settings}
+
+\Hypertarget{namespacetesting__new__script_a8b51ee729c10d355c300c7da2179e39d}\index{testing\_new\_script@{testing\_new\_script}!trackmate@{trackmate}}
+\index{trackmate@{trackmate}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{trackmate}{trackmate}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a8b51ee729c10d355c300c7da2179e39d} 
+testing\+\_\+new\+\_\+script.\+trackmate = Track\+Mate(\mbox{\hyperlink{namespacetesting__new__script_a9c102a1326a175112814591b5cb70602}{model}}, \mbox{\hyperlink{namespacetesting__new__script_ade7247cbd304b222525bf0cd334c803f}{settings}})}
+
+\Hypertarget{namespacetesting__new__script_a4a625061dc884e102aba7ba8588027db}\index{testing\_new\_script@{testing\_new\_script}!v@{v}}
+\index{v@{v}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{v}{v}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a4a625061dc884e102aba7ba8588027db} 
+testing\+\_\+new\+\_\+script.\+v = fm.\+get\+Track\+Feature(id, \textquotesingle{}TRACK\+\_\+\+MEAN\+\_\+\+SPEED\textquotesingle{})}
+
+\Hypertarget{namespacetesting__new__script_a2bc47eb998dfa538af2eea2f6505cdeb}\index{testing\_new\_script@{testing\_new\_script}!x@{x}}
+\index{x@{x}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{x}{x}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_a2bc47eb998dfa538af2eea2f6505cdeb} 
+testing\+\_\+new\+\_\+script.\+x = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+X\textquotesingle{})}
+
+\Hypertarget{namespacetesting__new__script_ab0f9f04e6544e08cdae48066e9a36dad}\index{testing\_new\_script@{testing\_new\_script}!y@{y}}
+\index{y@{y}!testing\_new\_script@{testing\_new\_script}}
+\doxysubsubsection{\texorpdfstring{y}{y}}
+{\footnotesize\ttfamily \label{namespacetesting__new__script_ab0f9f04e6544e08cdae48066e9a36dad} 
+testing\+\_\+new\+\_\+script.\+y = spot.\+get\+Feature(\textquotesingle{}POSITION\+\_\+Y\textquotesingle{})}
+

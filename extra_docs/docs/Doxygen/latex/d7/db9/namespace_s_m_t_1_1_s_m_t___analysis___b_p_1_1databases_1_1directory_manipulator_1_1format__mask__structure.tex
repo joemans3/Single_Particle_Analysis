@@ -1,0 +1,107 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+format\+\_\+mask\+\_\+structure Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__st336892828fde598759ac53916ea36883}{movie\+\_\+mask\+\_\+directory\+\_\+structure\+\_\+manager}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_a5713fb7f3d1647f3df6ba13c0da4d040}{read\+\_\+npy\+\_\+file}} (\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_aa8d7f8056ce7969c75f31fc698197e68}{path}}, correct\+\_\+dtype=True)
+\item 
+dict \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_a62c2dca55c9986863fea1a0fdadc1f93}{obtain\+\_\+masks\+\_\+npy}} (npy\+\_\+output\+\_\+file)
+\item 
+None \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_af1dab50474f6b78ced54fbf8db4aa8ea}{\+\_\+reorder\+\_\+file\+\_\+names}} (file\+\_\+paths, end\+\_\+string=None)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+list \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_aa8d7f8056ce7969c75f31fc698197e68}{path}}
+\begin{DoxyCompactList}\small\item\em testing \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_af088ed268f48b50e3fa722b30ffbf356}{mask\+\_\+dir}} = \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__st336892828fde598759ac53916ea36883}{movie\+\_\+mask\+\_\+directory\+\_\+structure\+\_\+manager}}(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_aa8d7f8056ce7969c75f31fc698197e68}{path}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}Helper script to find all the masks in a directory and format them into a directory structure
+
+The directory structure is as follows:
+
+-parent_dir
+    -full_path_to_mask_dir
+
+    -Movies
+        -Movie_1
+            -IMAGEJ_ROI.zip
+            -Cell_1
+                -mask.tif
+
+This is repeated for each movie defined by the number of mask files found. 
+The cells are determined by the number of unique masks found in each mask file.
+
+The IMAGEJ_ROI.zip file is the ROI file that works for input into ImageJ for further analysis
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_af1dab50474f6b78ced54fbf8db4aa8ea}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}!\_reorder\_file\_names@{\_reorder\_file\_names}}
+\index{\_reorder\_file\_names@{\_reorder\_file\_names}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}}
+\doxysubsubsection{\texorpdfstring{\_reorder\_file\_names()}{\_reorder\_file\_names()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_af1dab50474f6b78ced54fbf8db4aa8ea} 
+None SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+format\+\_\+mask\+\_\+structure.\+\_\+reorder\+\_\+file\+\_\+names (\begin{DoxyParamCaption}\item[{}]{file\+\_\+paths}{, }\item[{}]{end\+\_\+string}{ = {\ttfamily None}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb}Reorders the names of the files to start from 1->end.
+Given a set of files in the directory, it will reorder them to start from 1->end
+so <name>_20.tif will be <name>_1.tif, <name>_21.tif will be <name>_2.tif and so on
+This is to rename the file 
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_a62c2dca55c9986863fea1a0fdadc1f93}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}!obtain\_masks\_npy@{obtain\_masks\_npy}}
+\index{obtain\_masks\_npy@{obtain\_masks\_npy}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}}
+\doxysubsubsection{\texorpdfstring{obtain\_masks\_npy()}{obtain\_masks\_npy()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_a62c2dca55c9986863fea1a0fdadc1f93} 
+dict SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+format\+\_\+mask\+\_\+structure.\+obtain\+\_\+masks\+\_\+npy (\begin{DoxyParamCaption}\item[{}]{npy\+\_\+output\+\_\+file}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Obtains the masks from the npy file
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_a5713fb7f3d1647f3df6ba13c0da4d040}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}!read\_npy\_file@{read\_npy\_file}}
+\index{read\_npy\_file@{read\_npy\_file}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}}
+\doxysubsubsection{\texorpdfstring{read\_npy\_file()}{read\_npy\_file()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_a5713fb7f3d1647f3df6ba13c0da4d040} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+format\+\_\+mask\+\_\+structure.\+read\+\_\+npy\+\_\+file (\begin{DoxyParamCaption}\item[{}]{path}{, }\item[{}]{correct\+\_\+dtype}{ = {\ttfamily True}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Reads the npy file from the path
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_af088ed268f48b50e3fa722b30ffbf356}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}!mask\_dir@{mask\_dir}}
+\index{mask\_dir@{mask\_dir}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}}
+\doxysubsubsection{\texorpdfstring{mask\_dir}{mask\_dir}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_af088ed268f48b50e3fa722b30ffbf356} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+format\+\_\+mask\+\_\+structure.\+mask\+\_\+dir = \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__st336892828fde598759ac53916ea36883}{movie\+\_\+mask\+\_\+directory\+\_\+structure\+\_\+manager}}(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_aa8d7f8056ce7969c75f31fc698197e68}{path}})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_aa8d7f8056ce7969c75f31fc698197e68}\index{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}!path@{path}}
+\index{path@{path}!SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure@{SMT.SMT\_Analysis\_BP.databases.directoryManipulator.format\_mask\_structure}}
+\doxysubsubsection{\texorpdfstring{path}{path}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1directory_manipulator_1_1format__mask__structure_aa8d7f8056ce7969c75f31fc698197e68} 
+list SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+directory\+Manipulator.\+format\+\_\+mask\+\_\+structure.\+path}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ [}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Users/baljyot/Documents/CODE/GitHub\_t2/Baljyot\_EXP\_RPOC/DATA/Fixed\_100ms/20231015/ll\_ez/TS/gfp"{}},}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Users/baljyot/Documents/CODE/GitHub\_t2/Baljyot\_EXP\_RPOC/DATA/Fixed\_100ms/20231017/ll\_hex5\_fixed/TS/gfp"{}},}
+\DoxyCodeLine{00004\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Users/baljyot/Documents/CODE/GitHub\_t2/Baljyot\_EXP\_RPOC/DATA/Fixed\_100ms/20231017/rp\_ez\_fixed/TS/gfp"{}},}
+\DoxyCodeLine{00005\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Users/baljyot/Documents/CODE/GitHub\_t2/Baljyot\_EXP\_RPOC/DATA/Fixed\_100ms/20231017/rp\_ez\_fixed\_2/TS/gfp"{}},}
+\DoxyCodeLine{00006\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Users/baljyot/Documents/CODE/GitHub\_t2/Baljyot\_EXP\_RPOC/DATA/Fixed\_100ms/20231017/rp\_hex5\_fixed/TS/gfp"{}},}
+\DoxyCodeLine{00007\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Users/baljyot/Documents/CODE/GitHub\_t2/Baljyot\_EXP\_RPOC/DATA/Fixed\_100ms/20231017/rp\_hex5\_fixed\_2/TS/gfp"{}},}
+\DoxyCodeLine{00008\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Users/baljyot/Documents/CODE/GitHub\_t2/Baljyot\_EXP\_RPOC/DATA/Fixed\_100ms/20231017/rp\_m9\_fixed/TS/gfp"{}},}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Users/baljyot/Documents/CODE/GitHub\_t2/Baljyot\_EXP\_RPOC/DATA/Fixed\_100ms/20231017/rp\_rif\_fixed/TS/gfp"{}}}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \ \ ]}
+
+\end{DoxyCode}
+
+
+testing 
+

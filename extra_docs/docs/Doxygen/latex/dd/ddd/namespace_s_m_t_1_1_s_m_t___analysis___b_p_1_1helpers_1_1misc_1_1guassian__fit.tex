@@ -1,0 +1,170 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_1_1_s_m___localization___image}{SM\+\_\+\+Localization\+\_\+\+Image}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_1_1_s_m__localization__movie}{SM\+\_\+localization\+\_\+movie}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a5e2bbcf1e5848d6132d90e06bc21a40c}{gaussian2D}} (x, y, cen\+\_\+x, cen\+\_\+y, sig\+\_\+x, sig\+\_\+y, offset, height, kwargs=\{\})
+\begin{DoxyCompactList}\small\item\em define some gaussian models for fitting \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a42613117748b0d60666115825907520a}{gaussian2\+D\+\_\+theta}} (x, y, cen\+\_\+x, cen\+\_\+y, sig\+\_\+x, sig\+\_\+y, theta, offset, height, kwargs=\{\})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a88561023f4e11425b20be1c6b7fde601}{gaussian1D}} (x, cen\+\_\+x, sig\+\_\+x, offset, height, kwargs=\{\})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a33b38bd069265f9fa11a151a404079fd}{gaussian2\+D\+\_\+residual}} (params, x, y, data, kwargs=\{\})
+\begin{DoxyCompactList}\small\item\em define some residual functions for fitting \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_aa5ea540658ef7f104f1323db7ba8d14a}{gaussian2\+D\+\_\+theta\+\_\+residual}} (params, x, y, data, kwargs=\{\})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a0c4400703336d56f42dcd5fc13b59fd0}{gaussian1\+D\+\_\+residual}} (params, x, data, kwargs=\{\})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a00285dc531c3427a7b27ae5396df3a93}{find\+\_\+peaks}} (\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a5ffd1f0afcd08dfe25a000777b8f762e}{image}}, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\begin{DoxyCompactList}\small\item\em define functions to find candidate peaks in a signal for a 2D signal (image) \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_ab640eed520d90ad839a665a9f8b8cd8e}{save\+\_\+dataframe}} (pd.\+Data\+Frame df, str \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a3762853ecddc9a91e64ef536aab7afc7}{path}})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+str \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a3762853ecddc9a91e64ef536aab7afc7}{path}} = "{}/Volumes/Baljyot\+\_\+\+HD/SMT\+\_\+\+Olympus/Baljyot\+\_\+temp/20190527/rpoc\+\_\+ez/Movie/rpoc\+\_\+ez\+\_\+6.\+tif"{}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a5ffd1f0afcd08dfe25a000777b8f762e}{image}} = imread(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a3762853ecddc9a91e64ef536aab7afc7}{path}})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a3292623f2d4f97457b243afcd7fdf1de}{sm\+\_\+localization\+\_\+movie}} = \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_1_1_s_m__localization__movie}{SM\+\_\+localization\+\_\+movie}}(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a5ffd1f0afcd08dfe25a000777b8f762e}{image}})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a2d22fc648bf5ec69971c8cb6c0ce010e}{fit\+\_\+results\+\_\+df}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a00285dc531c3427a7b27ae5396df3a93}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!find\_peaks@{find\_peaks}}
+\index{find\_peaks@{find\_peaks}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{find\_peaks()}{find\_peaks()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a00285dc531c3427a7b27ae5396df3a93} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+find\+\_\+peaks (\begin{DoxyParamCaption}\item[{}]{image}{, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+
+
+define functions to find candidate peaks in a signal for a 2D signal (image) 
+
+\begin{DoxyVerb}Finds candidate peaks in a 2D image using skimage.feature.peak_local_max
+
+Parameters:
+-----------
+image: 2D numpy array
+    image to find peaks in
+kwargs: dict
+    dictionary of keyword arguments to pass to peak_local_max
+    See skimage.feature.peak_local_max for more details
+    Some useful kwargs:
+        min_distance: int
+            minimum distance in pixels between peaks
+        threshold_abs: int
+            minimum intensity of peaks
+        exclude_border: int
+            number of pixels to exclude from the border of the image
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a88561023f4e11425b20be1c6b7fde601}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!gaussian1D@{gaussian1D}}
+\index{gaussian1D@{gaussian1D}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{gaussian1D()}{gaussian1D()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a88561023f4e11425b20be1c6b7fde601} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+gaussian1D (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{cen\+\_\+x}{, }\item[{}]{sig\+\_\+x}{, }\item[{}]{offset}{, }\item[{}]{height}{, }\item[{}]{kwargs}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} 1d gaussian function\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a0c4400703336d56f42dcd5fc13b59fd0}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!gaussian1D\_residual@{gaussian1D\_residual}}
+\index{gaussian1D\_residual@{gaussian1D\_residual}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{gaussian1D\_residual()}{gaussian1D\_residual()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a0c4400703336d56f42dcd5fc13b59fd0} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+gaussian1\+D\+\_\+residual (\begin{DoxyParamCaption}\item[{}]{params}{, }\item[{}]{x}{, }\item[{}]{data}{, }\item[{}]{kwargs}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} 1d gaussian residual function\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a5e2bbcf1e5848d6132d90e06bc21a40c}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!gaussian2D@{gaussian2D}}
+\index{gaussian2D@{gaussian2D}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{gaussian2D()}{gaussian2D()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a5e2bbcf1e5848d6132d90e06bc21a40c} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+gaussian2D (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{cen\+\_\+x}{, }\item[{}]{cen\+\_\+y}{, }\item[{}]{sig\+\_\+x}{, }\item[{}]{sig\+\_\+y}{, }\item[{}]{offset}{, }\item[{}]{height}{, }\item[{}]{kwargs}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})}
+
+
+
+define some gaussian models for fitting 
+
+\begin{DoxyVerb} 2d gaussian function no theta\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a33b38bd069265f9fa11a151a404079fd}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!gaussian2D\_residual@{gaussian2D\_residual}}
+\index{gaussian2D\_residual@{gaussian2D\_residual}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{gaussian2D\_residual()}{gaussian2D\_residual()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a33b38bd069265f9fa11a151a404079fd} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+gaussian2\+D\+\_\+residual (\begin{DoxyParamCaption}\item[{}]{params}{, }\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{data}{, }\item[{}]{kwargs}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})}
+
+
+
+define some residual functions for fitting 
+
+\begin{DoxyVerb} 2d gaussian residual function\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a42613117748b0d60666115825907520a}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!gaussian2D\_theta@{gaussian2D\_theta}}
+\index{gaussian2D\_theta@{gaussian2D\_theta}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{gaussian2D\_theta()}{gaussian2D\_theta()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a42613117748b0d60666115825907520a} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+gaussian2\+D\+\_\+theta (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{cen\+\_\+x}{, }\item[{}]{cen\+\_\+y}{, }\item[{}]{sig\+\_\+x}{, }\item[{}]{sig\+\_\+y}{, }\item[{}]{theta}{, }\item[{}]{offset}{, }\item[{}]{height}{, }\item[{}]{kwargs}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} 2d gaussian function with theta\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_aa5ea540658ef7f104f1323db7ba8d14a}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!gaussian2D\_theta\_residual@{gaussian2D\_theta\_residual}}
+\index{gaussian2D\_theta\_residual@{gaussian2D\_theta\_residual}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{gaussian2D\_theta\_residual()}{gaussian2D\_theta\_residual()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_aa5ea540658ef7f104f1323db7ba8d14a} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+gaussian2\+D\+\_\+theta\+\_\+residual (\begin{DoxyParamCaption}\item[{}]{params}{, }\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{data}{, }\item[{}]{kwargs}{ = {\ttfamily \{\}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} 2d gaussian residual function with theta\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_ab640eed520d90ad839a665a9f8b8cd8e}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!save\_dataframe@{save\_dataframe}}
+\index{save\_dataframe@{save\_dataframe}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{save\_dataframe()}{save\_dataframe()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_ab640eed520d90ad839a665a9f8b8cd8e} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+save\+\_\+dataframe (\begin{DoxyParamCaption}\item[{pd.\+Data\+Frame}]{df}{, }\item[{str}]{path}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Saves a dataframe to a csv file
+
+Parameters:
+-----------
+df: pandas.DataFrame
+    dataframe to save
+path: str
+    path to save the dataframe to
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a2d22fc648bf5ec69971c8cb6c0ce010e}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!fit\_results\_df@{fit\_results\_df}}
+\index{fit\_results\_df@{fit\_results\_df}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{fit\_results\_df}{fit\_results\_df}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a2d22fc648bf5ec69971c8cb6c0ce010e} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+fit\+\_\+results\+\_\+df}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ sm\_localization\_movie.fit(}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ gaussian2D\_residual,}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{'cen\_x'}:0,\textcolor{stringliteral}{'cen\_y'}:0,\textcolor{stringliteral}{'sig\_x'}:1,\textcolor{stringliteral}{'sig\_y'}:1,\textcolor{stringliteral}{'offset'}:0,\textcolor{stringliteral}{'height'}:1\},}
+\DoxyCodeLine{00004\ \ \ \ \ \ \ \ \ \{\textcolor{stringliteral}{'cen\_x'}:(-\/np.inf,np.inf),\textcolor{stringliteral}{'cen\_y'}:(-\/np.inf,np.inf),\textcolor{stringliteral}{'sig\_x'}:(0,np.inf),\textcolor{stringliteral}{'sig\_y'}:(0,np.inf),\textcolor{stringliteral}{'offset'}:(-\/np.inf,np.inf),\textcolor{stringliteral}{'height'}:(0,np.inf)\},}
+\DoxyCodeLine{00005\ \ \ \ \ \ \ \ \ prune\_direction=\{\textcolor{stringliteral}{'sig\_x'}:(0.7,2),\textcolor{stringliteral}{'sig\_y'}:(0.7,2)\})}
+
+\end{DoxyCode}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a5ffd1f0afcd08dfe25a000777b8f762e}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!image@{image}}
+\index{image@{image}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{image}{image}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a5ffd1f0afcd08dfe25a000777b8f762e} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+image = imread(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a3762853ecddc9a91e64ef536aab7afc7}{path}})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a3762853ecddc9a91e64ef536aab7afc7}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!path@{path}}
+\index{path@{path}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{path}{path}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a3762853ecddc9a91e64ef536aab7afc7} 
+str SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+path = "{}/Volumes/Baljyot\+\_\+\+HD/SMT\+\_\+\+Olympus/Baljyot\+\_\+temp/20190527/rpoc\+\_\+ez/Movie/rpoc\+\_\+ez\+\_\+6.\+tif"{}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a3292623f2d4f97457b243afcd7fdf1de}\index{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}!sm\_localization\_movie@{sm\_localization\_movie}}
+\index{sm\_localization\_movie@{sm\_localization\_movie}!SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit@{SMT.SMT\_Analysis\_BP.helpers.misc.guassian\_fit}}
+\doxysubsubsection{\texorpdfstring{sm\_localization\_movie}{sm\_localization\_movie}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a3292623f2d4f97457b243afcd7fdf1de} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+misc.\+guassian\+\_\+fit.\+sm\+\_\+localization\+\_\+movie = \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_1_1_s_m__localization__movie}{SM\+\_\+localization\+\_\+movie}}(\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1misc_1_1guassian__fit_a5ffd1f0afcd08dfe25a000777b8f762e}{image}})}
+

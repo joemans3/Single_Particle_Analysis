@@ -1,0 +1,104 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+scale\+\_\+space\+\_\+plus Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_1_1_scale_space_plus}{Scale\+Space\+Plus}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_1_1_s_m__reconstruction__image}{SM\+\_\+reconstruction\+\_\+image}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_1_1_s_m__reconstruction__masked}{SM\+\_\+reconstruction\+\_\+masked}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_ad20a8667d645b0565677adf1067752b3}{get\+\_\+gaussian}} (mu, sigma, domain=\mbox{[}list(range(10)), list(range(10))\mbox{]})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+dict \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a37673c8054fbb6b3fba85b98ee11b4ae}{KEY\+\_\+\+IMAGE}}
+\item 
+int \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a5736768f77f6da8a311f318733e14980}{MASK\+\_\+\+VALUE}} = 255
+\item 
+int \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a15324784db4e0a1867bf24d404b84a53}{BOUNDING\+\_\+\+BOX\+\_\+\+PADDING}} = 5
+\item 
+dict \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a107b96b1e48fab9aed2683f561518728}{CONVERSION\+\_\+\+TYPES}} = \{\textquotesingle{}RC\+\_\+to\+\_\+\+Original\textquotesingle{}\+:0,\textquotesingle{}original\+\_\+to\+\_\+\+RC\textquotesingle{}\+:1\}
+\item 
+int \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_ad31faf7c77ee4fde0590e4b297950473}{RANDOM\+\_\+\+SEED}} = 666
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}Suite of functions and classes to perfrom the scale space plus procedure to create the reconstruction image for scale space analysis.\end{DoxyVerb}
+ 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_ad20a8667d645b0565677adf1067752b3}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}!get\_gaussian@{get\_gaussian}}
+\index{get\_gaussian@{get\_gaussian}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}}
+\doxysubsubsection{\texorpdfstring{get\_gaussian()}{get\_gaussian()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_ad20a8667d645b0565677adf1067752b3} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+scale\+\_\+space\+\_\+plus.\+get\+\_\+gaussian (\begin{DoxyParamCaption}\item[{}]{mu}{, }\item[{}]{sigma}{, }\item[{}]{domain}{ = {\ttfamily \mbox{[}list(range(10)),~list(range(10))\mbox{]}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+mu : array-like or float of floats
+    center position of gaussian (x,y) or collection of (x,y)
+sigma : float or array-like of floats of shape mu
+    sigma of the gaussian
+domain : array-like, Defaults to 0->9 for x,y
+    x,y domain over which this gassuain is over
+
+
+Returns
+-------
+array-like 2D
+    values of the gaussian centered at mu with sigma across the (x,y) points defined in domain
+
+Notes:
+------
+THIS IS IMPORTANT: MAKE SURE THE TYPES IN EACH PARAMETER ARE THE SAME!!!!
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a15324784db4e0a1867bf24d404b84a53}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}!BOUNDING\_BOX\_PADDING@{BOUNDING\_BOX\_PADDING}}
+\index{BOUNDING\_BOX\_PADDING@{BOUNDING\_BOX\_PADDING}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}}
+\doxysubsubsection{\texorpdfstring{BOUNDING\_BOX\_PADDING}{BOUNDING\_BOX\_PADDING}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a15324784db4e0a1867bf24d404b84a53} 
+int SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+scale\+\_\+space\+\_\+plus.\+BOUNDING\+\_\+\+BOX\+\_\+\+PADDING = 5}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a107b96b1e48fab9aed2683f561518728}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}!CONVERSION\_TYPES@{CONVERSION\_TYPES}}
+\index{CONVERSION\_TYPES@{CONVERSION\_TYPES}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}}
+\doxysubsubsection{\texorpdfstring{CONVERSION\_TYPES}{CONVERSION\_TYPES}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a107b96b1e48fab9aed2683f561518728} 
+dict SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+scale\+\_\+space\+\_\+plus.\+CONVERSION\+\_\+\+TYPES = \{\textquotesingle{}RC\+\_\+to\+\_\+\+Original\textquotesingle{}\+:0,\textquotesingle{}original\+\_\+to\+\_\+\+RC\textquotesingle{}\+:1\}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a37673c8054fbb6b3fba85b98ee11b4ae}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}!KEY\_IMAGE@{KEY\_IMAGE}}
+\index{KEY\_IMAGE@{KEY\_IMAGE}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}}
+\doxysubsubsection{\texorpdfstring{KEY\_IMAGE}{KEY\_IMAGE}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a37673c8054fbb6b3fba85b98ee11b4ae} 
+dict SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+scale\+\_\+space\+\_\+plus.\+KEY\+\_\+\+IMAGE}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \{}
+\DoxyCodeLine{00002\ \ \ \ \ \textcolor{stringliteral}{'png'}:skimage.io.imsave,}
+\DoxyCodeLine{00003\ \ \ \ \ \textcolor{stringliteral}{'jpg'}:skimage.io.imsave,}
+\DoxyCodeLine{00004\ \ \ \ \ \textcolor{stringliteral}{'tif'}:skimage.io.imsave,}
+\DoxyCodeLine{00005\ \ \ \ \ \textcolor{stringliteral}{'svg'}:skimage.io.imsave}
+\DoxyCodeLine{00006\ \ \ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a5736768f77f6da8a311f318733e14980}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}!MASK\_VALUE@{MASK\_VALUE}}
+\index{MASK\_VALUE@{MASK\_VALUE}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}}
+\doxysubsubsection{\texorpdfstring{MASK\_VALUE}{MASK\_VALUE}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_a5736768f77f6da8a311f318733e14980} 
+int SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+scale\+\_\+space\+\_\+plus.\+MASK\+\_\+\+VALUE = 255}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_ad31faf7c77ee4fde0590e4b297950473}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}!RANDOM\_SEED@{RANDOM\_SEED}}
+\index{RANDOM\_SEED@{RANDOM\_SEED}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.scale\_space\_plus}}
+\doxysubsubsection{\texorpdfstring{RANDOM\_SEED}{RANDOM\_SEED}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1scale__space__plus_ad31faf7c77ee4fde0590e4b297950473} 
+int SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+scale\+\_\+space\+\_\+plus.\+RANDOM\+\_\+\+SEED = 666}
+

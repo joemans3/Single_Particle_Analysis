@@ -1,0 +1,76 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1boundary__analysis}{boundary\+\_\+analysis}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_cell}{Cell}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_movie__frame}{Movie\+\_\+frame}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1run__analysis}{run\+\_\+analysis}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory}{Trajectory}}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory___drop___mapping}{Trajectory\+\_\+\+Drop\+\_\+\+Mapping}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+list \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_ad7043e970a298ea4077b891376dc0e1b}{TRACK\+\_\+\+TYPES}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}Documentation for trajectory_analysis_script.py
+
+This script is used to analyse the data from the trajectory analysis script
+It does this by reading the data from the trajectory analysis script and then making mappings of the SMT data to drops and cells
+
+The core of the script is the run_analysis class, which is used to analyse a single dataset
+Each database in a given experiment is analysed by a separate instance of this class
+Each instance of this class is initialised with the working directory and the unique string identifier for the dataset
+The mapping of the SMT data to drops and cells is done by the analyse_cell_tracks method among others
+The core mapping is as follows:
+Movies -> Cells -> Drops -> Trajectories
+The class also contains methods to plot the data and to save the data to a .mat file
+
+The script also contains a number of helper functions that are used by the class
+These are mostly used to read the data from the trajectory analysis script and to plot the data and make classifications
+
+The script also contains a number of functions that are used to analyse the data
+These are mostly used to analyse the data and to plot the data and make classifications
+
+Classes:
+--------
+1. run_analysis: class for each dataset to analyse
+2. Movie_frame: class for each frame of view in a movie
+3. Cell: class for each cell in a frame of view
+4. Drop: class for each drop in a cell
+5. Trajectory: class for each trajectory in a drop
+6. Tracjectory_Drop_Mapping: class for each mapping of a trajectory to a drop
+
+7. boundary_analysis: class for each boundary analysis of a dataset
+
+Author: Baljyot Singh Parmar
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_ad7043e970a298ea4077b891376dc0e1b}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script}!TRACK\_TYPES@{TRACK\_TYPES}}
+\index{TRACK\_TYPES@{TRACK\_TYPES}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script}}
+\doxysubsubsection{\texorpdfstring{TRACK\_TYPES}{TRACK\_TYPES}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_ad7043e970a298ea4077b891376dc0e1b} 
+list SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+TRACK\+\_\+\+TYPES}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ [}
+\DoxyCodeLine{00002\ \ \ \ \ \textcolor{stringliteral}{"{}IN"{}},}
+\DoxyCodeLine{00003\ \ \ \ \ \textcolor{stringliteral}{"{}IO"{}},}
+\DoxyCodeLine{00004\ \ \ \ \ \textcolor{stringliteral}{"{}OUT"{}},}
+\DoxyCodeLine{00005\ \ \ \ \ \textcolor{stringliteral}{"{}ALL"{}}}
+\DoxyCodeLine{00006\ ]}
+
+\end{DoxyCode}

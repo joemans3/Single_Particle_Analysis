@@ -1,0 +1,57 @@
+\doxysection{/\+Users/baljyot/\+Documents/\+CODE/\+Git\+Hub\+\_\+t2/\+PHD/\+Baljyot\+\_\+\+EXP\+\_\+\+RPOC/\+Scripts/\+SMT/\+SMT\+\_\+\+Analysis\+\_\+\+BP/\+Random/sim\+\_\+track\+\_\+diff.py File Reference}
+\hypertarget{sim__track__diff_8py}{}\label{sim__track__diff_8py}\index{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/Random/sim\_track\_diff.py@{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/Random/sim\_track\_diff.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespacesim__track__diff}{sim\+\_\+track\+\_\+diff}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a60ea2072fdc8f70e77cf3764889e29e0}{sim\+\_\+track\+\_\+diff.\+d\+\_\+rand}} (l)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a489910b087a609eacc20f9865af1185e}{sim\+\_\+track\+\_\+diff.\+random\+\_\+scale}} (minv, maxv)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a137dcf436a8918a75a977ec4500a5cdb}{sim\+\_\+track\+\_\+diff.\+make\+\_\+grid}} (size)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a4285b6695542837bf52682c32afd79c2}{sim\+\_\+track\+\_\+diff.\+crw}} (\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}, \mbox{\hyperlink{namespacesim__track__diff_a3314b0241de1de9553a879a1a1ab4965}{length}}, diff, start, time\+\_\+end)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_aea812b0762d31b61c77e33c384eb7bbb}{sim\+\_\+track\+\_\+diff.\+track\+\_\+generator}} (\mbox{\hyperlink{namespacesim__track__diff_a3314b0241de1de9553a879a1a1ab4965}{length}}, diff\+\_\+coef, start\+\_\+loc, bleach\+\_\+time=20, amount=100, subdiffusion=False, hurst=0.\+5)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a456306709fce96b0dc529e68b76be7b2}{sim\+\_\+track\+\_\+diff.\+run\+\_\+flow}} (difs, amounts, places, lengths, movie\+\_\+length, subdiffusion=False, hurst=0.\+5)
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a90bd10aec527bd7d8698c2915beb0bd2}{sim\+\_\+track\+\_\+diff.\+add\+\_\+noise}} (movie, base\+\_\+int, gaussian\+\_\+blurr\+\_\+v=1)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{namespacesim__track__diff_aa994b1253ff7f4d5ecfa7c49473a70b1}{sim\+\_\+track\+\_\+diff.\+y\+\_\+min}} = 0.
+\item 
+int \mbox{\hyperlink{namespacesim__track__diff_a829c9e8502f02621ab0f60a187bf0388}{sim\+\_\+track\+\_\+diff.\+y\+\_\+max}} = 4.
+\item 
+int \mbox{\hyperlink{namespacesim__track__diff_ad6c86a01bc1c5aee9c4da7c96fc63826}{sim\+\_\+track\+\_\+diff.\+x\+\_\+min}} = 0.
+\item 
+int \mbox{\hyperlink{namespacesim__track__diff_a1efc033c03dfcb75ccfb171b15ce6729}{sim\+\_\+track\+\_\+diff.\+x\+\_\+max}} = 2.
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_af886fcac7eed4a42507279ba968283fb}{sim\+\_\+track\+\_\+diff.\+diffusion\+\_\+coeff}} = np.\+array(\mbox{[}0.\+01,0.\+1,1\mbox{]})
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a9d7f51514a627c6287fb34925845020e}{sim\+\_\+track\+\_\+diff.\+all\+\_\+hold}} = \mbox{\hyperlink{namespacesim__track__diff_a456306709fce96b0dc529e68b76be7b2}{run\+\_\+flow}}(\mbox{[}0.\+1\mbox{]},\mbox{[}200\mbox{]},\mbox{[}14\mbox{]},\mbox{[}100\mbox{]},1000,subdiffusion = \mbox{[}True\mbox{]}, hurst = \mbox{[}0.\+2\mbox{]})
+\item 
+str \mbox{\hyperlink{namespacesim__track__diff_ab70452ab3cd12eff9830fbb171c3c3da}{sim\+\_\+track\+\_\+diff.\+name}} = "{}0.\+001-\/0.\+01-\/0.\+1\+\_\+100-\/100-\/100\+\_\+r-\/r\+\_\+10-\/10-\/10\+\_\+1000\+\_\+\+SD\+\_\+0.\+5\+\_\+test"{}
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a4bb3b315bc65e3505778a3a69596caa7}{sim\+\_\+track\+\_\+diff.\+image}} = np.\+zeros(np.\+shape(\mbox{\hyperlink{namespacesim__track__diff_a9d7f51514a627c6287fb34925845020e}{all\+\_\+hold}}\mbox{[}0\mbox{]}\mbox{[}0\mbox{]}\mbox{[}4\mbox{]}))
+\item 
+list \mbox{\hyperlink{namespacesim__track__diff_ab0c28e3d524e533b42c344bef0f08ab0}{sim\+\_\+track\+\_\+diff.\+temp}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_aa3c89026337baddb88f9cea7ba9c1b30}{sim\+\_\+track\+\_\+diff.\+xy\+\_\+data}}
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_ab99c7c8c1dc45fdf30994dccdae2b157}{sim\+\_\+track\+\_\+diff.\+new\+\_\+image}} = \mbox{\hyperlink{namespacesim__track__diff_a90bd10aec527bd7d8698c2915beb0bd2}{add\+\_\+noise}}(\mbox{\hyperlink{namespacesim__track__diff_a4bb3b315bc65e3505778a3a69596caa7}{image}},100,3)
+\item 
+float \mbox{\hyperlink{namespacesim__track__diff_ac90106ff40534185024c31d021dd8c5d}{sim\+\_\+track\+\_\+diff.\+stack\+\_\+step}} = 5.\+0
+\item 
+\mbox{\hyperlink{namespacesim__track__diff_a3314b0241de1de9553a879a1a1ab4965}{sim\+\_\+track\+\_\+diff.\+length}} = int(len(\mbox{\hyperlink{namespacesim__track__diff_ab99c7c8c1dc45fdf30994dccdae2b157}{new\+\_\+image}})/\mbox{\hyperlink{namespacesim__track__diff_ac90106ff40534185024c31d021dd8c5d}{stack\+\_\+step}})
+\item 
+list \mbox{\hyperlink{namespacesim__track__diff_a520833c5a32eec2c208ec120eec9e4bf}{sim\+\_\+track\+\_\+diff.\+hold\+\_\+img}} = \mbox{[}$\,$\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacesim__track__diff_a27aa1750251575c93cf380d272e78693}{sim\+\_\+track\+\_\+diff.\+hold\+\_\+name}} = \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}

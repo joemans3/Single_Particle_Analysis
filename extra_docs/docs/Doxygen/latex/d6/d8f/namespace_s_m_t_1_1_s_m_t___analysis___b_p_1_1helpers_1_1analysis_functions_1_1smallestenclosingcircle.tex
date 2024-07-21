@@ -1,0 +1,78 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+smallestenclosingcircle Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a1f9e583613eb53d98593d4e5cf2ce382}{make\+\_\+circle}} (points)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a8cda5827571d0a046ce1f6770c4681c3}{\+\_\+make\+\_\+circle\+\_\+one\+\_\+point}} (points, p)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_afc2f167886a343232e20628aa190ccc3}{\+\_\+make\+\_\+circle\+\_\+two\+\_\+points}} (points, p, q)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_ae304aa9589f7a9ba2ef7272067c13e54}{make\+\_\+diameter}} (\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}, b)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_ab143fc721850f034a05a1b4e88828bf7}{make\+\_\+circumcircle}} (\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}, b, c)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a0913217ef9f16afaf89dcccbbfed5b6b}{is\+\_\+in\+\_\+circle}} (c, p)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a0a8a1934d512f432e75e4b10121a0744}{\+\_\+cross\+\_\+product}} (x0, y0, x1, y1, x2, y2)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_ae7af1a873777f4647354d6f256673522}{\+\_\+\+MULTIPLICATIVE\+\_\+\+EPSILON}} = 1 + 1e-\/14
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a0a8a1934d512f432e75e4b10121a0744}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}!\_cross\_product@{\_cross\_product}}
+\index{\_cross\_product@{\_cross\_product}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}}
+\doxysubsubsection{\texorpdfstring{\_cross\_product()}{\_cross\_product()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a0a8a1934d512f432e75e4b10121a0744} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+smallestenclosingcircle.\+\_\+cross\+\_\+product (\begin{DoxyParamCaption}\item[{}]{x0}{, }\item[{}]{y0}{, }\item[{}]{x1}{, }\item[{}]{y1}{, }\item[{}]{x2}{, }\item[{}]{y2}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a8cda5827571d0a046ce1f6770c4681c3}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}!\_make\_circle\_one\_point@{\_make\_circle\_one\_point}}
+\index{\_make\_circle\_one\_point@{\_make\_circle\_one\_point}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}}
+\doxysubsubsection{\texorpdfstring{\_make\_circle\_one\_point()}{\_make\_circle\_one\_point()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a8cda5827571d0a046ce1f6770c4681c3} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+smallestenclosingcircle.\+\_\+make\+\_\+circle\+\_\+one\+\_\+point (\begin{DoxyParamCaption}\item[{}]{points}{, }\item[{}]{p}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_afc2f167886a343232e20628aa190ccc3}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}!\_make\_circle\_two\_points@{\_make\_circle\_two\_points}}
+\index{\_make\_circle\_two\_points@{\_make\_circle\_two\_points}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}}
+\doxysubsubsection{\texorpdfstring{\_make\_circle\_two\_points()}{\_make\_circle\_two\_points()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_afc2f167886a343232e20628aa190ccc3} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+smallestenclosingcircle.\+\_\+make\+\_\+circle\+\_\+two\+\_\+points (\begin{DoxyParamCaption}\item[{}]{points}{, }\item[{}]{p}{, }\item[{}]{q}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a0913217ef9f16afaf89dcccbbfed5b6b}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}!is\_in\_circle@{is\_in\_circle}}
+\index{is\_in\_circle@{is\_in\_circle}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}}
+\doxysubsubsection{\texorpdfstring{is\_in\_circle()}{is\_in\_circle()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a0913217ef9f16afaf89dcccbbfed5b6b} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+smallestenclosingcircle.\+is\+\_\+in\+\_\+circle (\begin{DoxyParamCaption}\item[{}]{c}{, }\item[{}]{p}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a1f9e583613eb53d98593d4e5cf2ce382}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}!make\_circle@{make\_circle}}
+\index{make\_circle@{make\_circle}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}}
+\doxysubsubsection{\texorpdfstring{make\_circle()}{make\_circle()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_a1f9e583613eb53d98593d4e5cf2ce382} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+smallestenclosingcircle.\+make\+\_\+circle (\begin{DoxyParamCaption}\item[{}]{points}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_ab143fc721850f034a05a1b4e88828bf7}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}!make\_circumcircle@{make\_circumcircle}}
+\index{make\_circumcircle@{make\_circumcircle}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}}
+\doxysubsubsection{\texorpdfstring{make\_circumcircle()}{make\_circumcircle()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_ab143fc721850f034a05a1b4e88828bf7} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+smallestenclosingcircle.\+make\+\_\+circumcircle (\begin{DoxyParamCaption}\item[{}]{a}{, }\item[{}]{b}{, }\item[{}]{c}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_ae304aa9589f7a9ba2ef7272067c13e54}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}!make\_diameter@{make\_diameter}}
+\index{make\_diameter@{make\_diameter}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}}
+\doxysubsubsection{\texorpdfstring{make\_diameter()}{make\_diameter()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_ae304aa9589f7a9ba2ef7272067c13e54} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+smallestenclosingcircle.\+make\+\_\+diameter (\begin{DoxyParamCaption}\item[{}]{a}{, }\item[{}]{b}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_ae7af1a873777f4647354d6f256673522}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}!\_MULTIPLICATIVE\_EPSILON@{\_MULTIPLICATIVE\_EPSILON}}
+\index{\_MULTIPLICATIVE\_EPSILON@{\_MULTIPLICATIVE\_EPSILON}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.smallestenclosingcircle}}
+\doxysubsubsection{\texorpdfstring{\_MULTIPLICATIVE\_EPSILON}{\_MULTIPLICATIVE\_EPSILON}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1smallestenclosingcircle_ae7af1a873777f4647354d6f256673522} 
+int SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+smallestenclosingcircle.\+\_\+\+MULTIPLICATIVE\+\_\+\+EPSILON = 1 + 1e-\/14\hspace{0.3cm}{\ttfamily [protected]}}
+

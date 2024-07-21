@@ -1,0 +1,138 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory Class Reference}
+\hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory}{}\label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ab3e82ae746cfd2798bddf74112530253}{\+\_\+\+\_\+init\+\_\+\+\_\+}} (self, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a476f01a815356202caf857aca643fda9}{Track\+\_\+\+ID}}, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a8e14e31cdb354f305d3f6f44e26f0659}{Frame\+\_\+number}}, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ad6fb2e021a7a71331b6c807443b4d89e}{X}}, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a73ee84328c2023c2911171a8e5e75871}{Y}}, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a745085a6c38c02ef00bd60b8e5ac1ce9}{Classification}}, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ae954f0459c6caa236b8dd4565cbf3eaf}{Drop\+\_\+\+Identifier}}, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a680cb70c8e02e7588c8a05e6e9fddfd0}{Frames}}, \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a58ff7cf50665d08f68f56b4aca1e3cbf}{MSD\+\_\+total\+\_\+um}}=None, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a476f01a815356202caf857aca643fda9}{Track\+\_\+\+ID}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a8e14e31cdb354f305d3f6f44e26f0659}{Frame\+\_\+number}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a680cb70c8e02e7588c8a05e6e9fddfd0}{Frames}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ad6fb2e021a7a71331b6c807443b4d89e}{X}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a73ee84328c2023c2911171a8e5e75871}{Y}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a2fc0b8f3572f0cb26807170b4160d7af}{Intensity}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a745085a6c38c02ef00bd60b8e5ac1ce9}{Classification}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ae954f0459c6caa236b8dd4565cbf3eaf}{Drop\+\_\+\+Identifier}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a58ff7cf50665d08f68f56b4aca1e3cbf}{MSD\+\_\+total\+\_\+um}}
+\item 
+\mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ad335c57d927490ccdc914651eff99737}{distance\+\_\+from\+\_\+drop}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}    Trajectory attribute class
+
+    Parameters
+    ----------
+    __init__ :
+        Track_ID : int
+            unique identifier for each trajectory
+        Frame_number : int
+            frame number of the trajectory (based on the sub segmented frames) (i.e 0,1,2,3,4 if subframes = 5)
+        X : list or np.array
+            x coordinates of the trajectory
+        Y : list or np.array
+            y coordinates of the trajectory
+        Classification : str 
+            "IN" or "OUT" or "IO", for In Drop, Out Drop, In and Out Drop
+        Drop_Identifier : str
+            ID of the drop that the trajectory belongs to
+        Frames : list or np.array
+            frame numbers of the trajectory (based on the original frames) 
+        Intensity : list or np.array
+            intensity of the trajectory (same length as X and Y and Frames)
+        MSD_total_um : float, default = None
+            total MSD of the trajectory
+        
+        Kwargs:
+        -------
+        distance_from_drop : float
+            distance from the drop center to the trajectory\end{DoxyVerb}
+ 
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ab3e82ae746cfd2798bddf74112530253}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!\_\_init\_\_@{\_\_init\_\_}}
+\index{\_\_init\_\_@{\_\_init\_\_}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{\_\_init\_\_()}{\_\_init\_\_()}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ab3e82ae746cfd2798bddf74112530253} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+\_\+\+\_\+init\+\_\+\+\_\+ (\begin{DoxyParamCaption}\item[{}]{self}{, }\item[{}]{Track\+\_\+\+ID}{, }\item[{}]{Frame\+\_\+number}{, }\item[{}]{X}{, }\item[{}]{Y}{, }\item[{}]{Classification}{, }\item[{}]{Drop\+\_\+\+Identifier}{, }\item[{}]{Frames}{, }\item[{}]{MSD\+\_\+total\+\_\+um}{ = {\ttfamily None}, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a745085a6c38c02ef00bd60b8e5ac1ce9}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!Classification@{Classification}}
+\index{Classification@{Classification}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{Classification}{Classification}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a745085a6c38c02ef00bd60b8e5ac1ce9} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+Classification}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ad335c57d927490ccdc914651eff99737}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!distance\_from\_drop@{distance\_from\_drop}}
+\index{distance\_from\_drop@{distance\_from\_drop}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{distance\_from\_drop}{distance\_from\_drop}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ad335c57d927490ccdc914651eff99737} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+distance\+\_\+from\+\_\+drop}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ae954f0459c6caa236b8dd4565cbf3eaf}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!Drop\_Identifier@{Drop\_Identifier}}
+\index{Drop\_Identifier@{Drop\_Identifier}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{Drop\_Identifier}{Drop\_Identifier}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ae954f0459c6caa236b8dd4565cbf3eaf} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+Drop\+\_\+\+Identifier}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a8e14e31cdb354f305d3f6f44e26f0659}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!Frame\_number@{Frame\_number}}
+\index{Frame\_number@{Frame\_number}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{Frame\_number}{Frame\_number}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a8e14e31cdb354f305d3f6f44e26f0659} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+Frame\+\_\+number}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a680cb70c8e02e7588c8a05e6e9fddfd0}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!Frames@{Frames}}
+\index{Frames@{Frames}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{Frames}{Frames}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a680cb70c8e02e7588c8a05e6e9fddfd0} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+Frames}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a2fc0b8f3572f0cb26807170b4160d7af}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!Intensity@{Intensity}}
+\index{Intensity@{Intensity}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{Intensity}{Intensity}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a2fc0b8f3572f0cb26807170b4160d7af} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+Intensity}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a58ff7cf50665d08f68f56b4aca1e3cbf}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!MSD\_total\_um@{MSD\_total\_um}}
+\index{MSD\_total\_um@{MSD\_total\_um}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{MSD\_total\_um}{MSD\_total\_um}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a58ff7cf50665d08f68f56b4aca1e3cbf} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+MSD\+\_\+total\+\_\+um}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a476f01a815356202caf857aca643fda9}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!Track\_ID@{Track\_ID}}
+\index{Track\_ID@{Track\_ID}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{Track\_ID}{Track\_ID}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a476f01a815356202caf857aca643fda9} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+Track\+\_\+\+ID}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ad6fb2e021a7a71331b6c807443b4d89e}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!X@{X}}
+\index{X@{X}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{X}{X}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_ad6fb2e021a7a71331b6c807443b4d89e} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+X}
+
+\Hypertarget{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a73ee84328c2023c2911171a8e5e75871}\index{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}!Y@{Y}}
+\index{Y@{Y}!SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory@{SMT.SMT\_Analysis\_BP.databases.trajectory\_analysis\_script.Trajectory}}
+\doxysubsubsection{\texorpdfstring{Y}{Y}}
+{\footnotesize\ttfamily \label{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1databases_1_1trajectory__analysis__script_1_1_trajectory_a73ee84328c2023c2911171a8e5e75871} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+databases.\+trajectory\+\_\+analysis\+\_\+script.\+Trajectory.\+Y}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/baljyot/\+Documents/\+CODE/\+Git\+Hub\+\_\+t2/\+PHD/\+Baljyot\+\_\+\+EXP\+\_\+\+RPOC/\+Scripts/\+SMT/\+SMT\+\_\+\+Analysis\+\_\+\+BP/databases/\mbox{\hyperlink{trajectory__analysis__script_8py}{trajectory\+\_\+analysis\+\_\+script.\+py}}\end{DoxyCompactItemize}

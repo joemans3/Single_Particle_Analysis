@@ -1,0 +1,227 @@
+\doxysection{scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm Namespace Reference}
+\hypertarget{namespacescale__space__plus__fixed__palm}{}\label{namespacescale__space__plus__fixed__palm}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classscale__space__plus__fixed__palm_1_1_reconstruct___fixed___p_a_l_m___d_a_t_a_s_e_t_s}{Reconstruct\+\_\+\+Fixed\+\_\+\+PALM\+\_\+\+DATASETS}}
+\item 
+class \mbox{\hyperlink{classscale__space__plus__fixed__palm_1_1_reconstruct___masked___p_a_l_m___d_a_t_a_s_e_t_s}{Reconstruct\+\_\+\+Masked\+\_\+\+PALM\+\_\+\+DATASETS}}
+\item 
+class \mbox{\hyperlink{classscale__space__plus__fixed__palm_1_1_reconstruct___tracked___p_a_l_m___d_a_t_a_s_e_t_s__with__mask}{Reconstruct\+\_\+\+Tracked\+\_\+\+PALM\+\_\+\+DATASETS\+\_\+with\+\_\+mask}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacescale__space__plus__fixed__palm_a316099d7efa650d951ac148d9a2fa023}{load\+\_\+localizations}} (localizations\+\_\+path, skiprows=4)
+\item 
+\mbox{\hyperlink{namespacescale__space__plus__fixed__palm_ae1c3f6d430ec2e611a5c69ab04a487c7}{load\+\_\+localizations\+\_\+\+TS}} (localizations\+\_\+path, skiprows=0)
+\item 
+pd.\+Data\+Frame \mbox{\hyperlink{namespacescale__space__plus__fixed__palm_ac846b89f88480392d2e58b8cc84202a5}{get\+\_\+unique\+\_\+localizations}} (pd.\+Data\+Frame localizations\+\_\+df, str unique\+\_\+loc\+\_\+type="{}first"{})
+\item 
+pd.\+Data\+Frame \mbox{\hyperlink{namespacescale__space__plus__fixed__palm_acfd0247e81e89b3452bc90f1cd323ddb}{get\+\_\+unique\+\_\+localizations\+\_\+\+TS}} (pd.\+Data\+Frame localizations\+\_\+df, str unique\+\_\+loc\+\_\+type="{}first"{})
+\item 
+\mbox{\hyperlink{namespacescale__space__plus__fixed__palm_ac3e9cd3e0253127690f3015b342b03e3}{rescale\+\_\+scale\+\_\+space\+\_\+blob\+\_\+detection}} (blobs, callable rescaling\+\_\+func, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{namespacescale__space__plus__fixed__palm_a7b40d32d2d076d86f293a2babcefcc6b}{CORRECTION\+\_\+\+FACTOR}} = 1.
+\item 
+str \mbox{\hyperlink{namespacescale__space__plus__fixed__palm_a9d3e8767d49af96fbbc49ae8a42b9aff}{LOCALIZATION\+\_\+\+UNIQUE\+\_\+\+TYPE}} = "{}mean"{}
+\item 
+list \mbox{\hyperlink{namespacescale__space__plus__fixed__palm_a83587294429fa266e1eeece8a9a18ac0}{XY\+\_\+\+NAMES}} = \mbox{[}\textquotesingle{}x\textquotesingle{},\textquotesingle{}y\textquotesingle{}\mbox{]}
+\item 
+list \mbox{\hyperlink{namespacescale__space__plus__fixed__palm_a87558a1700a8c55c4c5623aa520c827b}{global\+\_\+path}}
+\item 
+dict \mbox{\hyperlink{namespacescale__space__plus__fixed__palm_a5e657c36233ce5df3120b6124fd00789}{blob\+\_\+parameters}}
+\item 
+dict \mbox{\hyperlink{namespacescale__space__plus__fixed__palm_affa7539eaa89caae7884dc55f076bbe6}{fitting\+\_\+parameters}}
+\item 
+\mbox{\hyperlink{namespacescale__space__plus__fixed__palm_a5ca9e625a6f2978a83f924f0fb627728}{sm\+\_\+rec}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}Helper script to do the reconstruction and scale space blob detection along with the DBSCAN clustering on fixed cell PALM data.
+This is different from scale_space_plus_database_tracked.py since it inforces a cell mask for each cell in a movie and also ixpects a different file structure.
+
+
+############################################################################################################
+File structure:
+---------------
+The file structure is as follows:
+
+<main_path>
+    /Movies
+        /Movie_<01>
+            /Cell_<cell_number>
+                /localizations.csv
+                /mask.tif
+
+This is the base file structure for the PALM data. The script will look for the localizations and mask files in the above structure.
+
+The localizations file needs to be in the form of TRACKMATE output from the GUI. TODO make it more general.
+
+The objective of this script is to add the following files to the above structure: (new files and directories have a # next to them)
+
+<main_path>
+    /Movies
+        /Movie_<01>
+            /Cell_<cell_number>
+                /localizations.csv
+                /mask.tif
+                /reconstruction.tif #
+                /uniform_reconstruction.tif #
+                /normal_scale_projection.tif #
+                /reconstruction_parameters.json #
+                    /Analysis #
+                        /scale_space_plus_blob_fitted.csv #
+                        /scale_space_plus_blob_scale.csv #
+                        /DBSCAN_clusters.csv #
+                        /analysis_parameters.json #\end{DoxyVerb}
+ 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacescale__space__plus__fixed__palm_ac846b89f88480392d2e58b8cc84202a5}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!get\_unique\_localizations@{get\_unique\_localizations}}
+\index{get\_unique\_localizations@{get\_unique\_localizations}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{get\_unique\_localizations()}{get\_unique\_localizations()}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_ac846b89f88480392d2e58b8cc84202a5} 
+pd.\+Data\+Frame scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+get\+\_\+unique\+\_\+localizations (\begin{DoxyParamCaption}\item[{pd.\+Data\+Frame}]{localizations\+\_\+df}{, }\item[{str}]{unique\+\_\+loc\+\_\+type}{ = {\ttfamily "{}first"{}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}For each unique track_ID get the first localization or the mean value of all the localizations
+
+Parameters:
+-----------
+localizations_df: pd.DataFrame
+    The dataframe of the localizations
+unique_loc_type: str
+    The type of unique localization to get. Can be either "first" or "mean"
+\end{DoxyVerb}
+ \Hypertarget{namespacescale__space__plus__fixed__palm_acfd0247e81e89b3452bc90f1cd323ddb}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!get\_unique\_localizations\_TS@{get\_unique\_localizations\_TS}}
+\index{get\_unique\_localizations\_TS@{get\_unique\_localizations\_TS}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{get\_unique\_localizations\_TS()}{get\_unique\_localizations\_TS()}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_acfd0247e81e89b3452bc90f1cd323ddb} 
+pd.\+Data\+Frame scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+get\+\_\+unique\+\_\+localizations\+\_\+\+TS (\begin{DoxyParamCaption}\item[{pd.\+Data\+Frame}]{localizations\+\_\+df}{, }\item[{str}]{unique\+\_\+loc\+\_\+type}{ = {\ttfamily "{}first"{}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}For each unique track_ID get the first localization or the mean value of all the localizations
+
+Parameters:
+-----------
+localizations_df: pd.DataFrame
+    The dataframe of the localizations
+unique_loc_type: str
+    The type of unique localization to get. Can be either "first" or "mean"
+\end{DoxyVerb}
+ \Hypertarget{namespacescale__space__plus__fixed__palm_a316099d7efa650d951ac148d9a2fa023}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!load\_localizations@{load\_localizations}}
+\index{load\_localizations@{load\_localizations}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{load\_localizations()}{load\_localizations()}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_a316099d7efa650d951ac148d9a2fa023} 
+scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+load\+\_\+localizations (\begin{DoxyParamCaption}\item[{}]{localizations\+\_\+path}{, }\item[{}]{skiprows}{ = {\ttfamily 4}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Load the localizations from the localizations.csv file
+\end{DoxyVerb}
+ \Hypertarget{namespacescale__space__plus__fixed__palm_ae1c3f6d430ec2e611a5c69ab04a487c7}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!load\_localizations\_TS@{load\_localizations\_TS}}
+\index{load\_localizations\_TS@{load\_localizations\_TS}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{load\_localizations\_TS()}{load\_localizations\_TS()}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_ae1c3f6d430ec2e611a5c69ab04a487c7} 
+scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+load\+\_\+localizations\+\_\+\+TS (\begin{DoxyParamCaption}\item[{}]{localizations\+\_\+path}{, }\item[{}]{skiprows}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Load the localizations from the localizations.csv file (ThunderSTORM format)
+\end{DoxyVerb}
+ \Hypertarget{namespacescale__space__plus__fixed__palm_ac3e9cd3e0253127690f3015b342b03e3}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!rescale\_scale\_space\_blob\_detection@{rescale\_scale\_space\_blob\_detection}}
+\index{rescale\_scale\_space\_blob\_detection@{rescale\_scale\_space\_blob\_detection}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{rescale\_scale\_space\_blob\_detection()}{rescale\_scale\_space\_blob\_detection()}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_ac3e9cd3e0253127690f3015b342b03e3} 
+scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+rescale\+\_\+scale\+\_\+space\+\_\+blob\+\_\+detection (\begin{DoxyParamCaption}\item[{}]{blobs}{, }\item[{callable}]{rescaling\+\_\+func}{, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{namespacescale__space__plus__fixed__palm_a5e657c36233ce5df3120b6124fd00789}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!blob\_parameters@{blob\_parameters}}
+\index{blob\_parameters@{blob\_parameters}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{blob\_parameters}{blob\_parameters}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_a5e657c36233ce5df3120b6124fd00789} 
+dict scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+blob\+\_\+parameters}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \{}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}threshold"{}}:\ 2e-\/1,\ \(\backslash\)}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}overlap"{}}:\ 0,\ \(\backslash\)}
+\DoxyCodeLine{00004\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}median"{}}:\ \textcolor{keyword}{False},\ \(\backslash\)}
+\DoxyCodeLine{00005\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}min\_sigma"{}}:\ 3/np.sqrt(2),\ \(\backslash\)}
+\DoxyCodeLine{00006\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}max\_sigma"{}}:\ 20/np.sqrt(2),\ \(\backslash\)}
+\DoxyCodeLine{00007\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}num\_sigma"{}}:\ 30,\ \(\backslash\)}
+\DoxyCodeLine{00008\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}detection"{}}:\ \textcolor{stringliteral}{'bp'},\ \(\backslash\)}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}log\_scale"{}}:\ \textcolor{keyword}{False}}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{namespacescale__space__plus__fixed__palm_a7b40d32d2d076d86f293a2babcefcc6b}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!CORRECTION\_FACTOR@{CORRECTION\_FACTOR}}
+\index{CORRECTION\_FACTOR@{CORRECTION\_FACTOR}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{CORRECTION\_FACTOR}{CORRECTION\_FACTOR}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_a7b40d32d2d076d86f293a2babcefcc6b} 
+int scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+CORRECTION\+\_\+\+FACTOR = 1.}
+
+\Hypertarget{namespacescale__space__plus__fixed__palm_affa7539eaa89caae7884dc55f076bbe6}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!fitting\_parameters@{fitting\_parameters}}
+\index{fitting\_parameters@{fitting\_parameters}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{fitting\_parameters}{fitting\_parameters}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_affa7539eaa89caae7884dc55f076bbe6} 
+dict scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+fitting\+\_\+parameters}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ \{}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}mask\_size"{}}:5,}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}plot\_fit"{}}:\textcolor{keyword}{False},}
+\DoxyCodeLine{00004\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}fitting\_image"{}}:\textcolor{stringliteral}{"{}LAP"{}},}
+\DoxyCodeLine{00005\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}radius\_func"{}}:np.mean,\textcolor{comment}{\#identity,}}
+\DoxyCodeLine{00006\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}residual\_func"{}}:residuals\_gaus2d,}
+\DoxyCodeLine{00007\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}sigma\_range"{}}:4,}
+\DoxyCodeLine{00008\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}centroid\_range"{}}:2,}
+\DoxyCodeLine{00009\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}height\_range"{}}:1}
+\DoxyCodeLine{00010\ \ \ \ \ \ \ \ \ \}}
+
+\end{DoxyCode}
+\Hypertarget{namespacescale__space__plus__fixed__palm_a87558a1700a8c55c4c5623aa520c827b}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!global\_path@{global\_path}}
+\index{global\_path@{global\_path}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{global\_path}{global\_path}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_a87558a1700a8c55c4c5623aa520c827b} 
+list scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+global\+\_\+path}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ [}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}/Users/baljyot/Documents/CODE/GitHub\_t2/Baljyot\_EXP\_RPOC/DATA/Fixed\_100ms/20231017/rp\_rif\_fixed\_2"{}}}
+\DoxyCodeLine{00003\ \ \ \ \ ]}
+
+\end{DoxyCode}
+\Hypertarget{namespacescale__space__plus__fixed__palm_a9d3e8767d49af96fbbc49ae8a42b9aff}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!LOCALIZATION\_UNIQUE\_TYPE@{LOCALIZATION\_UNIQUE\_TYPE}}
+\index{LOCALIZATION\_UNIQUE\_TYPE@{LOCALIZATION\_UNIQUE\_TYPE}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{LOCALIZATION\_UNIQUE\_TYPE}{LOCALIZATION\_UNIQUE\_TYPE}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_a9d3e8767d49af96fbbc49ae8a42b9aff} 
+str scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+LOCALIZATION\+\_\+\+UNIQUE\+\_\+\+TYPE = "{}mean"{}}
+
+\Hypertarget{namespacescale__space__plus__fixed__palm_a5ca9e625a6f2978a83f924f0fb627728}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!sm\_rec@{sm\_rec}}
+\index{sm\_rec@{sm\_rec}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{sm\_rec}{sm\_rec}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_a5ca9e625a6f2978a83f924f0fb627728} 
+scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+sm\+\_\+rec}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ =\ \ Reconstruct\_Fixed\_PALM\_DATASETS(cd\ =\ global\_path[i],}
+\DoxyCodeLine{00002\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ blob\_parameters\ =\ blob\_parameters,}
+\DoxyCodeLine{00003\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ fitting\_parameters\ =\ fitting\_parameters,}
+\DoxyCodeLine{00004\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ rescale\_pixel\_size\ =\ 10,}
+\DoxyCodeLine{00005\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ pixel\_size\ =\ 130,}
+\DoxyCodeLine{00006\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ loc\_error\ =\ 20,}
+\DoxyCodeLine{00007\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ include\_all\ =\ \textcolor{keyword}{False})}
+
+\end{DoxyCode}
+\Hypertarget{namespacescale__space__plus__fixed__palm_a83587294429fa266e1eeece8a9a18ac0}\index{scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}!XY\_NAMES@{XY\_NAMES}}
+\index{XY\_NAMES@{XY\_NAMES}!scale\_space\_plus\_fixed\_palm@{scale\_space\_plus\_fixed\_palm}}
+\doxysubsubsection{\texorpdfstring{XY\_NAMES}{XY\_NAMES}}
+{\footnotesize\ttfamily \label{namespacescale__space__plus__fixed__palm_a83587294429fa266e1eeece8a9a18ac0} 
+list scale\+\_\+space\+\_\+plus\+\_\+fixed\+\_\+palm.\+XY\+\_\+\+NAMES = \mbox{[}\textquotesingle{}x\textquotesingle{},\textquotesingle{}y\textquotesingle{}\mbox{]}}
+

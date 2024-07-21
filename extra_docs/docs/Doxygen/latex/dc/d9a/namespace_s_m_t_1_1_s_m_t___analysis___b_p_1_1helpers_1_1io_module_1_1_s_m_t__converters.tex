@@ -1,0 +1,90 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+SMT\+\_\+converters Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters@{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{class_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_1_1_i_o__run__analysis}{IO\+\_\+run\+\_\+analysis}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+list \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_ae49d70175da0e94b362e4fe7a55ba300}{convert\+\_\+track\+\_\+data\+\_\+\+SMAUG\+\_\+format}} (dict track\+\_\+data)
+\item 
+list \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_a885af63b962f4603c5760c6185deccd1}{convert\+\_\+track\+\_\+data\+\_\+\+NOBIAS\+\_\+format\+\_\+global}} (dict track\+\_\+data, int max\+\_\+tau=1)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_a1041c081ae3f32a11b6e986ab12edcc1}{\+\_\+convert\+\_\+track\+\_\+data\+\_\+\+NOBIAS\+\_\+format\+\_\+tau}} (displacement\+\_\+dict, tau, bool include\+\_\+cor\+\_\+obs=False)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_a1041c081ae3f32a11b6e986ab12edcc1}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters@{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters}!\_convert\_track\_data\_NOBIAS\_format\_tau@{\_convert\_track\_data\_NOBIAS\_format\_tau}}
+\index{\_convert\_track\_data\_NOBIAS\_format\_tau@{\_convert\_track\_data\_NOBIAS\_format\_tau}!SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters@{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters}}
+\doxysubsubsection{\texorpdfstring{\_convert\_track\_data\_NOBIAS\_format\_tau()}{\_convert\_track\_data\_NOBIAS\_format\_tau()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_a1041c081ae3f32a11b6e986ab12edcc1} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+SMT\+\_\+converters.\+\_\+convert\+\_\+track\+\_\+data\+\_\+\+NOBIAS\+\_\+format\+\_\+tau (\begin{DoxyParamCaption}\item[{}]{displacement\+\_\+dict}{, }\item[{}]{tau}{, }\item[{bool }]{include\+\_\+cor\+\_\+obs}{ = {\ttfamily False}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb} Docstring for _convert_track_data_NOBIAS_format_tau
+This is a utility function for convert_track_data_NOBIAS_format_global that formats the track data for a specific tau
+
+Parameters:
+-----------
+displacement_dict: dict
+    dict of the form {track_id:{tau:[[x1-x0,x2-x1,...],[y1-y0,y2-y1,...]],...},...}
+    This is the output from the MSD_Tracks function in Analysis_functions.py
+tau: int
+    the tau to use for the NOBIAS analysis
+include_cor_obs: bool
+    whether to include the correlation observations in the output
+
+Returns:
+--------
+nobias_dict_out: dict
+    dict of the form {"obs":[[x1-x0,x2-x1,...],[y1-y0,y2-y1,...]],"TrID":[track_id1,track_id1,...]}
+    "obs" is 2 x T where T is the number of frames and 2 is the dimension of the data (x,y)
+    "TrID" is a list of track ids that correspond to the displacements in "obs"
+
+Notes:
+------
+For the "cor_obs" key, i have no idea what the values for this are and as such i am leaving it out. But can be implemented later if needed
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_a885af63b962f4603c5760c6185deccd1}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters@{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters}!convert\_track\_data\_NOBIAS\_format\_global@{convert\_track\_data\_NOBIAS\_format\_global}}
+\index{convert\_track\_data\_NOBIAS\_format\_global@{convert\_track\_data\_NOBIAS\_format\_global}!SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters@{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters}}
+\doxysubsubsection{\texorpdfstring{convert\_track\_data\_NOBIAS\_format\_global()}{convert\_track\_data\_NOBIAS\_format\_global()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_a885af63b962f4603c5760c6185deccd1} 
+list SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+SMT\+\_\+converters.\+convert\+\_\+track\+\_\+data\+\_\+\+NOBIAS\+\_\+format\+\_\+global (\begin{DoxyParamCaption}\item[{dict}]{track\+\_\+data}{, }\item[{int }]{max\+\_\+tau}{ = {\ttfamily 1}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Docstring for convert_track_data_NOBIAS_format_global
+This should be run in the background to gain all the tau permutations for posterity but the main function should be convert_track_data_NOBIAS_format
+for a single tau. The other funtions will be described later.
+
+Parameters:
+-----------
+track_data: dict
+    dict of track data in the format {track_id:[[x0,y0,frame0],[x1,y1,frame1],...],...}
+max_tau: int
+    the maximum tau to use for the NOBIAS analysis
+
+Returns:
+--------
+track_data_NOBIAS: list of dict
+    dict of the form [{"obs":[[x1-x0,x2-x1,...],[y1-y0,y2-y1,...]],"TrID":[track_id1,track_id1,...]},...]
+    Each element in the list is a dict of the displacements for a given tau
+    "obs" is 2 x T where T is the number of frames and 2 is the dimension of the data (x,y)
+    "TrID" is a list of track ids that correspond to the displacements in "obs"
+    For example:
+    {"obs":[[x1-x0,x2-x1,...],[y1-y0,y2-y1,...]],"TrID":[1,1,...]}
+    this means that the displacements in "obs" are for track id 1
+
+
+
+Notes:
+------
+This function is used to convert track data in the format {track_id:[[x0,y0,frame0],[x1,y1,frame1],...],...}
+to the format required for NOBIAS analysis
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_ae49d70175da0e94b362e4fe7a55ba300}\index{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters@{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters}!convert\_track\_data\_SMAUG\_format@{convert\_track\_data\_SMAUG\_format}}
+\index{convert\_track\_data\_SMAUG\_format@{convert\_track\_data\_SMAUG\_format}!SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters@{SMT.SMT\_Analysis\_BP.helpers.ioModule.SMT\_converters}}
+\doxysubsubsection{\texorpdfstring{convert\_track\_data\_SMAUG\_format()}{convert\_track\_data\_SMAUG\_format()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1io_module_1_1_s_m_t__converters_ae49d70175da0e94b362e4fe7a55ba300} 
+list SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+io\+Module.\+SMT\+\_\+converters.\+convert\+\_\+track\+\_\+data\+\_\+\+SMAUG\+\_\+format (\begin{DoxyParamCaption}\item[{dict}]{track\+\_\+data}{}\end{DoxyParamCaption})}
+

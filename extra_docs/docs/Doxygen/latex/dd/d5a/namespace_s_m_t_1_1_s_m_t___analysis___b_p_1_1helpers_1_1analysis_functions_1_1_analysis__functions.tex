@@ -1,0 +1,1012 @@
+\doxysection{SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions Namespace Reference}
+\hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions}{}\label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a30aec5bcddc63c237ea4c624eac969bb}{non\+\_\+linear\+\_\+curvefit}} (func, xdata, ydata, p0=None, method=\textquotesingle{}lm\textquotesingle{}, bounds=None)
+\begin{DoxyCompactList}\small\item\em RANDOM FITTING FUNCTIONS \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a181a74832daab8b8a05f2cd927fc5e28}{linear\+\_\+fitting}} (xdata, ydata, deg=1)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_abe556b53e3b4bbfa5da8c9aeddf8cd22}{gaus1D}} (x, \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}, b, c)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a1f9304b19d338c1b5ad4ae015ce1e678}{gaus2D}} (x, \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}, b, c, a1, b1, c1)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aa24e9b3686e3ee4cf26f4489aabb5088}{gaussian\+\_\+fit}} (x, p0, p1, p2)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab82b4d121958032d17953cbd8158f6b1}{Thompson\+\_\+localization\+\_\+precision}} (float psf\+\_\+sigma, float pixel\+\_\+size, float\texorpdfstring{$\vert$}{|}np.\+ndarray num\+\_\+photons, float background\+\_\+photons)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a91509ed175aae51023e50f0751f4b712}{rayleigh\+\_\+corr}} (x, corr, sigma, A)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aac2c1299c3af1b3539727c88ead285ba}{nnd\+\_\+correction\+\_\+rayleigh}} (x, sigma, xc, w, a1, a2, a3)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a69d655174035c6008347ebeb0be91af0}{cum\+\_\+sum}} (data, binz=10)
+\begin{DoxyCompactList}\small\item\em RANDOM UTILITY FUNCTIONS \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_adc2e73b207de5c79d6a0f3dd29bd40b5}{rescale}} (x, \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}, b)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a16d13b829410a74fb8b568013fe93357}{dif\+\_\+dis}} (x, y)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_abbb5e613653bb2a78d0bae228aad4789}{dist}} (x, y, c1, c2)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aaa81cc8ff619dd4344e111d00a4a608b}{d\+\_\+to\+\_\+rad}} (deg\+\_\+)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a774aaa9db6e14a9c15ff64a49946f1b0}{rad\+\_\+to\+\_\+d}} (rad\+\_\+)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ae1eee273df7ad8c4f406dcebc2a84449}{cm\+\_\+normal}} (x, y)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a64124826010c1f039ddc458d6bcf55fd}{con\+\_\+pix\+\_\+si}} (data, con\+\_\+nm=0.\+130, con\+\_\+ms=20., which=0)
+\item 
+float \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ad6fab2dd9b5765cbfa4cff321bda34a1}{radius\+\_\+of\+\_\+gyration}} (\texorpdfstring{$\ast$}{*}args)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a8347c37464dc114a9bd8c7135e110b88}{photon\+\_\+conversion\+\_\+from\+\_\+\+AUD}} (float\texorpdfstring{$\vert$}{|}np.\+ndarray AUD, float\texorpdfstring{$\vert$}{|}int photon\+\_\+conversion\+\_\+factor, float\texorpdfstring{$\vert$}{|}int quantum\+\_\+efficiency, float\texorpdfstring{$\vert$}{|}int dark\+\_\+offset)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a81989dc7dcc592d4eb9bc3ed78455e43}{bin\+\_\+ndarray}} (ndarray, new\+\_\+shape, operation=\textquotesingle{}sum\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a0b90cee6bef32712fc3ba8d188e2b982}{bin\+\_\+img}} (img, bin=2, operation=\textquotesingle{}sum\textquotesingle{})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a5eb760d88dc3ba38826ce5e5b834785b}{convert\+\_\+3d\+\_\+to\+\_\+2d}} (\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ae85a090c8ca2869703ae2f2f3774e249}{point\+\_\+inside\+\_\+circle2D}} (circle, point)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a61a0272d3ea0fab6400d9a3fb04a33e1}{reshape\+\_\+col2d}} (arr, permutations)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a57ea73456f0cb72046d0c4ec2f632ffd}{range\+\_\+distance}} (\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}, b)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_abc292aa538899e043a82d0c8d5a32fd4}{rt\+\_\+to\+\_\+xy}} (r, theta)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a4b51062b419c605017fa9d0e4bd528a0}{pad\+\_\+array}} (subarray, shape, top\+\_\+left\+\_\+coord, pad=0)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_af4ea93a21049ee4a791d9c56e2309f8c}{sorted\+\_\+alphanumeric}} (data)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aed0a3295ef3762c8907ecfd0d91d3380}{subarray2D}} (arr, mask, full=True, transpose=True)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a433f90a0e02c01c3fcc2fd521b7d93a8}{flatten}} (t)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ac7f16da4c3211ea9df7187c9ad01207a}{rescale\+\_\+range}} (x, min\+\_\+x, max\+\_\+x, \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}, b)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ae4b68bb4942c39a8805131e9947681db}{dic\+\_\+union\+\_\+two}} (dic\+\_\+1, dic\+\_\+2)
+\begin{DoxyCompactList}\small\item\em MSD calculations for sim data format of dict \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a0efc5738b5c1db6f0b59bc9458bf8544}{MSD\+\_\+tavg1}} (x, y, f, f\+\_\+inc=False)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aaf0d9379b609f6ad5bef7e11d2a7ae7c}{MSD\+\_\+tavg}} (x, y, f, f\+\_\+inc=False)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_af6ee1eaba85e2eefdf7e3118b954db8b}{MSD\+\_\+tavg\+\_\+single}} (x, f, f\+\_\+inc=False)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a6319255512a68b484aae60d090928b81}{track\+\_\+decomp}} (x, y, f, max\+\_\+track\+\_\+decomp)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a45208db5ea56f3cabf3ab3679e9fd988}{fit\+\_\+\+MSD\+\_\+loc\+\_\+err}} (t, p\+\_\+0, p\+\_\+1, p\+\_\+2)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab949f7cd5d6af2c7ec26b39f8d75baa4}{fit\+\_\+\+MSD}} (t, p\+\_\+0, p\+\_\+1, p\+\_\+2)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a76e9ceccca43dede8bacbacf5f10435d}{fit\+\_\+\+MSD\+\_\+\+Linear}} (t, p\+\_\+0, p\+\_\+1)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a2854e92dd30248510807fff0c7be0fc4}{find\+\_\+diffusion\+\_\+coefficient}} (time, distance, dim)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a8f22cdf39891acd911bb7c9cd01b46b4}{find\+\_\+static\+\_\+localization\+\_\+error\+\_\+\+MSD}} (sigma, dim)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab8f4979c2e329599eb2c255f98c09c2b}{\+\_\+random\+\_\+starting\+\_\+point}} (start, end)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a00ac0c98d8bfcabb8bf0d53287b97be5}{squared\+\_\+mean\+\_\+difference}} (\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab2a3f93a19bfd256417ff9b3b0b551cb}{point\+\_\+per\+\_\+frame\+\_\+difference}} (true\+\_\+points\+\_\+per\+\_\+frame, extracted\+\_\+points\+\_\+per\+\_\+frame)
+\begin{DoxyCompactList}\small\item\em Track percent identity functions \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aa6e15e74fefb1b7b653c8a3f148eb4ce}{percent\+\_\+error}} (true, estimate, abs=True)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a7420da17bf6b6569972f8bb7a84f0e98}{\+\_\+point\+\_\+identity}} (point\+\_\+true, track\+\_\+estimate, distance\+\_\+threshold)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a48fbca914bb19f3dea7890f08eb215a0}{identity\+\_\+tracks}} (track\+\_\+true, track\+\_\+estimate, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_acb5c4355c872515db36a4e8d44b47ade}{identity\+\_\+track\+\_\+matrix}} (tracks\+\_\+true, tracks\+\_\+estimate, verbose=True, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a663911666812a703ab3916ed2c8aaec2}{point\+\_\+error\+\_\+detection}} (true\+\_\+points, extracted\+\_\+points, threshold=0.\+5)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a16f8c295822912240a6a231d970b497c}{points\+\_\+per\+\_\+frame\+\_\+convert}} (tracks)
+\item 
+dict \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab96752af606fd47c3bfe16da64bd010b}{points\+\_\+per\+\_\+frame\+\_\+bulk\+\_\+sort}} (np.\+ndarray x, np.\+ndarray y, np.\+ndarray t)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a7986875486722de72cf5a1e91c3573ec}{convert\+\_\+point\+\_\+pairs}} (tracks)
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aedab23f88e301e077d48142e4160c03c}{point\+\_\+pair\+\_\+error\+\_\+detection}} (true\+\_\+point\+\_\+pairs, extracted\+\_\+point\+\_\+pairs, threshold=0.\+5)
+\item 
+dict \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a8011d5dc58d870b0df4dc133c800ed6d}{area\+\_\+points\+\_\+per\+\_\+frame}} (dict points\+\_\+per\+\_\+frame, callable area\+\_\+func=\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ad6fab2dd9b5765cbfa4cff321bda34a1}{radius\+\_\+of\+\_\+gyration}})
+\item 
+\mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a983eacc4772938ed34cbb5c504a39c94}{convex\+\_\+hull\+\_\+area}} (points)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+\begin{DoxyVerb}This module contains a collection of functions for analysis
+
+Some of the functions are old and not used anymore, but I am keeping them here for now
+Author: Baljyot Singh Parmar
+\end{DoxyVerb}
+ 
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a7420da17bf6b6569972f8bb7a84f0e98}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!\_point\_identity@{\_point\_identity}}
+\index{\_point\_identity@{\_point\_identity}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{\_point\_identity()}{\_point\_identity()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a7420da17bf6b6569972f8bb7a84f0e98} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+\_\+point\+\_\+identity (\begin{DoxyParamCaption}\item[{}]{point\+\_\+true}{, }\item[{}]{track\+\_\+estimate}{, }\item[{}]{distance\+\_\+threshold}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\begin{DoxyVerb} Documentation for _point_identity
+
+Parameters:
+-----------
+point_true : array
+    true point, shape (,2)
+track_estimate : array
+    estimated track, shape (n,2)
+distance_threshold : float
+    distance threshold for the point to be considered a match
+
+Returns:
+--------
+1 : int
+    if the point is within the distance threshold
+0 : int
+    if the point is not within the distance threshold
+
+Notes:
+------
+1. Assumes that the tracks and points are formatted as [[x,y,T],[x,y,T],...,[x,y,T]] numpy arrays and [x,y,T] for a single point
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab8f4979c2e329599eb2c255f98c09c2b}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!\_random\_starting\_point@{\_random\_starting\_point}}
+\index{\_random\_starting\_point@{\_random\_starting\_point}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{\_random\_starting\_point()}{\_random\_starting\_point()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab8f4979c2e329599eb2c255f98c09c2b} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+\_\+random\+\_\+starting\+\_\+point (\begin{DoxyParamCaption}\item[{}]{start}{, }\item[{}]{end}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a8011d5dc58d870b0df4dc133c800ed6d}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!area\_points\_per\_frame@{area\_points\_per\_frame}}
+\index{area\_points\_per\_frame@{area\_points\_per\_frame}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{area\_points\_per\_frame()}{area\_points\_per\_frame()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a8011d5dc58d870b0df4dc133c800ed6d} 
+dict SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+area\+\_\+points\+\_\+per\+\_\+frame (\begin{DoxyParamCaption}\item[{dict}]{points\+\_\+per\+\_\+frame}{, }\item[{callable }]{area\+\_\+func}{ = {\ttfamily \mbox{\hyperlink{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ad6fab2dd9b5765cbfa4cff321bda34a1}{radius\+\_\+of\+\_\+gyration}}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters:
+-----------
+points_per_frame : dict
+    dictionary of points per frame, keys are the frame number and the values are the points in that frame of shape (n,2) given 2D data
+area_func : callable
+    function to calculate the area of the points per frame, default is radius of gyration
+Returns:
+--------
+area_per_frame : dict
+    dictionary of area per frame, keys are the frame number and the values are the area of the points in that frame\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a0b90cee6bef32712fc3ba8d188e2b982}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!bin\_img@{bin\_img}}
+\index{bin\_img@{bin\_img}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{bin\_img()}{bin\_img()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a0b90cee6bef32712fc3ba8d188e2b982} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+bin\+\_\+img (\begin{DoxyParamCaption}\item[{}]{img}{, }\item[{}]{bin}{ = {\ttfamily 2}, }\item[{}]{operation}{ = {\ttfamily \textquotesingle{}sum\textquotesingle{}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for bin_img
+
+Parameters:
+-----------
+img : numpy array
+    The image to be binned
+bin : int, optional (default=2)
+    The binning factor, this is the number of pixels to be binned together for each axis
+operation : str, optional (default='sum')
+    The operation to be performed on the pixels, can be 'sum' or 'mean'
+
+Returns:
+--------
+numpy array
+    The binned image of shape (img.shape[0]//bin,img.shape[1]//bin)
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a81989dc7dcc592d4eb9bc3ed78455e43}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!bin\_ndarray@{bin\_ndarray}}
+\index{bin\_ndarray@{bin\_ndarray}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{bin\_ndarray()}{bin\_ndarray()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a81989dc7dcc592d4eb9bc3ed78455e43} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+bin\+\_\+ndarray (\begin{DoxyParamCaption}\item[{}]{ndarray}{, }\item[{}]{new\+\_\+shape}{, }\item[{}]{operation}{ = {\ttfamily \textquotesingle{}sum\textquotesingle{}}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for bin_ndarray
+Bins an ndarray in all axes based on the target shape, by summing or
+    averaging.
+
+Parameters:
+-----------
+ndarray : numpy array
+    The array to be binned
+new_shape : tuple
+    The shape of the output array
+operation : str, optional (default='sum')
+    The operation to be performed on the pixels, can be 'sum' or 'mean'
+
+Returns:
+--------
+numpy array
+    The binned array of shape new_shape
+
+Raises:
+-------
+ValueError
+    If the operation is not 'sum' or 'mean'
+ValueError
+    If the number of dimensions of the input array does not match the length of the new_shape tuple
+
+Examples:
+---------
+>>> m = np.arange(0,100,1).reshape((10,10))
+>>> n = bin_ndarray(m, new_shape=(5,5), operation='sum')
+>>> print(n)
+    [[ 22  30  38  46  54]
+    [102 110 118 126 134]
+    [182 190 198 206 214]
+    [262 270 278 286 294]
+    [342 350 358 366 374]]
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ae1eee273df7ad8c4f406dcebc2a84449}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!cm\_normal@{cm\_normal}}
+\index{cm\_normal@{cm\_normal}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{cm\_normal()}{cm\_normal()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ae1eee273df7ad8c4f406dcebc2a84449} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+cm\+\_\+normal (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a64124826010c1f039ddc458d6bcf55fd}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!con\_pix\_si@{con\_pix\_si}}
+\index{con\_pix\_si@{con\_pix\_si}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{con\_pix\_si()}{con\_pix\_si()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a64124826010c1f039ddc458d6bcf55fd} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+con\+\_\+pix\+\_\+si (\begin{DoxyParamCaption}\item[{}]{data}{, }\item[{}]{con\+\_\+nm}{ = {\ttfamily 0.130}, }\item[{}]{con\+\_\+ms}{ = {\ttfamily 20.}, }\item[{}]{which}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a5eb760d88dc3ba38826ce5e5b834785b}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!convert\_3d\_to\_2d@{convert\_3d\_to\_2d}}
+\index{convert\_3d\_to\_2d@{convert\_3d\_to\_2d}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{convert\_3d\_to\_2d()}{convert\_3d\_to\_2d()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a5eb760d88dc3ba38826ce5e5b834785b} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+convert\+\_\+3d\+\_\+to\+\_\+2d (\begin{DoxyParamCaption}\item[{}]{a}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a7986875486722de72cf5a1e91c3573ec}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!convert\_point\_pairs@{convert\_point\_pairs}}
+\index{convert\_point\_pairs@{convert\_point\_pairs}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{convert\_point\_pairs()}{convert\_point\_pairs()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a7986875486722de72cf5a1e91c3573ec} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+convert\+\_\+point\+\_\+pairs (\begin{DoxyParamCaption}\item[{}]{tracks}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for convert_point_pairs
+Convert a track dictionary to a point pair dictionary where the keys is a combination of the two frames of the points and the values are the point pairs
+point pairs are defined as consecutive points in a track.
+eg: track = [[x1,y1,frame1],[x2,y2,frame2],[x3,y3,frame3]]
+    point_pairs = {"frame1,frame2":[[x1,y1,frame1],[x2,y2,frame2]],"frame1,frame2":[[x2,y2,frame2],[x3,y3,frame3]]}
+
+Parameters:
+-----------
+tracks : dict, keys are track numbers and values are tracks as defined above
+    dictionary of tracks where the keys are the track numbers and the values are the tracks
+
+Returns:
+--------
+point_pairs : dict, keys is a combination of the two frames of the points are point pairs as defined above
+    dictionary of point pairs where the keys is a combination of the two frames of the points and the values are the point pairs\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a983eacc4772938ed34cbb5c504a39c94}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!convex\_hull\_area@{convex\_hull\_area}}
+\index{convex\_hull\_area@{convex\_hull\_area}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{convex\_hull\_area()}{convex\_hull\_area()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a983eacc4772938ed34cbb5c504a39c94} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+convex\+\_\+hull\+\_\+area (\begin{DoxyParamCaption}\item[{}]{points}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for convex_hull_area
+Calculate the convex hull area of a set of points
+
+Parameters:
+-----------
+points : numpy array of shape (n,2)
+    points to calculate the convex hull area
+
+Returns:
+--------
+hull_points : numpy array of shape (n,2)
+    convex hull area of the input points
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a69d655174035c6008347ebeb0be91af0}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!cum\_sum@{cum\_sum}}
+\index{cum\_sum@{cum\_sum}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{cum\_sum()}{cum\_sum()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a69d655174035c6008347ebeb0be91af0} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+cum\+\_\+sum (\begin{DoxyParamCaption}\item[{}]{data}{, }\item[{}]{binz}{ = {\ttfamily 10}}\end{DoxyParamCaption})}
+
+
+
+RANDOM UTILITY FUNCTIONS \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#. 
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aaa81cc8ff619dd4344e111d00a4a608b}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!d\_to\_rad@{d\_to\_rad}}
+\index{d\_to\_rad@{d\_to\_rad}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{d\_to\_rad()}{d\_to\_rad()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aaa81cc8ff619dd4344e111d00a4a608b} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+d\+\_\+to\+\_\+rad (\begin{DoxyParamCaption}\item[{}]{deg\+\_\+}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ae4b68bb4942c39a8805131e9947681db}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!dic\_union\_two@{dic\_union\_two}}
+\index{dic\_union\_two@{dic\_union\_two}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{dic\_union\_two()}{dic\_union\_two()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ae4b68bb4942c39a8805131e9947681db} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+dic\+\_\+union\+\_\+two (\begin{DoxyParamCaption}\item[{}]{dic\+\_\+1}{, }\item[{}]{dic\+\_\+2}{}\end{DoxyParamCaption})}
+
+
+
+MSD calculations for sim data format of dict \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#. 
+
+\begin{DoxyVerb}Documentation for dic_union_two
+Find the unique union of two dictionaries, assumes the values are lists
+
+Parameters:
+-----------
+dic_1 : dict
+    dictionary 1
+dic_2 : dict
+    dictionary 2
+
+Returns:
+--------
+dic_union : dict
+    dictionary of the unique union of the two dictionaries
+
+Notes:
+------
+The values of the dictionaries must be lists for the list concatenation to work properly
+This function turns the values of the dictionaries into lists, if arrays are needed then the values must be converted back to arrays\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a16d13b829410a74fb8b568013fe93357}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!dif\_dis@{dif\_dis}}
+\index{dif\_dis@{dif\_dis}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{dif\_dis()}{dif\_dis()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a16d13b829410a74fb8b568013fe93357} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+dif\+\_\+dis (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_abbb5e613653bb2a78d0bae228aad4789}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!dist@{dist}}
+\index{dist@{dist}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{dist()}{dist()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_abbb5e613653bb2a78d0bae228aad4789} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+dist (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{c1}{, }\item[{}]{c2}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Distance(s) x,y away from a point c1,c2 in 2D\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a2854e92dd30248510807fff0c7be0fc4}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!find\_diffusion\_coefficient@{find\_diffusion\_coefficient}}
+\index{find\_diffusion\_coefficient@{find\_diffusion\_coefficient}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{find\_diffusion\_coefficient()}{find\_diffusion\_coefficient()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a2854e92dd30248510807fff0c7be0fc4} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+find\+\_\+diffusion\+\_\+coefficient (\begin{DoxyParamCaption}\item[{}]{time}{, }\item[{}]{distance}{, }\item[{}]{dim}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for find_diffusion_coefficient
+This function finds the diffusion coefficient given a time and distance, this is just a simple calculation:
+D = (1/(2*dim))*(distance)^2/time
+
+Parameters:
+-----------
+time : array-like or int or float
+    The time
+distance : array-like or int or float
+    The distance
+dim : int
+    The dimensionality of the system
+
+Returns:
+--------
+float or numpy array
+    The diffusion coefficient, units are based on the units of the input parameters (time and distance, ie: um^2/s)
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a8f22cdf39891acd911bb7c9cd01b46b4}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!find\_static\_localization\_error\_MSD@{find\_static\_localization\_error\_MSD}}
+\index{find\_static\_localization\_error\_MSD@{find\_static\_localization\_error\_MSD}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{find\_static\_localization\_error\_MSD()}{find\_static\_localization\_error\_MSD()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a8f22cdf39891acd911bb7c9cd01b46b4} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+find\+\_\+static\+\_\+localization\+\_\+error\+\_\+\+MSD (\begin{DoxyParamCaption}\item[{}]{sigma}{, }\item[{}]{dim}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for find_static_localization_error_MSD
+Given the isotropic gaussian scale (sigma), this function finds the static localization error (sigma_loc) using the equation:
+sigma_loc = 2n*(sigma)^2
+
+Parameters:
+-----------
+sigma : array-like or int or float
+    The isotropic gaussian scale
+dim : int
+    The dimensionality of the system
+
+Returns:
+--------
+float or numpy array
+    The static localization error
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab949f7cd5d6af2c7ec26b39f8d75baa4}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!fit\_MSD@{fit\_MSD}}
+\index{fit\_MSD@{fit\_MSD}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{fit\_MSD()}{fit\_MSD()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab949f7cd5d6af2c7ec26b39f8d75baa4} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+fit\+\_\+\+MSD (\begin{DoxyParamCaption}\item[{}]{t}{, }\item[{}]{p\+\_\+0}{, }\item[{}]{p\+\_\+1}{, }\item[{}]{p\+\_\+2}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a76e9ceccca43dede8bacbacf5f10435d}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!fit\_MSD\_Linear@{fit\_MSD\_Linear}}
+\index{fit\_MSD\_Linear@{fit\_MSD\_Linear}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{fit\_MSD\_Linear()}{fit\_MSD\_Linear()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a76e9ceccca43dede8bacbacf5f10435d} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+fit\+\_\+\+MSD\+\_\+\+Linear (\begin{DoxyParamCaption}\item[{}]{t}{, }\item[{}]{p\+\_\+0}{, }\item[{}]{p\+\_\+1}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a45208db5ea56f3cabf3ab3679e9fd988}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!fit\_MSD\_loc\_err@{fit\_MSD\_loc\_err}}
+\index{fit\_MSD\_loc\_err@{fit\_MSD\_loc\_err}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{fit\_MSD\_loc\_err()}{fit\_MSD\_loc\_err()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a45208db5ea56f3cabf3ab3679e9fd988} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+fit\+\_\+\+MSD\+\_\+loc\+\_\+err (\begin{DoxyParamCaption}\item[{}]{t}{, }\item[{}]{p\+\_\+0}{, }\item[{}]{p\+\_\+1}{, }\item[{}]{p\+\_\+2}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a433f90a0e02c01c3fcc2fd521b7d93a8}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!flatten@{flatten}}
+\index{flatten@{flatten}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{flatten()}{flatten()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a433f90a0e02c01c3fcc2fd521b7d93a8} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+flatten (\begin{DoxyParamCaption}\item[{}]{t}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}function to flatten a list of any dimension (arbitrary sublist dimension)
+
+Parameters
+----------
+t : list
+    list of any size
+
+Returns
+-------
+list
+    flattened list along all dimensions of t.
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_abe556b53e3b4bbfa5da8c9aeddf8cd22}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!gaus1D@{gaus1D}}
+\index{gaus1D@{gaus1D}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{gaus1D()}{gaus1D()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_abe556b53e3b4bbfa5da8c9aeddf8cd22} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+gaus1D (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{a}{, }\item[{}]{b}{, }\item[{}]{c}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a1f9304b19d338c1b5ad4ae015ce1e678}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!gaus2D@{gaus2D}}
+\index{gaus2D@{gaus2D}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{gaus2D()}{gaus2D()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a1f9304b19d338c1b5ad4ae015ce1e678} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+gaus2D (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{a}{, }\item[{}]{b}{, }\item[{}]{c}{, }\item[{}]{a1}{, }\item[{}]{b1}{, }\item[{}]{c1}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aa24e9b3686e3ee4cf26f4489aabb5088}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!gaussian\_fit@{gaussian\_fit}}
+\index{gaussian\_fit@{gaussian\_fit}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{gaussian\_fit()}{gaussian\_fit()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aa24e9b3686e3ee4cf26f4489aabb5088} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+gaussian\+\_\+fit (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{p0}{, }\item[{}]{p1}{, }\item[{}]{p2}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_acb5c4355c872515db36a4e8d44b47ade}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!identity\_track\_matrix@{identity\_track\_matrix}}
+\index{identity\_track\_matrix@{identity\_track\_matrix}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{identity\_track\_matrix()}{identity\_track\_matrix()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_acb5c4355c872515db36a4e8d44b47ade} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+identity\+\_\+track\+\_\+matrix (\begin{DoxyParamCaption}\item[{}]{tracks\+\_\+true}{, }\item[{}]{tracks\+\_\+estimate}{, }\item[{}]{verbose}{ = {\ttfamily True}, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Documentation for identity_track_matrix
+This creates all unique combinations of tracks and then finds the identity between each pair
+
+Parameters:
+-----------
+tracks_true : dict
+    dict of true tracks, shape (n,2). Key is the track number, value is the track
+tracks_estimate : dict
+    dict of estimated tracks, shape (m,2). Key is the track number, value is the track
+verbose : bool
+    if True then return all the identity matrices, if False then only return the per track results
+
+Returns:
+--------
+max_identity : array
+    array of the maximum identity between each true track and the estimated tracks
+lengh_error : array
+    array of the percent error between the lengths of each true track and the estimated tracks
+identity_matrix : array
+    matrix of the identity between each pair of tracks
+length_error_matrix : array
+    matrix of the percent error between the lengths of each pair of tracks
+
+Notes:
+------\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a48fbca914bb19f3dea7890f08eb215a0}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!identity\_tracks@{identity\_tracks}}
+\index{identity\_tracks@{identity\_tracks}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{identity\_tracks()}{identity\_tracks()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a48fbca914bb19f3dea7890f08eb215a0} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+identity\+\_\+tracks (\begin{DoxyParamCaption}\item[{}]{track\+\_\+true}{, }\item[{}]{track\+\_\+estimate}{, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Documentation for identity_tracks
+
+Parameters:
+-----------
+track_true : array
+    true track, shape (n,2)
+track_estimate : array
+    estimated track, shape (m,2), m can be different than n
+threshold : float
+    distance threshold for the point to be considered a match
+
+Returns:
+--------
+mean_point_identity : float
+    mean percent identity between the points in the true track and the estimated track
+length_error : float
+    percent error between the lengths of the tracks
+
+Notes:
+------
+1. Assumes that the tracks and points are formatted as [[x,y,T],[x,y,T],...,[x,y,T]] numpy arrays and [x,y,T] for a single point
+2. Assumes that the true track is not empty
+3. Assumes that the estimated track is not empty
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a181a74832daab8b8a05f2cd927fc5e28}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!linear\_fitting@{linear\_fitting}}
+\index{linear\_fitting@{linear\_fitting}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{linear\_fitting()}{linear\_fitting()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a181a74832daab8b8a05f2cd927fc5e28} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+linear\+\_\+fitting (\begin{DoxyParamCaption}\item[{}]{xdata}{, }\item[{}]{ydata}{, }\item[{}]{deg}{ = {\ttfamily 1}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for linear_fitting
+This function perfroms a linear fit to the data using polyfit
+
+Parameters:
+-----------
+xdata : numpy array
+    The x data
+ydata : numpy array
+    The y data
+deg : int, optional (default=1)
+    The degree of the polynomial to be fitted
+
+Returns:
+--------
+numpy array with 2 elements
+    1. The polynomial coefficients
+    2. The covariance matrix
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aaf0d9379b609f6ad5bef7e11d2a7ae7c}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!MSD\_tavg@{MSD\_tavg}}
+\index{MSD\_tavg@{MSD\_tavg}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{MSD\_tavg()}{MSD\_tavg()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aaf0d9379b609f6ad5bef7e11d2a7ae7c} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+MSD\+\_\+tavg (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{f}{, }\item[{}]{f\+\_\+inc}{ = {\ttfamily False}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a0efc5738b5c1db6f0b59bc9458bf8544}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!MSD\_tavg1@{MSD\_tavg1}}
+\index{MSD\_tavg1@{MSD\_tavg1}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{MSD\_tavg1()}{MSD\_tavg1()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a0efc5738b5c1db6f0b59bc9458bf8544} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+MSD\+\_\+tavg1 (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{f}{, }\item[{}]{f\+\_\+inc}{ = {\ttfamily False}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_af6ee1eaba85e2eefdf7e3118b954db8b}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!MSD\_tavg\_single@{MSD\_tavg\_single}}
+\index{MSD\_tavg\_single@{MSD\_tavg\_single}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{MSD\_tavg\_single()}{MSD\_tavg\_single()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_af6ee1eaba85e2eefdf7e3118b954db8b} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+MSD\+\_\+tavg\+\_\+single (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{f}{, }\item[{}]{f\+\_\+inc}{ = {\ttfamily False}}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aac2c1299c3af1b3539727c88ead285ba}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!nnd\_correction\_rayleigh@{nnd\_correction\_rayleigh}}
+\index{nnd\_correction\_rayleigh@{nnd\_correction\_rayleigh}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{nnd\_correction\_rayleigh()}{nnd\_correction\_rayleigh()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aac2c1299c3af1b3539727c88ead285ba} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+nnd\+\_\+correction\+\_\+rayleigh (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{sigma}{, }\item[{}]{xc}{, }\item[{}]{w}{, }\item[{}]{a1}{, }\item[{}]{a2}{, }\item[{}]{a3}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a30aec5bcddc63c237ea4c624eac969bb}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!non\_linear\_curvefit@{non\_linear\_curvefit}}
+\index{non\_linear\_curvefit@{non\_linear\_curvefit}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{non\_linear\_curvefit()}{non\_linear\_curvefit()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a30aec5bcddc63c237ea4c624eac969bb} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+non\+\_\+linear\+\_\+curvefit (\begin{DoxyParamCaption}\item[{}]{func}{, }\item[{}]{xdata}{, }\item[{}]{ydata}{, }\item[{}]{p0}{ = {\ttfamily None}, }\item[{}]{method}{ = {\ttfamily \textquotesingle{}lm\textquotesingle{}}, }\item[{}]{bounds}{ = {\ttfamily None}}\end{DoxyParamCaption})}
+
+
+
+RANDOM FITTING FUNCTIONS \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#. 
+
+\begin{DoxyVerb}Docstring for non_linear_curvefit
+This function fits a curve to the data using scipy.optimize.curve_fit
+
+Parameters:
+-----------
+func : function
+    The function to be fitted to the data
+xdata : numpy array
+    The x data
+ydata : numpy array
+    The y data
+p0 : numpy array, optional (default=None)
+    The initial guess for the parameters
+method : str, optional (default='lm')
+    The method to be used for the curve fitting, can be 'lm' or 'trf' or 'dogbox'
+bounds : tuple, optional (default=None)
+    The lower and upper bounds for the parameters
+
+Returns:
+--------
+tuple
+    The fitted parameters and the covariance matrix
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a4b51062b419c605017fa9d0e4bd528a0}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!pad\_array@{pad\_array}}
+\index{pad\_array@{pad\_array}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{pad\_array()}{pad\_array()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a4b51062b419c605017fa9d0e4bd528a0} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+pad\+\_\+array (\begin{DoxyParamCaption}\item[{}]{subarray}{, }\item[{}]{shape}{, }\item[{}]{top\+\_\+left\+\_\+coord}{, }\item[{}]{pad}{ = {\ttfamily 0}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Parameters
+----------
+subarray : 2D array-like
+    array to pad
+shape : tuple, list, array-like of length 2
+    2D shape of the full array
+top_left_coord : list, array-like of length 2
+    coordinate of the top left corner of the subarray in the full array of shape
+
+Returns
+-------
+array-like 2D
+    returns the full array of with size shape entries of the subarray are inputted relative to top_left_coord
+    padded with 0s
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aa6e15e74fefb1b7b653c8a3f148eb4ce}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!percent\_error@{percent\_error}}
+\index{percent\_error@{percent\_error}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{percent\_error()}{percent\_error()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aa6e15e74fefb1b7b653c8a3f148eb4ce} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+percent\+\_\+error (\begin{DoxyParamCaption}\item[{}]{true}{, }\item[{}]{estimate}{, }\item[{}]{abs}{ = {\ttfamily True}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Documentation for percent_error
+
+Parameters:
+-----------
+true : float
+    true value
+estimate : float
+    estimated value
+abs : bool (default = True)
+    if abs == True then the absolute value of the percent error is returned
+
+Returns:
+--------
+percent_error : float
+    percent error between the true and estimated values
+
+Notes:
+------
+1. Assumes that the true and estimated values are floats
+2. Assumes that the true value is not zero
+3. Assumes that the true value is not negative
+4. Assumes that the true value is not NaN
+5. Assumes that the estimated value is not NaN\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a8347c37464dc114a9bd8c7135e110b88}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!photon\_conversion\_from\_AUD@{photon\_conversion\_from\_AUD}}
+\index{photon\_conversion\_from\_AUD@{photon\_conversion\_from\_AUD}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{photon\_conversion\_from\_AUD()}{photon\_conversion\_from\_AUD()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a8347c37464dc114a9bd8c7135e110b88} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+photon\+\_\+conversion\+\_\+from\+\_\+\+AUD (\begin{DoxyParamCaption}\item[{float\texorpdfstring{$\vert$}{|}np.\+ndarray}]{AUD}{, }\item[{float\texorpdfstring{$\vert$}{|}int}]{photon\+\_\+conversion\+\_\+factor}{, }\item[{float\texorpdfstring{$\vert$}{|}int}]{quantum\+\_\+efficiency}{, }\item[{float\texorpdfstring{$\vert$}{|}int}]{dark\+\_\+offset}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Converting from AUD to photons for a CMOS camera using the formula:
+photons = (AUD - dark_offset)*photon_conversion_factor/quantum_efficiency
+
+Parameters:
+-----------
+AUD : float or numpy array
+    The AUD values
+photon_conversion_factor : float or int
+    The photon conversion factor
+quantum_efficiency : float or int
+    The quantum efficiency at a wavelength for the detector (from 0-1, ie 0% - 100%)
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a663911666812a703ab3916ed2c8aaec2}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!point\_error\_detection@{point\_error\_detection}}
+\index{point\_error\_detection@{point\_error\_detection}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{point\_error\_detection()}{point\_error\_detection()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a663911666812a703ab3916ed2c8aaec2} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+point\+\_\+error\+\_\+detection (\begin{DoxyParamCaption}\item[{}]{true\+\_\+points}{, }\item[{}]{extracted\+\_\+points}{, }\item[{}]{threshold}{ = {\ttfamily 0.5}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for point_error_detection
+Calculate the error between the true points and the extracted points per frame
+
+Parameters:
+-----------
+true_points : dict
+    dictionary of true points where the keys are the frame numbers and the values are the true points in that frame
+extracted_points : dict
+    dictionary of extracted points where the keys are the frame numbers and the values are the extracted points in that frame
+threshold : float
+    threshold for the distance between the true points and the extracted points
+
+Returns:
+--------
+percent_detected : float
+    percent of the true points that are detected\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ae85a090c8ca2869703ae2f2f3774e249}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!point\_inside\_circle2D@{point\_inside\_circle2D}}
+\index{point\_inside\_circle2D@{point\_inside\_circle2D}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{point\_inside\_circle2D()}{point\_inside\_circle2D()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ae85a090c8ca2869703ae2f2f3774e249} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+point\+\_\+inside\+\_\+circle2D (\begin{DoxyParamCaption}\item[{}]{circle}{, }\item[{}]{point}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Check if a point is inside a circle
+
+Parameters:
+-----------
+circle : tuple
+    (x,y,radius) of the circle
+point : tuple
+    (x,y) of the point
+
+Returns:
+--------
+bool
+    True if the point is inside the circle, False otherwise
+
+Raises:
+-------
+TypeError
+    If circle or point are not tuples
+TypeError
+    If circle or point are not tuples of length 3 and 2 respectively
+TypeError
+    If circle or point are not tuples of numbers
+ValueError
+    If the radius of the circle is not positive
+
+Examples:
+---------
+>>> point_inside_circle2D((0,0,1),(0,0))
+True
+>>> point_inside_circle2D((0,0,1),(0,1))
+False
+
+Notes:
+------
+1. This function is not vectorized, so it will not work with numpy arrays
+2. This function is not robust to floating point errors
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aedab23f88e301e077d48142e4160c03c}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!point\_pair\_error\_detection@{point\_pair\_error\_detection}}
+\index{point\_pair\_error\_detection@{point\_pair\_error\_detection}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{point\_pair\_error\_detection()}{point\_pair\_error\_detection()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aedab23f88e301e077d48142e4160c03c} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+point\+\_\+pair\+\_\+error\+\_\+detection (\begin{DoxyParamCaption}\item[{}]{true\+\_\+point\+\_\+pairs}{, }\item[{}]{extracted\+\_\+point\+\_\+pairs}{, }\item[{}]{threshold}{ = {\ttfamily 0.5}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for point_pair_error_detection
+Calculate the error between the true point pairs and the extracted point pairs per frame
+point_pairs = {"frame1,frame2":[[x1,y1,frame1],[x2,y2,frame2]],"frame1,frame2":[[x2,y2,frame2],[x3,y3,frame3]]}
+
+Parameters:
+-----------
+true_point_pairs : dict, keys is a combination of the two frames of the points are point pairs as defined above
+    dictionary of true point pairs where the keys is a combination of the two frames of the points and the values are the point pairs
+extracted_point_pairs : dict, keys is a combination of the two frames of the points are point pairs as defined above
+    dictionary of extracted point pairs where the keys is a combination of the two frames of the points and the values are the point pairs
+threshold : float
+    threshold for the distance between the true point pairs and the extracted point pairs
+
+Returns:
+--------
+percent_detected : float
+    percent of the true point pairs that are detected
+mismatch_error : float
+    percent of true detected point pairs over the total amount of extracted pairs
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab2a3f93a19bfd256417ff9b3b0b551cb}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!point\_per\_frame\_difference@{point\_per\_frame\_difference}}
+\index{point\_per\_frame\_difference@{point\_per\_frame\_difference}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{point\_per\_frame\_difference()}{point\_per\_frame\_difference()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab2a3f93a19bfd256417ff9b3b0b551cb} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+point\+\_\+per\+\_\+frame\+\_\+difference (\begin{DoxyParamCaption}\item[{}]{true\+\_\+points\+\_\+per\+\_\+frame}{, }\item[{}]{extracted\+\_\+points\+\_\+per\+\_\+frame}{}\end{DoxyParamCaption})}
+
+
+
+Track percent identity functions \#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#. 
+
+\begin{DoxyVerb} Documentation for point_per_frame_difference
+Finds the closest point in the extracted points per frame to the true points per frame and returns the difference between the two points
+for each such point in each frame
+
+Parameters:
+-----------
+true_points_per_frame : dict
+    dictionary of the true points per frame, key = frame number, value = array of points, shape (n,2)
+extracted_points_per_frame : dict
+    dictionary of the extracted points per frame, key = frame number, value = array of points, shape (n,2)
+
+Returns:
+--------
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab96752af606fd47c3bfe16da64bd010b}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!points\_per\_frame\_bulk\_sort@{points\_per\_frame\_bulk\_sort}}
+\index{points\_per\_frame\_bulk\_sort@{points\_per\_frame\_bulk\_sort}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{points\_per\_frame\_bulk\_sort()}{points\_per\_frame\_bulk\_sort()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab96752af606fd47c3bfe16da64bd010b} 
+dict SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+points\+\_\+per\+\_\+frame\+\_\+bulk\+\_\+sort (\begin{DoxyParamCaption}\item[{np.\+ndarray}]{x}{, }\item[{np.\+ndarray}]{y}{, }\item[{np.\+ndarray}]{t}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Utility function, shouldn't be needed.
+
+Sorts points by frame number. The output should be a dict with keys of frame numbers and values of points in that frame.
+
+Parameters:
+-----------
+x : np.ndarray
+    x coordinates of points
+y : np.ndarray
+    y coordinates of points
+t : np.ndarray
+    frame numbers of points
+
+Returns:
+--------
+points_per_frame : dict
+    dictionary of points per frame where the keys are the frame numbers and the values are the points in that frame
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a16f8c295822912240a6a231d970b497c}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!points\_per\_frame\_convert@{points\_per\_frame\_convert}}
+\index{points\_per\_frame\_convert@{points\_per\_frame\_convert}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{points\_per\_frame\_convert()}{points\_per\_frame\_convert()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a16f8c295822912240a6a231d970b497c} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+points\+\_\+per\+\_\+frame\+\_\+convert (\begin{DoxyParamCaption}\item[{}]{tracks}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Docstring for points_per_frame_convert
+Take a track dictionary and convert it to a points per frame dictionary where the keys are the frame numbers and the values are the points in that frame
+
+Parameters:
+-----------
+tracks : dict
+    dictionary of tracks where the keys are the track numbers and the values are the tracks
+
+Returns:
+--------
+points_per_frame : dict
+    dictionary of points per frame where the keys are the frame numbers and the values are the points in that frame
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a774aaa9db6e14a9c15ff64a49946f1b0}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!rad\_to\_d@{rad\_to\_d}}
+\index{rad\_to\_d@{rad\_to\_d}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{rad\_to\_d()}{rad\_to\_d()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a774aaa9db6e14a9c15ff64a49946f1b0} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+rad\+\_\+to\+\_\+d (\begin{DoxyParamCaption}\item[{}]{rad\+\_\+}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ad6fab2dd9b5765cbfa4cff321bda34a1}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!radius\_of\_gyration@{radius\_of\_gyration}}
+\index{radius\_of\_gyration@{radius\_of\_gyration}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{radius\_of\_gyration()}{radius\_of\_gyration()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ad6fab2dd9b5765cbfa4cff321bda34a1} 
+float SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+radius\+\_\+of\+\_\+gyration (\begin{DoxyParamCaption}\item[{\texorpdfstring{$\ast$}{*}}]{args}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Determine the radius of gyration of a particle given its x,y coordinates.
+If only one argument is given, it is assumed to be a 2D array of x,y coordinates.
+If two arguments are given, they are assumed to be x,y coordinates.
+
+Parameters:
+-----------
+*args : array-like
+    if one argument is given, it is assumed to be a 2D array of x,y coordinates. (N,2)
+    if two arguments are given, they are assumed to be x,y coordinates. (N,),(N,)
+
+Returns:
+--------
+r_g: float
+    radius of gyration of particles
+
+Raises:
+-------
+ValueError
+    if the number of arguments is not 1 or 2\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a57ea73456f0cb72046d0c4ec2f632ffd}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!range\_distance@{range\_distance}}
+\index{range\_distance@{range\_distance}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{range\_distance()}{range\_distance()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a57ea73456f0cb72046d0c4ec2f632ffd} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+range\+\_\+distance (\begin{DoxyParamCaption}\item[{}]{a}{, }\item[{}]{b}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for range_distance
+
+Parameters:
+-----------
+a : float
+    The first number
+b : float
+    The second number
+
+Returns:
+--------
+float
+    The distance between the two numbers
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a91509ed175aae51023e50f0751f4b712}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!rayleigh\_corr@{rayleigh\_corr}}
+\index{rayleigh\_corr@{rayleigh\_corr}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{rayleigh\_corr()}{rayleigh\_corr()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a91509ed175aae51023e50f0751f4b712} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+rayleigh\+\_\+corr (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{corr}{, }\item[{}]{sigma}{, }\item[{}]{A}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_adc2e73b207de5c79d6a0f3dd29bd40b5}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!rescale@{rescale}}
+\index{rescale@{rescale}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{rescale()}{rescale()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_adc2e73b207de5c79d6a0f3dd29bd40b5} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+rescale (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{a}{, }\item[{}]{b}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ac7f16da4c3211ea9df7187c9ad01207a}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!rescale\_range@{rescale\_range}}
+\index{rescale\_range@{rescale\_range}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{rescale\_range()}{rescale\_range()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ac7f16da4c3211ea9df7187c9ad01207a} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+rescale\+\_\+range (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{min\+\_\+x}{, }\item[{}]{max\+\_\+x}{, }\item[{}]{a}{, }\item[{}]{b}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}https://stats.stackexchange.com/questions/281162/scale-a-number-between-a-range\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a61a0272d3ea0fab6400d9a3fb04a33e1}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!reshape\_col2d@{reshape\_col2d}}
+\index{reshape\_col2d@{reshape\_col2d}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{reshape\_col2d()}{reshape\_col2d()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a61a0272d3ea0fab6400d9a3fb04a33e1} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+reshape\+\_\+col2d (\begin{DoxyParamCaption}\item[{}]{arr}{, }\item[{}]{permutations}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for reshape_col2d
+This function reshapes a 2D array by permuting the columns in the order specified by permutations
+
+Parameters:
+-----------
+arr : numpy array
+    The array to be reshaped
+permutations : list of integers
+    The permutations to be applied to the columns of arr
+
+Returns:
+--------
+numpy array
+    The reshaped array
+
+NOTES:
+------
+Sometimes this breaks i have no idea why. Use with caution\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_abc292aa538899e043a82d0c8d5a32fd4}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!rt\_to\_xy@{rt\_to\_xy}}
+\index{rt\_to\_xy@{rt\_to\_xy}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{rt\_to\_xy()}{rt\_to\_xy()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_abc292aa538899e043a82d0c8d5a32fd4} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+rt\+\_\+to\+\_\+xy (\begin{DoxyParamCaption}\item[{}]{r}{, }\item[{}]{theta}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Docstring for rt_to_xy
+
+Parameters:
+-----------
+r : float
+    The radial coordinate
+theta : float
+    The angular coordinate
+
+Returns:
+--------
+tuple
+    The x and y coordinates\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_af4ea93a21049ee4a791d9c56e2309f8c}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!sorted\_alphanumeric@{sorted\_alphanumeric}}
+\index{sorted\_alphanumeric@{sorted\_alphanumeric}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{sorted\_alphanumeric()}{sorted\_alphanumeric()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_af4ea93a21049ee4a791d9c56e2309f8c} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+sorted\+\_\+alphanumeric (\begin{DoxyParamCaption}\item[{}]{data}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a00ac0c98d8bfcabb8bf0d53287b97be5}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!squared\_mean\_difference@{squared\_mean\_difference}}
+\index{squared\_mean\_difference@{squared\_mean\_difference}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{squared\_mean\_difference()}{squared\_mean\_difference()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a00ac0c98d8bfcabb8bf0d53287b97be5} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+squared\+\_\+mean\+\_\+difference (\begin{DoxyParamCaption}\item[{}]{a}{}\end{DoxyParamCaption})}
+
+\Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aed0a3295ef3762c8907ecfd0d91d3380}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!subarray2D@{subarray2D}}
+\index{subarray2D@{subarray2D}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{subarray2D()}{subarray2D()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_aed0a3295ef3762c8907ecfd0d91d3380} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+subarray2D (\begin{DoxyParamCaption}\item[{}]{arr}{, }\item[{}]{mask}{, }\item[{}]{full}{ = {\ttfamily True}, }\item[{}]{transpose}{ = {\ttfamily True}}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Gives a new array from a 2D defined by mask. Assumes mask is [n,m]
+
+Parameters
+----------
+arr : 2D numpy array-like
+    original array to be zoomed
+mask : 2D numpy array-like
+    2D mask defining the corners of the box to make the subarray
+full : bool
+    if True return the full size array with 0 entry anywhere not in the subarray
+    else return a new array defined by the mask
+transpose : bool 
+    if true transpose the mask before subindexing
+    else use mask as is
+
+Returns
+-------
+numpy array-like
+    subarray defined using the mask.
+    array is same shape as original with 0 values outside subarray if full = True
+
+Notes
+-----
+Assumes mask is the same shape or smaller than the input array
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab82b4d121958032d17953cbd8158f6b1}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!Thompson\_localization\_precision@{Thompson\_localization\_precision}}
+\index{Thompson\_localization\_precision@{Thompson\_localization\_precision}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{Thompson\_localization\_precision()}{Thompson\_localization\_precision()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_ab82b4d121958032d17953cbd8158f6b1} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+Thompson\+\_\+localization\+\_\+precision (\begin{DoxyParamCaption}\item[{float}]{psf\+\_\+sigma}{, }\item[{float}]{pixel\+\_\+size}{, }\item[{float\texorpdfstring{$\vert$}{|}np.\+ndarray}]{num\+\_\+photons}{, }\item[{float}]{background\+\_\+photons}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb}Theory from Thompson et al. 2002 (Precise Nanometer Localization Analysis for Individual Fluorescent Probes)
+For a gaussian PSF, the localization precision is given by:
+sigma_loc^2 = (psf_sigma^2 + pixel_size^2 /12)/num_photons + (8*pi*psf_sigma^4*background_photons^2)/(num_photons^2 * pixel_size^2)
+
+This is assuming that the fit of the single molecule localization is done using a least squares fit
+
+Parameters: ( all units for the parameters need to be the same)
+-----------
+psf_sigma : float
+    The sigma of the PSF
+pixel_size : float
+    The size of a pixel
+num_photons : float or numpy array
+    The number of photons
+background_photons : float
+    The number of background photons
+
+Returns:
+--------
+float or numpy array
+    The localization precision
+\end{DoxyVerb}
+ \Hypertarget{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a6319255512a68b484aae60d090928b81}\index{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}!track\_decomp@{track\_decomp}}
+\index{track\_decomp@{track\_decomp}!SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions@{SMT.SMT\_Analysis\_BP.helpers.analysisFunctions.Analysis\_functions}}
+\doxysubsubsection{\texorpdfstring{track\_decomp()}{track\_decomp()}}
+{\footnotesize\ttfamily \label{namespace_s_m_t_1_1_s_m_t___analysis___b_p_1_1helpers_1_1analysis_functions_1_1_analysis__functions_a6319255512a68b484aae60d090928b81} 
+SMT.\+SMT\+\_\+\+Analysis\+\_\+\+BP.\+helpers.\+analysis\+Functions.\+Analysis\+\_\+functions.\+track\+\_\+decomp (\begin{DoxyParamCaption}\item[{}]{x}{, }\item[{}]{y}{, }\item[{}]{f}{, }\item[{}]{max\+\_\+track\+\_\+decomp}{}\end{DoxyParamCaption})}
+

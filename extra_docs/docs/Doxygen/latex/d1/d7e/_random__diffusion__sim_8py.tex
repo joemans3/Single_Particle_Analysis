@@ -1,0 +1,42 @@
+\doxysection{/\+Users/baljyot/\+Documents/\+CODE/\+Git\+Hub\+\_\+t2/\+PHD/\+Baljyot\+\_\+\+EXP\+\_\+\+RPOC/\+Scripts/\+SMT/\+SMT\+\_\+\+Analysis\+\_\+\+BP/\+Random/\+Random\+\_\+diffusion\+\_\+sim.py File Reference}
+\hypertarget{_random__diffusion__sim_8py}{}\label{_random__diffusion__sim_8py}\index{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/Random/Random\_diffusion\_sim.py@{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/Random/Random\_diffusion\_sim.py}}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \mbox{\hyperlink{namespace_random__diffusion__sim}{Random\+\_\+diffusion\+\_\+sim}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{namespace_random__diffusion__sim_a218cd64a627d4e8eb57370f1d3c7b090}{Random\+\_\+diffusion\+\_\+sim.\+size\+\_\+step}} = 1.
+\item 
+int \mbox{\hyperlink{namespace_random__diffusion__sim_a5f6346a0aee71081148200a05b06fdae}{Random\+\_\+diffusion\+\_\+sim.\+time\+\_\+step}} = 1.
+\item 
+int \mbox{\hyperlink{namespace_random__diffusion__sim_a40e981f06edb5b55b0a70a625b80ca03}{Random\+\_\+diffusion\+\_\+sim.\+mean\+\_\+length}} = 15
+\item 
+int \mbox{\hyperlink{namespace_random__diffusion__sim_a76cc0d49ebb68b17805c1b726b82a8e0}{Random\+\_\+diffusion\+\_\+sim.\+trajectory\+\_\+total}} = 10000
+\item 
+list \mbox{\hyperlink{namespace_random__diffusion__sim_a1c768546c3e478328fab2ee4f8b2b46c}{Random\+\_\+diffusion\+\_\+sim.\+trajectory\+\_\+container}} = \mbox{[}$\,$\mbox{]}
+\item 
+bool \mbox{\hyperlink{namespace_random__diffusion__sim_aedafd2fec8ce53d6a427c28a7793651c}{Random\+\_\+diffusion\+\_\+sim.\+good}} = True
+\item 
+int \mbox{\hyperlink{namespace_random__diffusion__sim_a9f61b08b12e004af4502603a4b5195ce}{Random\+\_\+diffusion\+\_\+sim.\+length}} = 0
+\item 
+\mbox{\hyperlink{namespace_random__diffusion__sim_add94a7ca7063f9cb9dc76e429e965321}{Random\+\_\+diffusion\+\_\+sim.\+trajectory}} = np.\+zeros((int(\mbox{\hyperlink{namespace_random__diffusion__sim_a9f61b08b12e004af4502603a4b5195ce}{length}}),2))
+\item 
+int \mbox{\hyperlink{namespace_random__diffusion__sim_aa7b1e950a1522cc5ae99e309d3387bb7}{Random\+\_\+diffusion\+\_\+sim.\+angle}} = np.\+random.\+random()\texorpdfstring{$\ast$}{*}2.\texorpdfstring{$\ast$}{*}np.\+pi
+\item 
+int \mbox{\hyperlink{namespace_random__diffusion__sim_ada6f1b6e7e36e8a850bc3a532dd26c0b}{Random\+\_\+diffusion\+\_\+sim.\+dx}} = np.\+cos(\mbox{\hyperlink{namespace_random__diffusion__sim_aa7b1e950a1522cc5ae99e309d3387bb7}{angle}})\texorpdfstring{$\ast$}{*}\mbox{\hyperlink{namespace_random__diffusion__sim_a218cd64a627d4e8eb57370f1d3c7b090}{size\+\_\+step}}
+\item 
+int \mbox{\hyperlink{namespace_random__diffusion__sim_a37fb86cee0c6cb8a3af49d9a2c957a92}{Random\+\_\+diffusion\+\_\+sim.\+dy}} = np.\+sin(\mbox{\hyperlink{namespace_random__diffusion__sim_aa7b1e950a1522cc5ae99e309d3387bb7}{angle}})\texorpdfstring{$\ast$}{*}\mbox{\hyperlink{namespace_random__diffusion__sim_a218cd64a627d4e8eb57370f1d3c7b090}{size\+\_\+step}}
+\item 
+list \mbox{\hyperlink{namespace_random__diffusion__sim_ac5883a10bbdd8fc05c99dceb72c0e941}{Random\+\_\+diffusion\+\_\+sim.\+angle\+\_\+container}} = \mbox{[}$\,$\mbox{]}
+\item 
+\mbox{\hyperlink{namespace_random__diffusion__sim_a004b1a287193799b1b7eb3f220640c64}{Random\+\_\+diffusion\+\_\+sim.\+angles\+\_\+all}} = af.\+trajectory\+\_\+angle(\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{[}\+:,0\mbox{]},\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}\mbox{[}\+:,1\mbox{]})
+\item 
+\mbox{\hyperlink{namespace_random__diffusion__sim_a93ba5a685569b375de3e9d56032dd3af}{Random\+\_\+diffusion\+\_\+sim.\+flatten\+\_\+angle}} = af.\+flatten(\mbox{\hyperlink{namespace_random__diffusion__sim_ac5883a10bbdd8fc05c99dceb72c0e941}{angle\+\_\+container}})
+\item 
+\mbox{\hyperlink{namespace_random__diffusion__sim_a08e80cc934a2a220b661fe43c04d43be}{Random\+\_\+diffusion\+\_\+sim.\+bins}}
+\item 
+\mbox{\hyperlink{namespace_random__diffusion__sim_a67b220336a643bbc2b6352caa38f67ff}{Random\+\_\+diffusion\+\_\+sim.\+alpha}}
+\end{DoxyCompactItemize}

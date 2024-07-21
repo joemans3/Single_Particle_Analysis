@@ -1,0 +1,35 @@
+\doxysection{scalebars Namespace Reference}
+\hypertarget{namespacescalebars}{}\label{namespacescalebars}\index{scalebars@{scalebars}}
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \mbox{\hyperlink{classscalebars_1_1_anchored_scale_bar}{Anchored\+Scale\+Bar}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{namespacescalebars_a9199f84a05b36ab27df5e2b431378e8c}{add\+\_\+scalebar}} (ax, matchx=True, matchy=True, hidex=True, hidey=True, \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}kwargs)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{namespacescalebars_a9199f84a05b36ab27df5e2b431378e8c}\index{scalebars@{scalebars}!add\_scalebar@{add\_scalebar}}
+\index{add\_scalebar@{add\_scalebar}!scalebars@{scalebars}}
+\doxysubsubsection{\texorpdfstring{add\_scalebar()}{add\_scalebar()}}
+{\footnotesize\ttfamily \label{namespacescalebars_a9199f84a05b36ab27df5e2b431378e8c} 
+scalebars.\+add\+\_\+scalebar (\begin{DoxyParamCaption}\item[{}]{ax}{, }\item[{}]{matchx}{ = {\ttfamily True}, }\item[{}]{matchy}{ = {\ttfamily True}, }\item[{}]{hidex}{ = {\ttfamily True}, }\item[{}]{hidey}{ = {\ttfamily True}, }\item[{\texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}}]{kwargs}{}\end{DoxyParamCaption})}
+
+\begin{DoxyVerb} Add scalebars to axes
+
+Adds a set of scale bars to *ax*, matching the size to the ticks of the plot
+and optionally hiding the x and y axes
+
+- ax : the axis to attach ticks to
+- matchx,matchy : if True, set size of scale bars to spacing between ticks
+                if False, size should be set using sizex and sizey params
+- hidex,hidey : if True, hide x-axis and y-axis of parent
+- **kwargs : additional arguments passed to AnchoredScaleBars
+
+Returns created scalebar object
+\end{DoxyVerb}
+ 

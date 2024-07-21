@@ -1,0 +1,91 @@
+\doxysection{/\+Users/baljyot/\+Documents/\+CODE/\+Git\+Hub\+\_\+t2/\+PHD/\+Baljyot\+\_\+\+EXP\+\_\+\+RPOC/\+Scripts/\+SMT/\+SMT\+\_\+\+Analysis\+\_\+\+BP/\+Matlab/batch\+\_\+convert\+\_\+single\+\_\+fluorescence\+\_\+\+BW.m File Reference}
+\hypertarget{batch__convert__single__fluorescence___b_w_8m}{}\label{batch__convert__single__fluorescence___b_w_8m}\index{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/Matlab/batch\_convert\_single\_fluorescence\_BW.m@{/Users/baljyot/Documents/CODE/GitHub\_t2/PHD/Baljyot\_EXP\_RPOC/Scripts/SMT/SMT\_Analysis\_BP/Matlab/batch\_convert\_single\_fluorescence\_BW.m}}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a195d0c64e3cd0c8f5f6512c293b121dc}{imwrite}} (\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_abdd7198e45e3c615db038f3bb6fd4902}{rd2}}\{\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}, 1\}, filename, \textquotesingle{}Write\+Mode\textquotesingle{}, \textquotesingle{}append\textquotesingle{})
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+clear \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}} = which(\textquotesingle{}rp\+\_\+ez\+\_\+fixed\+\_\+01.\+vsi\textquotesingle{})
+\item 
+give it an initial file to start with \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a7ed33e03e50327a62e9a92e3404a4e83}{filelist}} = dir(\mbox{[}fileparts(\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}) filesep \textquotesingle{}rp\+\_\+ez\+\_\+fixed\+\_\+\texorpdfstring{$\ast$}{*}.vsi\textquotesingle{}\mbox{]})
+\item 
+\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_ab4f72909bf60c2701c312451a7d5ef88}{file\+Names}} = \{filelist.\+name\}
+\item 
+\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_ac698cf6d51ebf14adf659a3d8ffdddf0}{number\+\_\+of\+\_\+files}} =100
+\item 
+pick the number of files to convert mkdir Movie mkdir gfp for \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a823dc6f99f605b83b84c6eaa64ed8d6c}{k}}
+\item 
+\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_abdd7198e45e3c615db038f3bb6fd4902}{rd2}} =rd\{1,1\}
+\item 
+for \mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\Hypertarget{batch__convert__single__fluorescence___b_w_8m_a195d0c64e3cd0c8f5f6512c293b121dc}\index{batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}!imwrite@{imwrite}}
+\index{imwrite@{imwrite}!batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}}
+\doxysubsubsection{\texorpdfstring{imwrite()}{imwrite()}}
+{\footnotesize\ttfamily \label{batch__convert__single__fluorescence___b_w_8m_a195d0c64e3cd0c8f5f6512c293b121dc} 
+imwrite (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_abdd7198e45e3c615db038f3bb6fd4902}{rd2}}\{\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}{i}}, 1\}}]{}{, }\item[{filename}]{}{, }\item[{\textquotesingle{}Write\+Mode\textquotesingle{}}]{}{, }\item[{\textquotesingle{}append\textquotesingle{}}]{}{}\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\Hypertarget{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}\index{batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}!a@{a}}
+\index{a@{a}!batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}}
+\doxysubsubsection{\texorpdfstring{a}{a}}
+{\footnotesize\ttfamily \label{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb} 
+clear a = which(\textquotesingle{}rp\+\_\+ez\+\_\+fixed\+\_\+01.\+vsi\textquotesingle{})}
+
+\Hypertarget{batch__convert__single__fluorescence___b_w_8m_a7ed33e03e50327a62e9a92e3404a4e83}\index{batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}!filelist@{filelist}}
+\index{filelist@{filelist}!batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}}
+\doxysubsubsection{\texorpdfstring{filelist}{filelist}}
+{\footnotesize\ttfamily \label{batch__convert__single__fluorescence___b_w_8m_a7ed33e03e50327a62e9a92e3404a4e83} 
+give it an initial file to start with filelist = dir(\mbox{[}fileparts(\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a784452d960ab2a85c7fe5a6010ce13eb}{a}}) filesep \textquotesingle{}rp\+\_\+ez\+\_\+fixed\+\_\+\texorpdfstring{$\ast$}{*}.vsi\textquotesingle{}\mbox{]})}
+
+\Hypertarget{batch__convert__single__fluorescence___b_w_8m_ab4f72909bf60c2701c312451a7d5ef88}\index{batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}!fileNames@{fileNames}}
+\index{fileNames@{fileNames}!batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}}
+\doxysubsubsection{\texorpdfstring{fileNames}{fileNames}}
+{\footnotesize\ttfamily \label{batch__convert__single__fluorescence___b_w_8m_ab4f72909bf60c2701c312451a7d5ef88} 
+file\+Names = \{filelist.\+name\}}
+
+\Hypertarget{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426}\index{batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}!i@{i}}
+\index{i@{i}!batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}}
+\doxysubsubsection{\texorpdfstring{i}{i}}
+{\footnotesize\ttfamily \label{batch__convert__single__fluorescence___b_w_8m_a6f6ccfcf58b31cb6412107d9d5281426} 
+for i}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=1:length(\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_abdd7198e45e3c615db038f3bb6fd4902}{rd2}}(:,1))}
+\DoxyCodeLine{}
+\DoxyCodeLine{filename=sprintf(\textcolor{stringliteral}{'rp\_ez\_fixed\_\%d.tif'},\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a823dc6f99f605b83b84c6eaa64ed8d6c}{k}})}
+
+\end{DoxyCode}
+\Hypertarget{batch__convert__single__fluorescence___b_w_8m_a823dc6f99f605b83b84c6eaa64ed8d6c}\index{batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}!k@{k}}
+\index{k@{k}!batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}}
+\doxysubsubsection{\texorpdfstring{k}{k}}
+{\footnotesize\ttfamily \label{batch__convert__single__fluorescence___b_w_8m_a823dc6f99f605b83b84c6eaa64ed8d6c} 
+pick the number of files to convert mkdir Movie mkdir gfp for k}
+
+{\bfseries Initial value\+:}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{=1:1:\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_ac698cf6d51ebf14adf659a3d8ffdddf0}{number\_of\_files}}}
+\DoxyCodeLine{\ \ \ \ rd=bfopen(\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_ab4f72909bf60c2701c312451a7d5ef88}{fileNames}}\{\mbox{\hyperlink{batch__convert__single__fluorescence___b_w_8m_a823dc6f99f605b83b84c6eaa64ed8d6c}{k}}\})}
+
+\end{DoxyCode}
+\Hypertarget{batch__convert__single__fluorescence___b_w_8m_ac698cf6d51ebf14adf659a3d8ffdddf0}\index{batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}!number\_of\_files@{number\_of\_files}}
+\index{number\_of\_files@{number\_of\_files}!batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}}
+\doxysubsubsection{\texorpdfstring{number\_of\_files}{number\_of\_files}}
+{\footnotesize\ttfamily \label{batch__convert__single__fluorescence___b_w_8m_ac698cf6d51ebf14adf659a3d8ffdddf0} 
+number\+\_\+of\+\_\+files =100}
+
+\Hypertarget{batch__convert__single__fluorescence___b_w_8m_abdd7198e45e3c615db038f3bb6fd4902}\index{batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}!rd2@{rd2}}
+\index{rd2@{rd2}!batch\_convert\_single\_fluorescence\_BW.m@{batch\_convert\_single\_fluorescence\_BW.m}}
+\doxysubsubsection{\texorpdfstring{rd2}{rd2}}
+{\footnotesize\ttfamily \label{batch__convert__single__fluorescence___b_w_8m_abdd7198e45e3c615db038f3bb6fd4902} 
+rd2 =rd\{1,1\}}
+
