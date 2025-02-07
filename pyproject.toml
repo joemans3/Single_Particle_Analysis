@@ -30,6 +30,9 @@ dependencies = [
   "scikit-learn>=1.0",
   "scikit-image>=0.18.3",
   "lmfit>=1.0.2",
+  "ipykernel==6.25.0",
+  "ipython==8.15.0",
+  "shapely==2.0.1"
 ]
 [tool.setuptools.packages.find]
 include = ["SMT*"]

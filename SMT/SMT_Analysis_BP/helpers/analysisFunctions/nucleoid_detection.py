@@ -1,10 +1,11 @@
-'''
+"""
 This module contains the functions used to detect the nucleoids in the images
 
 It uses the Random Forest Classifier to detect the nucleoids in the images and then uses the regionprops function to get the properties of the nucleoids
 
 Author: Baljyot Singh Parmar
-'''
+"""
+
 import math
 from functools import partial
 
@@ -18,47 +19,48 @@ TESTED_DICT = {
     "RPOC_EZ": {
         "nucleoid_threshold": 10000,
         "background_threshold": 7000,
-        "background_threshold_2": 2000
-        },
+        "background_threshold_2": 2000,
+    },
     "NUSA_EZ": {
         "nucleoid_threshold": 9200,
         "background_threshold": 7000,
-        "background_threshold_2": 2000
-        },
+        "background_threshold_2": 2000,
+    },
     "RPOC_M9": {
         "nucleoid_threshold": 9200,
         "background_threshold": 7000,
-        "background_threshold_2": 2000
-        },
+        "background_threshold_2": 2000,
+    },
     "NUSA_M9": {
         "nucleoid_threshold": 9200,
         "background_threshold": 7000,
-        "background_threshold_2": 2000
+        "background_threshold_2": 2000,
     },
     "RPOC_H5": {
         "nucleoid_threshold": 9200,
         "background_threshold": 7000,
-        "background_threshold_2": 2000
-        },
+        "background_threshold_2": 2000,
+    },
     "NUSA_H5": {
         "nucleoid_threshold": 9200,
         "background_threshold": 7000,
-        "background_threshold_2": 2000
-        },
+        "background_threshold_2": 2000,
+    },
     "RPOC_H3": {
         "nucleoid_threshold": 9200,
         "background_threshold": 7000,
-        "background_threshold_2": 2000
-        },
+        "background_threshold_2": 2000,
+    },
     "NUSA_H3": {
         "nucleoid_threshold": 9200,
         "background_threshold": 7000,
-        "background_threshold_2": 2000
-        }
+        "background_threshold_2": 2000,
+    },
 }
 
-def find_nuc(img,typee:str,regions = True,**kwargs):
-    '''
+
+def find_nuc(img, typee: str, regions=True, **kwargs):
+    """
     Parameters:
     -----------
     img : 2D array-like
@@ -70,7 +72,7 @@ def find_nuc(img,typee:str,regions = True,**kwargs):
     **kwargs : dict
         keyword arguments to be passed to the function. These are:
             connectivity : int, default = 2
-                connectivity of the image. This is passed to the regionprops function   
+                connectivity of the image. This is passed to the regionprops function
             sigma_max : int, default = 10
                 maximum sigma value to be used in the multiscale_basic_features function
             sigma_min : int, default = 1
@@ -88,91 +90,102 @@ def find_nuc(img,typee:str,regions = True,**kwargs):
         segmented image. This is a mask with at max 3 values. 2 for background, 1 for nucleoid and 3 for rest of the cell
     region_result : list of RegionProperties
         list of region properties of the segmented image. This is returned only if regions = True
-    
-    '''
-    #check if given_type is in kwargs, if not then check if type is in TESTED_DICT.keys()
-    if kwargs.get('given_type',None) is None:
+
+    """
+    # check if given_type is in kwargs, if not then check if type is in TESTED_DICT.keys()
+    if kwargs.get("given_type", None) is None:
         if typee not in TESTED_DICT.keys():
-            raise ValueError(f"Image type {typee} is not supported. Supported types are {list(TESTED_DICT.keys())}")
+            raise ValueError(
+                f"Image type {typee} is not supported. Supported types are {list(TESTED_DICT.keys())}"
+            )
         else:
             given_type = TESTED_DICT[typee]
-    elif kwargs.get('given_type',None) is "Threshold_23":
+    elif kwargs.get("given_type", None) == "Threshold_23":
         given_type = {
-            "nucleoid_threshold": (2./3.)*np.max(img),
+            "nucleoid_threshold": (2.0 / 3.0) * np.max(img),
             "background_threshold": np.min(img),
-            "background_threshold_2": 2000
+            "background_threshold_2": 2000,
         }
-    elif kwargs.get('given_type',None) is "Threshold_12":
+    elif kwargs.get("given_type", None) == "Threshold_12":
         given_type = {
-            "nucleoid_threshold": (1./2.)*np.max(img),
+            "nucleoid_threshold": (1.0 / 2.0) * np.max(img),
             "background_threshold": np.min(img),
-            "background_threshold_2": 2000
+            "background_threshold_2": 2000,
         }
-    elif kwargs.get('given_type',None) is "Threshold_13":
+    elif kwargs.get("given_type", None) == "Threshold_13":
         given_type = {
-            "nucleoid_threshold": (1./3.)*np.max(img),
+            "nucleoid_threshold": (1.0 / 3.0) * np.max(img),
             "background_threshold": np.min(img),
-            "background_threshold_2": 2000
+            "background_threshold_2": 2000,
         }
-    elif kwargs.get('given_type',None) is "Threshold_34":
+    elif kwargs.get("given_type", None) == "Threshold_34":
         given_type = {
-            "nucleoid_threshold": (3./4.)*np.max(img),
+            "nucleoid_threshold": (3.0 / 4.0) * np.max(img),
             "background_threshold": np.min(img),
-            "background_threshold_2": 2000
+            "background_threshold_2": 2000,
         }
 
     else:
-        given_type = kwargs.get('given_type')
-    
-    connectivity = kwargs.get('connectivity', 2)
-    sigma_max = kwargs.get('sigma_max', 10)
-    sigma_min = kwargs.get('sigma_min', 1)
+        given_type = kwargs.get("given_type")
+
+    connectivity = kwargs.get("connectivity", 2)
+    sigma_max = kwargs.get("sigma_max", 10)
+    sigma_min = kwargs.get("sigma_min", 1)
     training_labels = np.zeros(img.shape[:2], dtype=np.uint8) + 3
 
-    #better way to do this
-    
+    # better way to do this
+
     index_nuc = np.where(img > given_type["nucleoid_threshold"])
     index_rest = np.where(img < given_type["background_threshold_2"])
     index_back = np.where(img < given_type["background_threshold"])
     training_labels[index_rest] = 2
     training_labels[index_nuc] = 1
 
-    features_func = partial(feature.multiscale_basic_features,
-                            intensity=True, edges=False, texture=True,
-                            sigma_min=sigma_min, sigma_max=sigma_max)
+    features_func = partial(
+        feature.multiscale_basic_features,
+        intensity=True,
+        edges=False,
+        texture=True,
+        sigma_min=sigma_min,
+        sigma_max=sigma_max,
+    )
     features = features_func(img)
-    clf = RandomForestClassifier(n_estimators=50, n_jobs=-1,
-                                max_depth=10, max_samples=0.05)
+    clf = RandomForestClassifier(
+        n_estimators=50, n_jobs=-1, max_depth=10, max_samples=0.05
+    )
     clf = future.fit_segmenter(training_labels, features, clf)
     result = future.predict_segmenter(features, clf)
     if regions:
-
         copy_result = np.copy(result)
         copy_result[np.invert(copy_result == 1)] = 0
-        nuc_result = result*copy_result
+        nuc_result = result * copy_result
 
-        region_result = get_region(nuc_result,type = regionprops,connectivity=connectivity)
+        region_result = get_region(
+            nuc_result, type=regionprops, connectivity=connectivity
+        )
         return [result, region_result]
     else:
         return [result, 0]
 
+
 def get_training_set(img):
     return
 
-def get_region(image,type = regionprops, connectivity = 2, **kawrgs):
-    '''
+
+def get_region(image, type=regionprops, connectivity=2, **kawrgs):
+    """
     Parameters
     ----------
     image : 2D array-like
-        binary image (0,1) where 1 indicates the region to fit 
+        binary image (0,1) where 1 indicates the region to fit
     type : functional, default = regionprops
         the function type used to fit the image. Default assumes elliptical shapes
-    
+
     Returns
     -------
     propertieslist of RegionProperties
         Each item describes one labeled region, and can be accessed using the attributes listed below.
-    
+
     Notes
     -----
     The following properties can be accessed as attributes or keys:
@@ -309,14 +322,14 @@ def get_region(image,type = regionprops, connectivity = 2, **kawrgs):
     Spatial moments of intensity image up to 3rd order:
 
     wm_ij = sum{ array(row, col) * row^i * col^j }
-     
+
     where the sum is over the row, col coordinates of the region.
 
     moments_weighted_central(3, 3) ndarray
     Central moments (translation invariant) of intensity image up to 3rd order:
 
     wmu_ij = sum{ array(row, col) * (row - row_c)^i * (col - col_c)^j }
-     
+
     where the sum is over the row, col coordinates of the region, and row_c and col_c are the coordinates of the region’s weighted centroid.
 
     moments_weighted_hutuple
@@ -327,7 +340,7 @@ def get_region(image,type = regionprops, connectivity = 2, **kawrgs):
     Normalized moments (translation and scale invariant) of intensity image up to 3rd order:
 
     wnu_ij = wmu_ij / wm_00^[(i+j)/2 + 1]
-     
+
     where wm_00 is the zeroth spatial moment (intensity-weighted area).
 
     orientationfloat
@@ -354,12 +367,13 @@ def get_region(image,type = regionprops, connectivity = 2, **kawrgs):
 
     for prop in region:
         print(prop, region[prop])
-    '''
-    regions = regionprops(label(image,connectivity=connectivity))
+    """
+    regions = regionprops(label(image, connectivity=connectivity))
     return regions
 
-def plot_regions(regions,fig,ax,colorbar_mappable,plot = False):
-    '''
+
+def plot_regions(regions, fig, ax, colorbar_mappable, plot=False):
+    """
     Parameters
     ----------
     regions : list, output from regionprops
@@ -369,15 +383,15 @@ def plot_regions(regions,fig,ax,colorbar_mappable,plot = False):
     ax : axis object
         axis object on which to plot to
     colorbar_mappable : colobar mappable
-        colorbar_mappable opbject 
+        colorbar_mappable opbject
 
     Returns
     -------
 
-    '''
-    if fig != isinstance(fig,plt.figure):
+    """
+    if fig != isinstance(fig, plt.figure):
         fig = plt.figure()
-        
+
     for props in regions:
         y0, x0 = props.centroid
         orientation = props.orientation
@@ -386,20 +400,19 @@ def plot_regions(regions,fig,ax,colorbar_mappable,plot = False):
         x2 = x0 - math.sin(orientation) * 0.5 * props.axis_major_length
         y2 = y0 - math.cos(orientation) * 0.5 * props.axis_major_length
 
-        ax.plot((x0, x1), (y0, y1), '-r', linewidth=2.5)
-        ax.plot((x0, x2), (y0, y2), '-r', linewidth=2.5)
-        ax.plot(x0, y0, '.g', markersize=15)
+        ax.plot((x0, x1), (y0, y1), "-r", linewidth=2.5)
+        ax.plot((x0, x2), (y0, y2), "-r", linewidth=2.5)
+        ax.plot(x0, y0, ".g", markersize=15)
 
         minr, minc, maxr, maxc = props.bbox
         bx = (minc, maxc, maxc, minc, minc)
         by = (minr, minr, maxr, maxr, minr)
-        ax.plot(bx, by, '-b', linewidth=2.5)
-    ax.set_xlim((minc - 5,maxc + 5))
-    ax.set_ylim((minr - 5,maxr + 5))
-    
+        ax.plot(bx, by, "-b", linewidth=2.5)
+    ax.set_xlim((minc - 5, maxc + 5))
+    ax.set_ylim((minr - 5, maxr + 5))
+
     plt.colorbar(colorbar_mappable)
     if plot:
         plt.show()
     else:
-        return fig,ax
-    
+        return fig, ax
