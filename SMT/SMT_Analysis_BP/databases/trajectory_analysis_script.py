@@ -34,32 +34,34 @@ Author: Baljyot Singh Parmar
 
 import glob
 import pickle
+
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.io as sio
-from skimage import io
 import pandas as pd
+import scipy.io as sio
 from scipy.stats import gaussian_kde
 from shapely.geometry import Point, Polygon
-from SMT.SMT_Analysis_BP.helpers.ioModule.SMT_converters import IO_run_analysis
+from skimage import io
 
-import SMT.SMT_Analysis_BP.helpers.ioModule.import_functions as import_functions
 import SMT.SMT_Analysis_BP.helpers.analysisFunctions.nucleoid_detection as nucleoid_detection
+import SMT.SMT_Analysis_BP.helpers.ioModule.import_functions as import_functions
+from SMT.SMT_Analysis_BP.databases.structure_storage import (
+    ANALYSIS_FOLDER_TYPES,
+    LOADING_DROP_BLOB_TYPES,
+    SEGMENTATION_FOLDER_TYPES,
+)
+from SMT.SMT_Analysis_BP.databases.utilities.mask_util import check_point_in_mask_gen
+from SMT.SMT_Analysis_BP.databases.utilities.utility_database import Counter_start_stop
 from SMT.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import *
+from SMT.SMT_Analysis_BP.helpers.analysisFunctions.features_from_mask import (
+    extract_mask_properties,
+)
 from SMT.SMT_Analysis_BP.helpers.clusterMethods.blob_detection import *
 from SMT.SMT_Analysis_BP.helpers.ioModule.plotting_functions import *
 from SMT.SMT_Analysis_BP.helpers.ioModule.SMT_converters import (
-    convert_track_data_SMAUG_format,
+    IO_run_analysis,
     convert_track_data_NOBIAS_format_global,
-)
-from SMT.SMT_Analysis_BP.databases.structure_storage import (
-    SEGMENTATION_FOLDER_TYPES,
-    ANALYSIS_FOLDER_TYPES,
-    LOADING_DROP_BLOB_TYPES,
-)
-from SMT.SMT_Analysis_BP.databases.utilities.utility_database import Counter_start_stop
-from SMT.SMT_Analysis_BP.helpers.analysisFunctions.features_from_mask import (
-    extract_mask_properties,
+    convert_track_data_SMAUG_format,
 )
 
 TRACK_TYPES = ["IN", "IO", "OUT", "ALL"]
@@ -882,29 +884,42 @@ class run_analysis:
                 x_points = tracked_data[:, 2]
                 y_points = tracked_data[:, 3]
 
-                ###-----Polygon Mask of Cell-----###
+                # ###-----Polygon Mask of Cell-----###
+                #
+                # # use the boundingbox to create a polygon
+                # poly_cord = [
+                #     (emp.bounding_box[0][0], emp.bounding_box[0][1]),
+                #     (emp.bounding_box[0][0], emp.bounding_box[1][1]),
+                #     (emp.bounding_box[1][0], emp.bounding_box[1][1]),
+                #     (emp.bounding_box[1][0], emp.bounding_box[0][1]),
+                # ]
+                # poly = Polygon(poly_cord)
+                # ###-----Polygon Mask of Cell End-----###
 
-                # use the boundingbox to create a polygon
-                poly_cord = [
-                    (emp.bounding_box[0][0], emp.bounding_box[0][1]),
-                    (emp.bounding_box[0][0], emp.bounding_box[1][1]),
-                    (emp.bounding_box[1][0], emp.bounding_box[1][1]),
-                    (emp.bounding_box[1][0], emp.bounding_box[0][1]),
-                ]
-                poly = Polygon(poly_cord)
-                ###-----Polygon Mask of Cell End-----###
+                # ###-----Point Sorting Using Polygon-----###
+                # # loop over the points and check if they are inside the polygon
+                # for k_point in range(len(x_points)):
+                #     # check if the point is inside the polygon
+                #     point = Point(x_points[k_point], y_points[k_point])
+                #     if poly.contains(point) or poly.touches(point):
+                #         self.Movie[movie_ID].Cells[cell_ID].raw_tracks.append(
+                #             tracked_data[k_point]
+                #         )
+                # ###-----Point Sorting Using Polygon End-----###
 
-                ###-----Point Sorting Using Polygon-----###
-                # loop over the points and check if they are inside the polygon
+                ###-----Point Mask of Cell-----###
+                mask_point_gen = check_point_in_mask_gen(mask, 255)
+                ###-----Point Mask of Cell End-----###
+
+                ###-----Point Sorting-----###
                 for k_point in range(len(x_points)):
-                    # check if the point is inside the polygon
-                    point = Point(x_points[k_point], y_points[k_point])
-                    if poly.contains(point) or poly.touches(point):
+                    # check if point is in the list
+                    if mask_point_gen(x_points[k_point], y_points[k_point]):
                         self.Movie[movie_ID].Cells[cell_ID].raw_tracks.append(
                             tracked_data[k_point]
                         )
-                ###-----Point Sorting Using Polygon End-----###
 
+                ###-----Point Sorting End-----###
                 # once the raw tracks are added, calculate the points_per_frame
                 if len(self.Movie[movie_ID].Cells[cell_ID].raw_tracks) != 0:
                     self.Movie[movie_ID].Cells[
@@ -926,11 +941,15 @@ class run_analysis:
                             len(blobs_found[j][self.type_of_blob])
                         ):  # only use the blob type that is being used for the analysis
                             # check if the blob is in the cell
-                            blob_point = Point(
+                            # blob_point = Point(
+                            #     blobs_found[j][self.type_of_blob][k][0],
+                            #     blobs_found[j][self.type_of_blob][k][1],
+                            # )
+                            # if poly.contains(blob_point) or poly.touches(blob_point):
+                            if mask_point_gen(
                                 blobs_found[j][self.type_of_blob][k][0],
-                                blobs_found[j][self.type_of_blob][k][1],
-                            )
-                            if poly.contains(blob_point) or poly.touches(blob_point):
+                                blobs_found[j][self.type_of_blob][k][0],
+                            ):
                                 # name the drop with j = sub-frame number (0-4), and k = unique ID for this drop in the j-th sub-frame
                                 # what the shit is going on here?
                                 self.Movie[movie_ID].Cells[cell_ID].All_Drop_Collection[
@@ -954,10 +973,11 @@ class run_analysis:
                                 dropss[j] = [dropss[j]]
                             for k in range(len(dropss[j])):
                                 # check if the blob is in the cell
-                                blob_point = Point(dropss[j][k][0], dropss[j][k][1])
-                                if poly.contains(blob_point) or poly.touches(
-                                    blob_point
-                                ):
+                                # blob_point = Point(dropss[j][k][0], dropss[j][k][1])
+                                # if poly.contains(blob_point) or poly.touches(
+                                #     blob_point
+                                # ):
+                                if mask_point_gen(dropss[j][k][0], dropss[j][k][1]):
                                     self.Movie[movie_ID].Cells[
                                         cell_ID
                                     ].All_Drop_Collection[
@@ -1906,19 +1926,13 @@ class run_analysis:
         # get the x,y points in a N,2 array
         x_points = tracked_data["POSITION_X"].to_numpy()
         y_points = tracked_data["POSITION_Y"].to_numpy()
-        # make a polygon
-        poly_cord = [
-            (emp.bounding_box[0][0], emp.bounding_box[0][1]),
-            (emp.bounding_box[0][0], emp.bounding_box[1][1]),
-            (emp.bounding_box[1][0], emp.bounding_box[1][1]),
-            (emp.bounding_box[1][0], emp.bounding_box[0][1]),
-        ]
-        poly = Polygon(poly_cord)
+
+        mask_point_gen = check_point_in_mask_gen(mask, 255)
+
         # loop over the points and check if they are inside the polygon
         for k_point in range(len(x_points)):
             # check if the point is inside the polygon
-            point = Point(x_points[k_point], y_points[k_point])
-            if poly.contains(point) or poly.touches(point):
+            if mask_point_gen(x_points[k_point], y_points[k_point]):
                 tracked_data_copy.append(tracked_data.iloc[k_point])
         # convert to a pd with the same columns as the original
         tracked_data_copy = pd.DataFrame(
