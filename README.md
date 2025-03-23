@@ -59,12 +59,14 @@
             - This path variable is on line 258 of this file.
 
 #### 2.2.3. Extracting the Time Average Projections.
-- Run the file **python SMT/SMT_Analysis_BP/helpers/tifanal.py** with the directory path changed to the **Movie** path. This will create a folder called **Segmented_mean** in the directory. Move this folder to the main parent path, such that the folder is in the same scope as the **Movies** folder.
+- Run the file **python SMT/SMT_Analysis_BP/helpers/tifanal.py** with the directory path changed to the **Movie** path.
     - The path variable to change is **DIR_PATH** on line 23 in that file.
+- A GUI will spawn asking you to select the files of the movies to use. Multiselect all movie files in the GUI. (These will be the Tiff files converted from the Bioformats package using MATLAB.
+- This will create a folder called **Segmented_mean** in the directory. Move this folder to the main parent path, such that the folder is in the same scope as the **Movies** folder.
 
 #### 2.2.4. Performing the Tracking.
 - You will need TrackMate plugin in ImageJ/FIJI for this.
-- I would use the default settings in the file **SMT/SMT_Analysis_BP/fiji/BP_TRACKING.py**. Change the directory path (DIRECTORY_MOVIES) to the **Movies** folder and change the value for the BASE_MOVIE_NAME to the base name of the set of movies in Movies. (this is the string that does not include the changing number in the file names).
+- I would use the default settings in the file **SMT/SMT_Analysis_BP/fiji/BP_TRACKING.py**. Change the directory path (DIRECTORY_MOVIES -> line 25) to the **Movies** folder and change the value for the BASE_MOVIE_NAME, -> line 27, to the base name of the set of movies in Movies. (this is the string that does not include the changing number in the file names).
 - You should open this script in FIJI/ImageJ unless you have told your interpreter to use the FIJI executable.
 - Run the script; it will create a folder called **Analysis_new**. Move this folder to the parent directory so that it is in the same scope as the **Movies** folder.
 
