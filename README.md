@@ -10,15 +10,15 @@
 
 ## 1. Installation
 -------------------
-1.1. Make sure you have anaconda installed: <https://www.anaconda.com/download>
-1.2. Download or clone this repository.
-1.3. In the conda prompt, navigate to the folder where you downloaded this repository using : **cd "path_to_folder"**
-1.4. Using the **SMT_env_BP.yml** file, create a new environment using: **conda env create -f SMT_env_BP.yml**
-1.5. Activate the environment using: **conda activate SMT_env_BP**
-1.6. Now we will install this package in edit mode: **pip install -e .**.
-1.7. You need to download the latest stable release of MATLAB. Use McGill account.
-1.8. Install the bioformats package for MATLAB and follow their install instructions to set the environment variables: <https://docs.openmicroscopy.org>. 
-1.9. Install the most stable release of Cellpose for python <https://github.com/MouseLand/cellpose/tree/main/README.md>. I would recommend setting up another conda environment for only the Cellpose GUI so that it doesn't mess up the SMT_env_BP.
+- 1.1. Make sure you have anaconda installed: <https://www.anaconda.com/download>
+- 1.2. Download or clone this repository.
+- 1.3. In the conda prompt, navigate to the folder where you downloaded this repository using : **cd "path_to_folder"**
+- 1.4. Using the **SMT_env_BP.yml** file, create a new environment using: **conda env create -f SMT_env_BP.yml**
+- 1.5. Activate the environment using: **conda activate SMT_env_BP**
+- 1.6. Now we will install this package in edit mode: **pip install -e .**.
+- 1.7. You need to download the latest stable release of MATLAB. Use McGill account.
+- 1.8. Install the bioformats package for MATLAB and follow their install instructions to set the environment variables: <https://docs.openmicroscopy.org>. 
+- 1.9. Install the most stable release of Cellpose for python <https://github.com/MouseLand/cellpose/tree/main/README.md>. I would recommend setting up another conda environment for only the Cellpose GUI so that it doesn't mess up the SMT_env_BP.
 
 ## 2. Preparing the data
 ----------------------------
