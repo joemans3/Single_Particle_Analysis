@@ -370,7 +370,7 @@ def tracking_plus_save(directory_path, dir_save, file_path, file_counter):
                 ]
             )
 
-    with open(file_name_save, "w") as f:
+    with open(file_name_save, "wb") as f:
         writer = csv.writer(f, delimiter=",")
         writer.writerows(collection_spots_per_track)
     IJ.log("Success")
