@@ -54,9 +54,6 @@
 - Now that you have a folder with the .npy files run the script: **python SMT/SMT_Analysis_BP/databases/format_mask_structure.py**.
     - Before you run this command consider the following:
     - Make sure you are at the root of the poject, such that the SMT folder is child folder of the current directory.
-        - /root
-            |
-            /SMT
     - You need to tell it which path the .npy files are in and it will save the masks and cells in a new folder called **Movies** in the parent directory.
         - If running as a script, change the path variable to your path after the "if \_\_name\_\_ == '\_\_main\_\_':" line. Else interface with the API if calling from another script.
         - This path variable is on line 258 of this file.
