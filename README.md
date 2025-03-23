@@ -53,10 +53,10 @@
     - I recommend using the **cyto** built-in model for initial segmentation, but I mainly have to go over each cell to manually adjust the mask after.
 - Now that you have a folder with the .npy files run the script: **python SMT/SMT_Analysis_BP/databases/format_mask_structure.py**.
     - Before you run this command consider the following:
-    - Make sure you are at the root of the poject, such that the SMT folder is child folder of the current directory.
-    - You need to tell it which path the .npy files are in and it will save the masks and cells in a new folder called **Movies** in the parent directory.
-        - If running as a script, change the path variable to your path after the "if \_\_name\_\_ == '\_\_main\_\_':" line. Else interface with the API if calling from another script.
-        - This path variable is on line 258 of this file.
+        - Make sure you are at the root of the poject, such that the SMT folder is child folder of the current directory.
+        - You need to tell it which path the .npy files are in and it will save the masks and cells in a new folder called **Movies** in the parent directory.
+            - If running as a script, change the path variable to your path after the "if \_\_name\_\_ == '\_\_main\_\_':" line. Else interface with the API if calling from another script.
+            - This path variable is on line 258 of this file.
 
 #### 2.2.3. Extracting the Time Average Projections.
 - Run the file **python SMT/SMT_Analysis_BP/helpers/tifanal.py** with the directory path changed to the **Movie** path. This will create a folder called **Segmented_mean** in the directory. Move this folder to the main parent path, such that the folder is in the same scope as the **Movies** folder.
