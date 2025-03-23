@@ -8,14 +8,9 @@ Main properties focused on extracting:
     - r_offset (bottom left corner of bounding box)
 """
 
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append("/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts")
 import matplotlib.pyplot as plt
 import numpy as np
-from skimage import measure
-from skimage import io
+from skimage import io, measure
 
 
 class extract_mask_properties:

@@ -1,39 +1,27 @@
 [project]
 #template from https://github.com/pypa/sampleproject/blob/main/pyproject.toml
-name = "SMT"  # Required
+name = "SMT" # Required
 
-version = "0.0.1"  # Required
+version = "0.0.1" # Required
 
-description = "Jumbled code for SMT analysis and simulation developed for the Weber Lab by Baljyot Singh Parmar"  # Optional
+description = "Jumbled code for SMT analysis and simulation developed for the Weber Lab by Baljyot Singh Parmar" # Optional
 
 readme = "README.md" # Optional
 
-requires-python = ">=3.10"
+requires-python = "==3.10.9"
 
-license = {file = "LICENSE"}
 
-keywords = ["SMT"]  # Optional
+keywords = ["SMT"] # Optional
 
 authors = [
-  {name = "Baljyot Singh Parmar", email = "baljyotparmar@hotmail.com" } # Optional
+  { name = "Baljyot Singh Parmar", email = "baljyotparmar@hotmail.com" }, # Optional
 ]
 
 maintainers = [
-  {name = "Baljyot Singh Parmar", email = "baljyotparmar@hotmail.com" } # Optional
+  { name = "Baljyot Singh Parmar", email = "baljyotparmar@hotmail.com" }, # Optional
 ]
 
-dependencies = [
-  "numpy>=1.21.2",
-  "matplotlib>=3.6.0",
-  "scipy>=1.7.1",
-  "pandas>=1.3.3",
-  "scikit-learn>=1.0",
-  "scikit-image>=0.18.3",
-  "lmfit>=1.0.2",
-  "ipykernel==6.25.0",
-  "ipython==8.15.0",
-  "shapely==2.0.1"
-]
+dependencies = []
 [tool.setuptools.packages.find]
 include = ["SMT*"]
 

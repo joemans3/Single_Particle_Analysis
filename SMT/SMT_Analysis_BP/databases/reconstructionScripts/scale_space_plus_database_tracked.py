@@ -1,22 +1,17 @@
+import glob
+import json
+import os
+
 import numpy as np
 import pandas as pd
-import os
-import json
-import glob
 
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append(
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src"
-    )
+from SMT.SMT_Analysis_BP.databases.reconstructionScripts.scale_space_plus_fixed_palm import (
+    get_unique_localizations,
+)
 from SMT.SMT_Analysis_BP.helpers.analysisFunctions.scale_space_plus import (
     SM_reconstruction_image,
 )
 from SMT.SMT_Analysis_BP.helpers.clusterMethods.blob_detection import residuals_gaus2d
-from SMT.SMT_Analysis_BP.databases.reconstructionScripts.scale_space_plus_fixed_palm import (
-    get_unique_localizations,
-)
 
 # import DBSCAN
 # import convex hull

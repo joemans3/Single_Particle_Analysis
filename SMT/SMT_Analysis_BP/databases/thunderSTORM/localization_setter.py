@@ -1,14 +1,9 @@
 import glob
 import os
+
 import pandas as pd
+from shapely.geometry import Point, Polygon
 from skimage.io import imread
-
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append(
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src"
-    )
 
 from SMT.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import (
     sorted_alphanumeric,
@@ -16,7 +11,6 @@ from SMT.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import (
 from SMT.SMT_Analysis_BP.helpers.analysisFunctions.features_from_mask import (
     extract_mask_properties,
 )
-from shapely.geometry import Point, Polygon
 
 RELATIVE_ANALYSIS_FOLDER = "TS_Analysis"
 BOUNDING_BOX_EXTRA_BORDER = 2

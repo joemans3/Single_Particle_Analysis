@@ -1,6 +1,6 @@
 
 
-# This is a short doc for the SMT project.
+# This is a short doc for the SPA (single particle analysis) project.
 -----------------------------------------
 
 - Author: Baljyot Singh Parmar
@@ -10,24 +10,15 @@
 
 ## 1. Installation
 -------------------
-1. Make sure you have anaconda installed: <https://www.anaconda.com/download>
-2. Download or clone this repository.
-3. In the conda prompt, navigate to the folder where you downloaded this repository using : **cd "path_to_folder"**
-4. Using the **SMT_env_BP.yml** file, create a new environment using: **conda env create -f SMT_env_BP.yml**
-5. Activate the environment using: **conda activate SMT_env_BP**
-6. Install the extra pip packages using: **pip install -r requirements.txt**
-7. Since tensflow and tensorflow-probability are platform dependent we need to install inidividually.
-    - Try the conda install method: **conda install tensorflow**, and **conda install tensorflow-probability**
-    - If the above method fails, try the pip install method: **pip install tensorflow**, and **pip install tensorflow-probability**
-
-8. Now we will install this package in edit mode so we can use its functionalities without invoking sys.path.append() every time.
-    - Navigate to the root directory of the package using the conda prompt.
-    - Run the command: **pip install -e .**
-    - This will install the package in editable mode and you can now use the package in any python environment without having to append the path every time. 
-
-9. You need to download the latest stable release of MATLAB. Use McGill account.
-10. Install the bioformats package for MATLAB and follow their install instructions to set the environment variables: <https://docs.openmicroscopy.org>. 
-11. Install the most stable release of Cellpose for python <https://github.com/MouseLand/cellpose/tree/main/README.md>. I would recommend setting up another conda environment for only Cellpose so that it doesn't mess up the SMT_env_BP.  
+1.1. Make sure you have anaconda installed: <https://www.anaconda.com/download>
+1.2. Download or clone this repository.
+1.3. In the conda prompt, navigate to the folder where you downloaded this repository using : **cd "path_to_folder"**
+1.4. Using the **SMT_env_BP.yml** file, create a new environment using: **conda env create -f SMT_env_BP.yml**
+1.5. Activate the environment using: **conda activate SMT_env_BP**
+1.6. Now we will install this package in edit mode: **pip install -e .**.
+1.7. You need to download the latest stable release of MATLAB. Use McGill account.
+1.8. Install the bioformats package for MATLAB and follow their install instructions to set the environment variables: <https://docs.openmicroscopy.org>. 
+1.9. Install the most stable release of Cellpose for python <https://github.com/MouseLand/cellpose/tree/main/README.md>. I would recommend setting up another conda environment for only the Cellpose GUI so that it doesn't mess up the SMT_env_BP.
 
 ## 2. Preparing the data
 ----------------------------
@@ -35,7 +26,7 @@
 ### 2.1. Converting Olympus .vsi files to .tif files
 -----------------------------------------------------
 - The Olympus .vsi files are not supported by the python libraries. So we need to convert them to .tif files. (this is not entirely true, we can use the python-bioformats library to read the .vsi files, but it is very slow and the API is not very user friendly) To do this we will use the Bioformats tool in Matlab. 
-    - Download the Bioformats tool from: <https://www.openmicroscopy.org/bio-formats/downloads/>
+    - Download the Bioformats tool from: <https://bio-formats.readthedocs.io/en/v8.1.0/users/matlab/index.html>
     - Install the tool in Matlab using the instructions given in the link above. (you will need to set the environment variable in Matlab to access the bioformats library, or manually add path every time.)
     - Open the **SMT/SMT_Analysis/Matlab/batch_convert_single_fluorescence_BW.m** file in Matlab and edit the following lines:
         - **line 2**: change the initial file to the first .vsi file in the folder.
@@ -55,17 +46,24 @@
 
 - Make 3 folders to store the files in. **bf**, **gfp**, **Movie**, and copy the files to the respective folders. 
 - **DO NOT MOVE THE ACTUAL DATA. ONLY COPY IT! This applies for all the processing steps later so that we don't overwrite something on accident.**
-    - Disk space is cheap, time (and your sanity) is not.
 
 #### 2.2.2. Extracting the ROI for Cells in a Movie
 - I prefer to use SuperSegger or CellPose to extract the ROI. The issue with SuperSegger is that it is written in Matlab and is not very extendable and does not allow manual adjustments. CellPose is written in python and is very extendable and allows manual adjustments. So ill just focus on CellPose here. However, the analysis code has API for reading formatting outputs from either one.
 - Download the Cellpose for python and use the GUI to save .npy files for the mask using the gfp images (or the bf).
-- Now that you have a folder with the .npy files run the script: **SMT/SMT_Analysis_BP/databases/format_mask_structure.py** 
+    - I recommend using the **cyto** built-in model for initial segmentation, but I mainly have to go over each cell to manually adjust the mask after.
+- Now that you have a folder with the .npy files run the script: **python SMT/SMT_Analysis_BP/databases/format_mask_structure.py**.
+    - Before you run this command consider the following:
+    - Make sure you are at the root of the poject, such that the SMT folder is child folder of the current directory.
+        - /root
+            |
+            /SMT
     - You need to tell it which path the .npy files are in and it will save the masks and cells in a new folder called **Movies** in the parent directory.
-    - If running as a script, change the path variable to your path after the "if \_\_name\_\_ == '\_\_main\_\_':" line. Else interface with the API if calling from another script.
+        - If running as a script, change the path variable to your path after the "if \_\_name\_\_ == '\_\_main\_\_':" line. Else interface with the API if calling from another script.
+        - This path variable is on line 258 of this file.
 
 #### 2.2.3. Extracting the Time Average Projections.
-- Run the file **SMT/SMT_Analysis_BP/helpers/tifanal.py** with the directory path changed to the **Movie** path. This will create a folder called **Segmented_mean** in the directory. Move this folder to the main parent path, such that the folder is in the same scope as the **Movies** folder.
+- Run the file **python SMT/SMT_Analysis_BP/helpers/tifanal.py** with the directory path changed to the **Movie** path. This will create a folder called **Segmented_mean** in the directory. Move this folder to the main parent path, such that the folder is in the same scope as the **Movies** folder.
+    - The path variable to change is **DIR_PATH** on line 23 in that file.
 
 #### 2.2.4. Performing the Tracking.
 - You will need TrackMate plugin in ImageJ/FIJI for this.
@@ -83,15 +81,3 @@ Your directory for the dataset should look something like this at the very least
 ├── Segmented_mean
 ├── gfp
 ```
-Not having this minimal structure will limit the functionality of the API. You can add more folders to this structure but the API will not be able to read them unless explicitly told to do so.
-
-
-
-
-
-
-        
-
-
-
-

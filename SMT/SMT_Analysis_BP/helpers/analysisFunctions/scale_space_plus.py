@@ -3,12 +3,6 @@ Suite of functions and classes to perfrom the scale space plus procedure to crea
 
 """
 
-# for testing add src to the path
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append("/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts")
-
 import os
 from abc import ABC, abstractmethod
 

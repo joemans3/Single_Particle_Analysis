@@ -18,24 +18,19 @@ The cells are determined by the number of unique masks found in each mask file.
 The IMAGEJ_ROI.zip file is the ROI file that works for input into ImageJ for further analysis
 """
 
-if __name__ == "__main__":
-    import sys
-
-    sys.path.append(
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src"
-    )
-
-import numpy as np
-import os
 import glob
-import skimage.io as ioski
-from cellpose import io
-from SMT.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import (
-    sorted_alphanumeric,
-)
+import os
 
 # remove warnings
 import warnings
+
+import numpy as np
+import skimage.io as ioski
+from cellpose import io
+
+from SMT.SMT_Analysis_BP.helpers.analysisFunctions.Analysis_functions import (
+    sorted_alphanumeric,
+)
 
 warnings.filterwarnings("ignore")
 

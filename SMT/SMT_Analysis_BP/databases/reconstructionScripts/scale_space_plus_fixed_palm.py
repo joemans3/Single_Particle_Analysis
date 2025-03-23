@@ -48,11 +48,6 @@ import numpy as np
 import pandas as pd
 
 if __name__ == "__main__":
-    import sys
-
-    sys.path.append(
-        "/Users/baljyot/Documents/CODE/GitHub_t2/Baljyot_EXP_RPOC/Scripts/src"
-    )
     import matplotlib.pyplot as plt
 from SMT.SMT_Analysis_BP.helpers.analysisFunctions.scale_space_plus import (
     BOUNDING_BOX_PADDING,
